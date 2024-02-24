@@ -1,3 +1,5 @@
+package db_services;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -5,8 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DbService {
-    String url = "jdbc:mysql//localhost:3306/resort";
+public class DB_Costumer {
+
+    String url = "jdbc:mysql://localhost:3306/RESORT_DB";
     String user = "resort";
     String password = "resort1234";
 
@@ -23,19 +26,20 @@ public class DbService {
     }
 
     // CREATE
-    int AddCustomer(String first_name) {
+    public int AddCustomer(String first_name) {
         int customer_id = -1;
         Connection connection = connect();
 
         try {
             connection.setAutoCommit(false);
             // Add Customer
-            String addCustomerMySql = "insert int customers(first_name) values(?)";
+            String addCustomerMySql = "insert into customers(first_name) values(?)";
             PreparedStatement addCustomer = connection.prepareStatement(addCustomerMySql,
                     Statement.RETURN_GENERATED_KEYS); // preparableStatement make shure avoid the script injection
             // Statement.RETURN_GENERATED_KEY retunr the key generated
             addCustomer.setString(1, first_name);
             addCustomer.executeUpdate();
+
             // getting the customer id
             ResultSet addCustomerResults = addCustomer.getGeneratedKeys();
             if (addCustomerResults.next()) {
