@@ -32,7 +32,7 @@ public class DB_Costumer {
             int parent_id,
             String password) {
         int customerId = -1;
-        // Customer customer = null;
+
         Connection connection = connect();
 
         try {
@@ -56,16 +56,6 @@ public class DB_Costumer {
             if (addCustomerResult.next()) {
                 customerId = addCustomerResult.getInt(1);
 
-                // String fisrtName = addCustomerResult.getString(2);
-                // String lastName = addCustomerResult.getString(3);
-                // email = addCustomerResult.getString(4);
-                // phone = addCustomerResult.getInt(5);
-                // balance = addCustomerResult.getDouble(6);
-                // int parentId = addCustomerResult.getInt(7);
-                // password = addCustomerResult.getString(8);
-
-                // customer = new Customer(customerId, fisrtName, lastName, email, phone,
-                // balance, parentId, password);
             }
 
             if (customerId > 1) {

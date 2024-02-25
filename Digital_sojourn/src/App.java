@@ -1,3 +1,4 @@
+import Models.Customer;
 import db_services.DB_Costumer;
 
 public class App {
@@ -6,7 +7,7 @@ public class App {
 
         DB_Costumer database = new DB_Costumer();
 
-        // TEST CREATE CUSTOMER
+        // // TEST CREATE CUSTOMER
         // System.out.println(database
         // .AddCustomer("Arileza",
         // "Kupatri",
@@ -16,7 +17,12 @@ public class App {
         // 2,
         // "arilezaTheWorst")); // printing the customer object
 
-        // TEST READ CUSTOMER BY ID
+        // // TEST READ CUSTOMER BY ID
+        // Customer prueba = database.GetCustomer(8);
+        // System.out.println(prueba.toString());
+        // System.out.println(prueba.getFirstName());
+
+        // Update Customer basic info
 
     }
 }
