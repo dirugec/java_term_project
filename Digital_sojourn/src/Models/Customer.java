@@ -92,9 +92,9 @@ public class Customer {
                 " First Name: " + firstName +
                 " Last Name: " + lastName +
                 " email: " + email +
-                " Phone NUmber: " + phone +
+                " Phone Number: " + phone +
                 " Balance Account: " + balance +
-                " Parten ID: " + parentId +
+                " Parent ID: " + parentId +
                 " Password: " + password;
 
     }
