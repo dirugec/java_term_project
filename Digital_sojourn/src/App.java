@@ -6,7 +6,17 @@ public class App {
 
         DB_Costumer database = new DB_Costumer();
 
-        System.out.println(database.AddCustomer("Deneb")); // printing the customer id
+        // TEST CREATE CUSTOMER
+        // System.out.println(database
+        // .AddCustomer("Arileza",
+        // "Kupatri",
+        // "arileza@gamil.com",
+        // 123123337,
+        // 0.00,
+        // 2,
+        // "arilezaTheWorst")); // printing the customer object
+
+        // TEST READ CUSTOMER BY ID
 
     }
 }
