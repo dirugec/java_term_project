@@ -1,6 +1,7 @@
 import Models.Customer;
 import db_services.DB_Costumer;
 import db_services.DB_Merchant;
+import db_services.Db_Product;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -36,6 +37,13 @@ public class App {
 
         // // Test get all Merchants
         // System.out.println(databaseMerchant.GetAllMerchants());
+
+        Db_Product databaseProduct = new Db_Product();
+        // // Test get Product
+        // System.out.println(databaseProduct.GetProduct(1));
+
+        // // Test product list for merchant
+        // System.out.println(databaseProduct.GetProductsByMercant(3));
 
     }
 }

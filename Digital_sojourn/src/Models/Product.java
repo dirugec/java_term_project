@@ -17,10 +17,6 @@ public class Product {
         return productID;
     }
 
-    public void setProductID(int priductID) {
-        this.productID = priductID;
-    }
-
     public String getName() {
         return name;
     }

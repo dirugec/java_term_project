@@ -45,7 +45,7 @@ public class DB_Merchant {
             }
 
         } catch (SQLException e) {
-            System.err.println("No Merchan found merchant_id: " + merchant_id);
+            System.err.println("No Merchant found merchant_id: " + merchant_id);
         }
         return merchant;
     }

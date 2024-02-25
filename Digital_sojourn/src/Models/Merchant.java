@@ -9,6 +9,10 @@ public class Merchant {
         this.name = name;
     }
 
+    public int getMerchantID() {
+        return merchantId;
+    }
+
     public String getName() {
         return name;
     }
