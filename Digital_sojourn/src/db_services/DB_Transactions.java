@@ -5,8 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import Models.Customer;
-
 public class DB_Transactions {
 
     String url = "jdbc:mysql://localhost:3306/RESORT_DB";
@@ -27,25 +25,56 @@ public class DB_Transactions {
     }
 
     public boolean LoadFounds(int customer_id, double amount) {
-        boolean succes = false;
+        boolean success = false;
         Connection connection = connect();
 
-        try {
-            connection.setAutoCommit(true);
-            String loadFounsMysql = "UPDATE customers SET balance = ? WHERE customer_id = ?";
-            PreparedStatement loadFounds = connection.prepareStatement(loadFounsMysql);
-            loadFounds.setDouble(1, amount);
-            loadFounds.setInt(2, customer_id);
-            succes = true;
-            System.out.println(loadFounds);
-            loadFounds.executeUpdate();
-            // connection.commit();
-            connection.close();
-        } catch (SQLException e) {
-            System.err.println("An error updating customer has occured:" + e.getMessage());
+        double initialBalance = 0;
+        double calculatedNewBalance = 0;
+
+        DB_Costumer databaseCustomer = new DB_Costumer();
+        initialBalance = databaseCustomer.GetCustomerBalance(customer_id);
+
+        if (initialBalance >= 0) {
+            try {
+
+                calculatedNewBalance = initialBalance + amount;
+
+                connection.setAutoCommit(true);
+                String loadFounsMysql = "UPDATE customers SET balance = ? WHERE customer_id =?";
+                PreparedStatement loadFounds = connection.prepareStatement(loadFounsMysql);
+                loadFounds.setDouble(1, calculatedNewBalance);
+                loadFounds.setInt(2, customer_id);
+                success = true;
+
+                loadFounds.executeUpdate();
+                connection.close();
+            } catch (SQLException e) {
+                System.err.println("An error updating customer has occured:" + e.getMessage());
+            }
+            return success;
         }
-        return succes;
+
+        return success;
 
     }
 
+    // public boolean purchase(int customer_id, int merchant_id) {
+
+    // boolean success = false;
+
+    // Connection connection = connect();
+
+    // try {
+
+    // // Validate Customer founds
+
+    // } catch (SQLException e) {
+    // System.err.println("An error with the purchase transaction has occurred : " +
+    // e.getMessage());
+
+    // }
+
+    // return success;
+
+    // }
 }

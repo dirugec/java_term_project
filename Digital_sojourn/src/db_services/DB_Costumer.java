@@ -7,10 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.naming.spi.DirStateFactory.Result;
 
 import Models.Customer;
 
@@ -159,11 +155,35 @@ public class DB_Costumer {
 
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-            // System.err.println("An error updating customer has occured: " +
-            // e.getMessage());
+
+            System.err.println("An error updating customer has occured: " + e.getMessage());
 
         }
         return success;
+    }
+
+    // TODO: GET PARENT AND GET CHILDREN
+
+    public double GetCustomerBalance(int customer_id) {
+
+        Connection connection = connect();
+        double balance = -1;
+
+        try {
+            String getCustomerBalanceMysql = "SELECT balance FROM customers WHERE customer_id = ?";
+            PreparedStatement getCustomerBalance = connection.prepareStatement(getCustomerBalanceMysql);
+            getCustomerBalance.setInt(1, customer_id);
+            ResultSet getCustomerBalanceResult = getCustomerBalance.executeQuery();
+            if (getCustomerBalanceResult.next()) {
+                balance = getCustomerBalanceResult.getDouble("balance");
+
+            } else {
+                System.err.println("No balance found for customer_id: " + customer_id);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("An error Getting the customer balance has occured: " + e.getMessage());
+        }
+        return balance;
     }
 }

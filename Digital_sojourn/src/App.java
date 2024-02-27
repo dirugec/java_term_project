@@ -32,6 +32,9 @@ public class App {
         // // Test get all customers
         // System.out.println(databaseCustomer.GetAllCustomers());
 
+        // //Test get customer balance
+        // System.out.println(databaseCustomer.GetCustomerBalance(1));
+
         DB_Merchant databaseMerchant = new DB_Merchant();
         // // Test get Merchant
         // System.out.println(databaseMerchant.GetMerchant(1));
@@ -46,10 +49,9 @@ public class App {
         // // Test product list for merchant
         // System.out.println(databaseProduct.GetProductsByMercant(3));
 
-        // Test Transactions
-        // Load Founds
+        // // Test Transactions
+        // // Load Founds
         DB_Transactions dataTranstacion = new DB_Transactions();
-
-        dataTranstacion.LoadFounds(3, 2000);
+        System.out.println(dataTranstacion.LoadFounds(1, 2000));
     }
 }
