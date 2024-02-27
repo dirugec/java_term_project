@@ -142,30 +142,28 @@ public class DB_Costumer {
 
     // Updtae Customer Info
 
-    // TODO: IT IS NOT WORKING
-    // public boolean updateCustomerInfo(int customer_id, int phone, String
-    // first_name, String last_name, String email) {
-    // boolean success = false;
-    // Connection connection = connect();
+    public boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name, String email) {
+        boolean success = false;
+        Connection connection = connect();
 
-    // try {
-    // String updateCustomerMysql = "UPDATE customers SET first_name = ? WHERE
-    // customer_id = ?";
-    // PreparedStatement updateCustomer =
-    // connection.prepareStatement(updateCustomerMysql);
-    // updateCustomer.setString(1, first_name);
-    // // updateCustomer.setString(2, last_name);
-    // // updateCustomer.setString(3, email);
-    // // updateCustomer.setInt(4, phone);
-    // updateCustomer.setInt(2, customer_id);
-    // success = true;
+        try {
+            String updateCustomerMysql = "UPDATE customers SET first_name = ?, last_name = ? , email = ?, phone = ? ,  WHERE customer_id = ?";
+            PreparedStatement updateCustomer = connection.prepareStatement(updateCustomerMysql);
+            updateCustomer.setString(1, first_name);
+            updateCustomer.setString(2, last_name);
+            updateCustomer.setString(3, email);
+            updateCustomer.setInt(4, phone);
+            updateCustomer.setInt(5, customer_id);
+            updateCustomer.executeUpdate();
+            success = true;
 
-    // connection.close();
-    // } catch (SQLException e) {
-    // System.err.println("An error updating customer has occured: " +
-    // e.getMessage());
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // System.err.println("An error updating customer has occured: " +
+            // e.getMessage());
 
-    // }
-    // return success;
-    // }
+        }
+        return success;
+    }
 }

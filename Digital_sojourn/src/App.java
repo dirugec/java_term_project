@@ -1,7 +1,8 @@
 import Models.Customer;
 import db_services.DB_Costumer;
 import db_services.DB_Merchant;
-import db_services.Db_Product;
+import db_services.DB_Product;
+import db_services.DB_Transactions;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -24,7 +25,7 @@ public class App {
         // System.out.println(prueba.toString());
         // System.out.println(prueba.getFirstName());
 
-        // //Update Customer basic info
+        // Update Customer basic info
         // databaseCustomer.updateCustomerInfo(8, 12345000, "Angel", "Martinez",
         // "wiky@gmail.com");
 
@@ -38,12 +39,17 @@ public class App {
         // // Test get all Merchants
         // System.out.println(databaseMerchant.GetAllMerchants());
 
-        Db_Product databaseProduct = new Db_Product();
+        // DB_Product databaseProduct = new DB_Product();
         // // Test get Product
         // System.out.println(databaseProduct.GetProduct(1));
 
         // // Test product list for merchant
         // System.out.println(databaseProduct.GetProductsByMercant(3));
 
+        // Test Transactions
+        // Load Founds
+        DB_Transactions dataTranstacion = new DB_Transactions();
+
+        dataTranstacion.LoadFounds(3, 2000);
     }
 }

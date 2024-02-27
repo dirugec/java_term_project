@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import Models.Product;
 
-public class Db_Product {
+public class DB_Product {
     String url = "jdbc:mysql://localhost:3306/RESORT_DB";
     String user = "resort";
     String password = "resort1234";
@@ -50,7 +50,7 @@ public class Db_Product {
         return product;
     }
 
-    // TODO: CREATE PRODUCT BY MERCHANT
+    // TODO: GET PRODUCT BY MERCHANT
     public ArrayList<Product> GetProductsByMercant(int merchant_id) {
         ArrayList<Product> productsByMerchant = new ArrayList<>();
 
