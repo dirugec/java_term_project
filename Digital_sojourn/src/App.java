@@ -36,6 +36,12 @@ public class App {
         // Test get customer balance
         // System.out.println(databaseCustomer.GetCustomerBalance(1));
 
+        // // Update Balance
+        // System.out.println(databaseCustomer.UpdateBalance(9, 2000));
+
+        // // Get family members
+        // System.out.println(databaseCustomer.GetFamilyMembers(9));
+
         DB_Merchant databaseMerchant = new DB_Merchant();
         // // Test get Merchant
         // System.out.println(databaseMerchant.GetMerchant(1));
@@ -44,6 +50,7 @@ public class App {
         // System.out.println(databaseMerchant.GetAllMerchants());
 
         // DB_Product databaseProduct = new DB_Product();
+
         // // Test get Product
         // System.out.println(databaseProduct.GetProduct(1));
 
@@ -52,11 +59,18 @@ public class App {
 
         // // Test Transactions
         DB_Transactions dataTranstacion = new DB_Transactions();
-        // // Load Founds
-        // System.out.println(dataTranstacion.LoadFunds(9, 2000));
+
         // // Insert Transaction
         // System.out.println(dataTranstacion.InsertTransaction(9, "20240227", 2, 300,
         // -1));
+
+        // // get transactions by customer
+        // System.out.println(dataTranstacion.GetTransByCustomer(9, "20240222",
+        // "20240228"));
+
+        // // Get transactions by merchant
+        // System.out.println(dataTranstacion.GetTransByMerchant(1, "20240222",
+        // "20240228"));
 
     }
 }

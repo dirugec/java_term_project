@@ -102,8 +102,8 @@ public class DB_Costumer {
         ArrayList<Customer> customers = new ArrayList<>();
 
         try {
-            String gellAllCustomersMysql = "SELECT customer_id, first_name,last_name,email, phone, balance, parent_id,password, active, user_type FROM customers";
-            PreparedStatement getAllCustomers = connection.prepareStatement(gellAllCustomersMysql);
+            String getAllCustomersMysql = "SELECT customer_id, first_name,last_name,email, phone, balance, parent_id,password, active, user_type FROM customers";
+            PreparedStatement getAllCustomers = connection.prepareStatement(getAllCustomersMysql);
             ResultSet getAllCustomerResult = getAllCustomers.executeQuery();
             while (getAllCustomerResult.next()) {
                 int customerId = getAllCustomerResult.getInt("customer_id");
@@ -115,7 +115,7 @@ public class DB_Costumer {
                 int parentId = getAllCustomerResult.getInt("parent_id");
                 String password = getAllCustomerResult.getString("password");
                 int active = getAllCustomerResult.getInt("active");
-                int user_type = getAllCustomerResult.getInt("user_tpe");
+                int user_type = getAllCustomerResult.getInt("user_type");
 
                 customers.add(new Customer(customerId, fisrtName, lastName, email, phone,
                         balance, parentId, password, active, user_type));
@@ -202,6 +202,29 @@ public class DB_Costumer {
         return balance;
     }
 
+    // //Update customer Balance
+    public boolean UpdateBalance(int customer_id, double newBalance) {
+        boolean success = false;
+
+        try {
+
+            connection.setAutoCommit(true);
+            String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
+            PreparedStatement loadFunds = connection.prepareStatement(loadFundsMysql);
+            loadFunds.setDouble(1, newBalance);
+            loadFunds.setInt(2, customer_id);
+            loadFunds.executeUpdate();
+            success = true;
+
+            connection.close();
+        } catch (SQLException e) {
+            System.err.println("An error updating customer balance has occured:" +
+                    e.getMessage());
+        }
+
+        return success;
+    }
+
     // // Update Customer Password
     public boolean UpdatePassword(int customer_id, String password) {
 
@@ -223,6 +246,42 @@ public class DB_Costumer {
         }
 
         return success;
+    }
+
+    // // Get Family Members
+    public ArrayList<Customer> GetFamilyMembers(int customer_id) {
+
+        ArrayList<Customer> familyMembers = new ArrayList<>();
+
+        try {
+            String getFamilyMembersMysql = "SELECT customer_id, first_name,last_name,email, phone," +
+                    "balance, parent_id,password, active, user_type FROM customers WHERE parent_id = ?";
+            PreparedStatement getFamilyMembers = connection.prepareStatement(getFamilyMembersMysql);
+            getFamilyMembers.setInt(1, customer_id);
+            ResultSet getFamilyMembersResult = getFamilyMembers.executeQuery();
+            while (getFamilyMembersResult.next()) {
+                int customerId = getFamilyMembersResult.getInt("customer_id");
+                String fisrtName = getFamilyMembersResult.getString("first_name");
+                String lastName = getFamilyMembersResult.getString("last_name");
+                String email = getFamilyMembersResult.getString("email");
+                int phone = getFamilyMembersResult.getInt("phone");
+                double balance = getFamilyMembersResult.getDouble("balance");
+                int parentId = getFamilyMembersResult.getInt("parent_id");
+                String password = getFamilyMembersResult.getString("password");
+                int active = getFamilyMembersResult.getInt("active");
+                int user_type = getFamilyMembersResult.getInt("user_type");
+
+                familyMembers.add(new Customer(customerId, fisrtName, lastName, email, phone,
+                        balance, parentId, password, active, user_type));
+
+            }
+        } catch (SQLException e) {
+            System.err.println("An error getting Family Members list has occured: " +
+                    e.getMessage());
+        }
+
+        return familyMembers;
+
     }
 
 }

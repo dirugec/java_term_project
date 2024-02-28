@@ -5,31 +5,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import Models.Transaction;
 
 public class DB_Transactions {
 
     Connection connection = DB_Service.connect();
 
-    public int InsertTransaction(int customer_id, String dateTrans, int type, double amount, int merchant_id) {
+    public int InsertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
 
         int transId = -1;
 
         try {
             connection.setAutoCommit(false);
 
-            String insertTransMysql = "INSERT INTO transactions(customer_id, date, type, amount, merchant_id) VALUES(?,?,?,?,?)";
+            String insertTransMysql = "INSERT INTO transactions(customer_id, date, amount, merchant_id) VALUES(?,?,?,?)";
             PreparedStatement insertTrans = connection.prepareStatement(insertTransMysql,
                     Statement.RETURN_GENERATED_KEYS);
             insertTrans.setInt(1, customer_id);
             insertTrans.setString(2, dateTrans);
-            insertTrans.setInt(3, type);
-            insertTrans.setDouble(4, amount);
-            if (merchant_id == -1) {
-                insertTrans.setNull(5, merchant_id);
-
-            } else {
-                insertTrans.setInt(5, merchant_id);
-            }
+            insertTrans.setDouble(3, amount);
+            insertTrans.setInt(4, merchant_id);
 
             insertTrans.executeUpdate();
 
@@ -51,57 +48,63 @@ public class DB_Transactions {
         return transId;
     }
 
-    public boolean LoadFunds(int customer_id, double amount) {
-        boolean success = false;
+    public ArrayList<Transaction> GetTransByCustomer(int customer_id, String initialDate, String finalDate) {
 
-        double initialBalance = 0;
-        double calculatedNewBalance = 0;
+        ArrayList<Transaction> transCustomerList = new ArrayList<>();
 
-        DB_Costumer databaseCustomer = new DB_Costumer();
-        initialBalance = databaseCustomer.GetCustomerBalance(customer_id);
+        try {
+            String getTransbyCustomerMySql = "SELECT * FROM transactions WHERE customer_id= ? AND date BETWEEN ? AND ?";
+            PreparedStatement getTransByCustomer = connection.prepareStatement(getTransbyCustomerMySql);
+            getTransByCustomer.setInt(1, customer_id);
+            getTransByCustomer.setString(2, initialDate);
+            getTransByCustomer.setString(3, finalDate);
+            ResultSet getTransByCustomerResult = getTransByCustomer.executeQuery();
+            while (getTransByCustomerResult.next()) {
 
-        if (initialBalance >= 0) {
-            try {
+                int transID = getTransByCustomerResult.getInt("trans_id");
+                int customerID = getTransByCustomerResult.getInt("customer_id");
+                String dateTrans = getTransByCustomerResult.getString("date");
+                double amount = getTransByCustomerResult.getDouble("amount");
+                int merchantID = getTransByCustomerResult.getInt("merchant_id");
 
-                calculatedNewBalance = initialBalance + amount;
-
-                connection.setAutoCommit(true);
-                String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
-                PreparedStatement loadFunds = connection.prepareStatement(loadFundsMysql);
-                loadFunds.setDouble(1, calculatedNewBalance);
-                loadFunds.setInt(2, customer_id);
-                loadFunds.executeUpdate();
-                success = true;
-
-                connection.close();
-            } catch (SQLException e) {
-                System.err.println("An error updating customer has occured:" +
-                        e.getMessage());
+                transCustomerList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID));
             }
 
-            // TODO: PLANNIG THE LOGIC STRUCTURE TO VALIDATE INSERT TRANSACTION AND UPDATE
-            // BALANCE
-
-            return success;
+        } catch (SQLException e) {
+            System.err.println("An error getting customer transaction list has occured: " +
+                    e.getMessage());
         }
-
-        return success;
-
+        return transCustomerList;
     }
 
-    // public boolean purchase(int customer_id, int merchant_id, double amount) {
+    // //Get Transactions by Merchant
+    public ArrayList<Transaction> GetTransByMerchant(int merchant_id, String initialDate, String finalDate) {
 
-    // boolean success = false;
+        ArrayList<Transaction> transMerchantList = new ArrayList<>();
 
-    // double initialBalance = 0;
-    // double calculatedNewBalance = 0;
+        try {
+            String getTransbyMerchantMySql = "SELECT * FROM transactions WHERE merchant_id= ? AND date BETWEEN ? AND ?";
+            PreparedStatement getTransByMerchant = connection.prepareStatement(getTransbyMerchantMySql);
+            getTransByMerchant.setInt(1, merchant_id);
+            getTransByMerchant.setString(2, initialDate);
+            getTransByMerchant.setString(3, finalDate);
+            ResultSet getTransByMerchantResult = getTransByMerchant.executeQuery();
+            while (getTransByMerchantResult.next()) {
 
-    // DB_Costumer databaseCustomer = new DB_Costumer();
-    // initialBalance = databaseCustomer.GetCustomerBalance(customer_id);
+                int transID = getTransByMerchantResult.getInt("trans_id");
+                int customerID = getTransByMerchantResult.getInt("customer_id");
+                String dateTrans = getTransByMerchantResult.getString("date");
+                double amount = getTransByMerchantResult.getDouble("amount");
+                int merchantID = getTransByMerchantResult.getInt("merchant_id");
 
-    // if (initialBalance)
+                transMerchantList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID));
+            }
 
-    // return success;
+        } catch (SQLException e) {
+            System.err.println("An error getting merchant transaction list has occured: " +
+                    e.getMessage());
+        }
+        return transMerchantList;
+    }
 
-    // }
 }
