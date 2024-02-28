@@ -22,7 +22,7 @@ public class DB_Costumer {
         try {
             connection.setAutoCommit(false);
             // Add Customer
-            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id,password, active, user_type) VALUES(?,?,?,?,?,?,?,?,?)";
+            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, active, user_type) VALUES(?,?,?,?,?,?,?,?,?)";
             PreparedStatement addCustomer = connection.prepareStatement(addCustomerMySql,
                     Statement.RETURN_GENERATED_KEYS); // preparableStatement make shure avoid the script injection
             // Statement.RETURN_GENERATED_KEY retunr the key generated
@@ -155,7 +155,7 @@ public class DB_Costumer {
         return success;
     }
 
-    // // Update Customer State Active/Desactive
+    // // Update Customer Status Active/Desactive
 
     public boolean UpdateActiveStatus(int customer_id, int active) {
 
@@ -178,8 +178,6 @@ public class DB_Costumer {
 
         return success;
     }
-
-    // // TODO: GET PARENT AND GET CHILDREN
 
     public double GetCustomerBalance(int customer_id) {
 
@@ -204,6 +202,27 @@ public class DB_Costumer {
         return balance;
     }
 
-    // TODO: CREATE A SCRIPT FOR CHECK CUSTOMER STATUS (ACTIVE OR DEAVCTIVATED)
-    // CREATE METHODS FOR ACTIVATE AND CHANGE PASSWORD
+    // // Update Customer Password
+    public boolean UpdatePassword(int customer_id, String password) {
+
+        boolean success = false;
+
+        try {
+            String updatePasswordMysql = "UPDATE customers SET password = ? WHERE customer_id = ?";
+            PreparedStatement updatePassword = connection.prepareStatement(updatePasswordMysql);
+            updatePassword.setString(1, password);
+            updatePassword.setInt(2, customer_id);
+            updatePassword.executeUpdate();
+            success = true;
+
+            connection.close();
+
+        } catch (SQLException e) {
+            System.err.println("An error updating customer password has occured: " +
+                    e.getMessage());
+        }
+
+        return success;
+    }
+
 }

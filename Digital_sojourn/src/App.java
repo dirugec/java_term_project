@@ -51,8 +51,12 @@ public class App {
         // System.out.println(databaseProduct.GetProductsByMercant(3));
 
         // // Test Transactions
+        DB_Transactions dataTranstacion = new DB_Transactions();
         // // Load Founds
-        // DB_Transactions dataTranstacion = new DB_Transactions();
-        // System.out.println(dataTranstacion.LoadFunds(3, 2000));
+        // System.out.println(dataTranstacion.LoadFunds(9, 2000));
+        // // Insert Transaction
+        // System.out.println(dataTranstacion.InsertTransaction(9, "20240227", 2, 300,
+        // -1));
+
     }
 }

@@ -1,7 +1,6 @@
 package db_services;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,8 +10,7 @@ public class DB_Transactions {
 
     Connection connection = DB_Service.connect();
 
-    public boolean InsertTransaction(int customer_id, String dateTrans, String type, double amount, int merchant_id) {
-        boolean success = false;
+    public int InsertTransaction(int customer_id, String dateTrans, int type, double amount, int merchant_id) {
 
         int transId = -1;
 
@@ -24,9 +22,14 @@ public class DB_Transactions {
                     Statement.RETURN_GENERATED_KEYS);
             insertTrans.setInt(1, customer_id);
             insertTrans.setString(2, dateTrans);
-            insertTrans.setString(3, type);
+            insertTrans.setInt(3, type);
             insertTrans.setDouble(4, amount);
-            insertTrans.setInt(5, merchant_id);
+            if (merchant_id == -1) {
+                insertTrans.setNull(5, merchant_id);
+
+            } else {
+                insertTrans.setInt(5, merchant_id);
+            }
 
             insertTrans.executeUpdate();
 
@@ -37,7 +40,7 @@ public class DB_Transactions {
 
             if (transId > 1) {
                 connection.commit();
-                success = true;
+
             }
 
             connection.close();
@@ -45,7 +48,7 @@ public class DB_Transactions {
         } catch (SQLException e) {
             System.err.println("An error inserting transaction has occured : " + e.getMessage());
         }
-        return success;
+        return transId;
     }
 
     public boolean LoadFunds(int customer_id, double amount) {
@@ -67,8 +70,8 @@ public class DB_Transactions {
                 PreparedStatement loadFunds = connection.prepareStatement(loadFundsMysql);
                 loadFunds.setDouble(1, calculatedNewBalance);
                 loadFunds.setInt(2, customer_id);
-                // success = true;
                 loadFunds.executeUpdate();
+                success = true;
 
                 connection.close();
             } catch (SQLException e) {
