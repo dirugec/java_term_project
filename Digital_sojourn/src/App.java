@@ -11,17 +11,18 @@ public class App {
         DB_Costumer databaseCustomer = new DB_Costumer();
 
         // // TEST CREATE CUSTOMER
-        // System.out.println(databaseCustomer
-        // .AddCustomer("Arileza",
-        // "Kupatri",
-        // "arileza@gamil.com",
+        // System.out.println(databaseCustomer.AddCustomer("John",
+        // "Doe",
+        // "john-doe@gamil.com",
         // 123123337,
         // 0.00,
         // 2,
-        // "arilezaTheWorst")); // printing the customer object
+        // "WhoAmI",
+        // 1,
+        // 1)); //
 
-        // // TEST READ CUSTOMER BY ID
-        // Customer prueba = databaseCustomer.GetCustomer(8);
+        // TEST READ CUSTOMER BY ID
+        // Customer prueba = databaseCustomer.GetCustomer(9);
         // System.out.println(prueba.toString());
         // System.out.println(prueba.getFirstName());
 
@@ -32,7 +33,7 @@ public class App {
         // // Test get all customers
         // System.out.println(databaseCustomer.GetAllCustomers());
 
-        // //Test get customer balance
+        // Test get customer balance
         // System.out.println(databaseCustomer.GetCustomerBalance(1));
 
         DB_Merchant databaseMerchant = new DB_Merchant();
@@ -51,7 +52,7 @@ public class App {
 
         // // Test Transactions
         // // Load Founds
-        DB_Transactions dataTranstacion = new DB_Transactions();
-        System.out.println(dataTranstacion.LoadFounds(1, 2000));
+        // DB_Transactions dataTranstacion = new DB_Transactions();
+        // System.out.println(dataTranstacion.LoadFunds(3, 2000));
     }
 }

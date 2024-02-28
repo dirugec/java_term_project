@@ -11,26 +11,11 @@ import Models.Merchant;
 
 public class DB_Merchant {
 
-    String url = "jdbc:mysql://localhost:3306/RESORT_DB";
-    String user = "resort";
-    String password = "resort1234";
-
-    private Connection connect() {
-
-        Connection connection;
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            connection = null;
-            e.printStackTrace();
-        }
-        return connection;
-    }
+    Connection connection = DB_Service.connect();
 
     public Merchant GetMerchant(int merchant_id) {
 
         Merchant merchant = null;
-        Connection connection = connect();
 
         try {
             String getMerchantMysql = "SELECT merchant_id, name FROM merchant WHERE merchant_id = ?";
@@ -53,8 +38,6 @@ public class DB_Merchant {
     public ArrayList<Merchant> GetAllMerchants() {
 
         ArrayList<Merchant> merchants = new ArrayList<>();
-
-        Connection connection = connect();
 
         try {
             String getAllMerchantsMySql = "SELECT merchant_id, name FROM merchant";

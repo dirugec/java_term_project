@@ -3,30 +3,53 @@ package db_services;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DB_Transactions {
 
-    String url = "jdbc:mysql://localhost:3306/RESORT_DB";
-    String user = "resort";
-    String password = "resort1234";
+    Connection connection = DB_Service.connect();
 
-    private Connection connect() {
+    public boolean InsertTransaction(int customer_id, String dateTrans, String type, double amount, int merchant_id) {
+        boolean success = false;
 
-        Connection connection;
+        int transId = -1;
+
         try {
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            connection = null;
-            e.printStackTrace();
-        }
-        return connection;
+            connection.setAutoCommit(false);
 
+            String insertTransMysql = "INSERT INTO transactions(customer_id, date, type, amount, merchant_id) VALUES(?,?,?,?,?)";
+            PreparedStatement insertTrans = connection.prepareStatement(insertTransMysql,
+                    Statement.RETURN_GENERATED_KEYS);
+            insertTrans.setInt(1, customer_id);
+            insertTrans.setString(2, dateTrans);
+            insertTrans.setString(3, type);
+            insertTrans.setDouble(4, amount);
+            insertTrans.setInt(5, merchant_id);
+
+            insertTrans.executeUpdate();
+
+            ResultSet insertTransResult = insertTrans.getGeneratedKeys();
+            if (insertTransResult.next()) {
+                transId = insertTransResult.getInt(1);
+            }
+
+            if (transId > 1) {
+                connection.commit();
+                success = true;
+            }
+
+            connection.close();
+
+        } catch (SQLException e) {
+            System.err.println("An error inserting transaction has occured : " + e.getMessage());
+        }
+        return success;
     }
 
-    public boolean LoadFounds(int customer_id, double amount) {
+    public boolean LoadFunds(int customer_id, double amount) {
         boolean success = false;
-        Connection connection = connect();
 
         double initialBalance = 0;
         double calculatedNewBalance = 0;
@@ -40,17 +63,22 @@ public class DB_Transactions {
                 calculatedNewBalance = initialBalance + amount;
 
                 connection.setAutoCommit(true);
-                String loadFounsMysql = "UPDATE customers SET balance = ? WHERE customer_id =?";
-                PreparedStatement loadFounds = connection.prepareStatement(loadFounsMysql);
-                loadFounds.setDouble(1, calculatedNewBalance);
-                loadFounds.setInt(2, customer_id);
-                success = true;
+                String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
+                PreparedStatement loadFunds = connection.prepareStatement(loadFundsMysql);
+                loadFunds.setDouble(1, calculatedNewBalance);
+                loadFunds.setInt(2, customer_id);
+                // success = true;
+                loadFunds.executeUpdate();
 
-                loadFounds.executeUpdate();
                 connection.close();
             } catch (SQLException e) {
-                System.err.println("An error updating customer has occured:" + e.getMessage());
+                System.err.println("An error updating customer has occured:" +
+                        e.getMessage());
             }
+
+            // TODO: PLANNIG THE LOGIC STRUCTURE TO VALIDATE INSERT TRANSACTION AND UPDATE
+            // BALANCE
+
             return success;
         }
 
@@ -58,21 +86,17 @@ public class DB_Transactions {
 
     }
 
-    // public boolean purchase(int customer_id, int merchant_id) {
+    // public boolean purchase(int customer_id, int merchant_id, double amount) {
 
     // boolean success = false;
 
-    // Connection connection = connect();
+    // double initialBalance = 0;
+    // double calculatedNewBalance = 0;
 
-    // try {
+    // DB_Costumer databaseCustomer = new DB_Costumer();
+    // initialBalance = databaseCustomer.GetCustomerBalance(customer_id);
 
-    // // Validate Customer founds
-
-    // } catch (SQLException e) {
-    // System.err.println("An error with the purchase transaction has occurred : " +
-    // e.getMessage());
-
-    // }
+    // if (initialBalance)
 
     // return success;
 

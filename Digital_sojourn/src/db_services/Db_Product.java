@@ -1,7 +1,6 @@
 package db_services;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,26 +9,10 @@ import java.util.ArrayList;
 import Models.Product;
 
 public class DB_Product {
-    String url = "jdbc:mysql://localhost:3306/RESORT_DB";
-    String user = "resort";
-    String password = "resort1234";
-
-    private Connection connect() {
-
-        Connection connection;
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            connection = null;
-            e.printStackTrace();
-        }
-        return connection;
-
-    }
+    Connection connection = DB_Service.connect();
 
     public Product GetProduct(int product_id) {
         Product product = null;
-        Connection connection = connect();
 
         try {
             String getProductMySql = "SELECT product_id, name, price, merchant_id FROM products WHERE product_id = ?";
@@ -53,8 +36,6 @@ public class DB_Product {
     // TODO: GET PRODUCT BY MERCHANT
     public ArrayList<Product> GetProductsByMercant(int merchant_id) {
         ArrayList<Product> productsByMerchant = new ArrayList<>();
-
-        Connection connection = connect();
 
         try {
             String getProductsByMerchantMySql = "SELECT product_id, name, price, merchant_id FROM products WHERE merchant_id = ?";
