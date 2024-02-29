@@ -18,6 +18,35 @@ USE `sojurn_db`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `admin_users`
+--
+
+DROP TABLE IF EXISTS `admin_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admin_users` (
+  `admin_id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(45) NOT NULL,
+  `last_name` varchar(45) NOT NULL,
+  `email` varchar(45) NOT NULL,
+  `phone` int NOT NULL,
+  `roll` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`admin_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin_users`
+--
+
+LOCK TABLES `admin_users` WRITE;
+/*!40000 ALTER TABLE `admin_users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `admin_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `customers`
 --
 
@@ -36,7 +65,7 @@ CREATE TABLE `customers` (
   `user_type` int NOT NULL,
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`customer_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +74,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (9,'John','Doe','john-doe@gamil.com',123123337,2000.00,2,'WhoAmI',1,1);
+INSERT INTO `customers` VALUES (9,'John','Doe','john-doe@gamil.com',123123337,2000.00,NULL,'WhoAmI',1,1),(10,'Deneb','Arc','deneb@gmail.com',12345654,1150.00,NULL,'asdasd',2,1),(11,'Angel','Perez','angel@gmail.com',12345654,2000.00,9,'asdasd',2,1),(12,'Dumar','Ruge','dumar@gmail.com',1239999,1550.00,9,'asdasd',2,1),(13,'Jefferson','Ruge','jeffer@gmail.com',1239999,1250.00,9,'asdasd',2,1),(14,'Amanda','Londono','mandy@gmail.com',1230000,1000.00,9,'asdasd',2,1),(15,'Gilmer','Londono','totis@gmail.com',1230000,1000.00,9,'asdasd',2,1);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,6 +132,38 @@ INSERT INTO `merchant` VALUES (4,'ITALIAN RESTAURANT'),(5,'COLOMBIAN RESTAURANT'
 UNLOCK TABLES;
 
 --
+-- Table structure for table `merchant_users`
+--
+
+DROP TABLE IF EXISTS `merchant_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `merchant_users` (
+  `merchant_user_id` int NOT NULL AUTO_INCREMENT,
+  `merchant_id` int NOT NULL,
+  `first_name` varchar(45) NOT NULL,
+  `last_name` varchar(45) NOT NULL,
+  `email` varchar(45) NOT NULL,
+  `phone` int NOT NULL,
+  `roll` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`merchant_user_id`),
+  KEY `FK_merchant_users_merchant_id_idx` (`merchant_id`),
+  CONSTRAINT `FK_merchant_users_merchant_id` FOREIGN KEY (`merchant_id`) REFERENCES `merchant` (`merchant_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `merchant_users`
+--
+
+LOCK TABLES `merchant_users` WRITE;
+/*!40000 ALTER TABLE `merchant_users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `merchant_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `products`
 --
 
@@ -131,31 +192,6 @@ INSERT INTO `products` VALUES (4,'AJIACO',27.95,5),(5,'PASTA CARBONARA',22.95,4)
 UNLOCK TABLES;
 
 --
--- Table structure for table `staff_users`
---
-
-DROP TABLE IF EXISTS `staff_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `staff_users` (
-  `staff_id` int NOT NULL,
-  `first_name` varchar(45) NOT NULL,
-  `last_name` varchar(45) NOT NULL,
-  `password` varchar(45) NOT NULL,
-  PRIMARY KEY (`staff_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `staff_users`
---
-
-LOCK TABLES `staff_users` WRITE;
-/*!40000 ALTER TABLE `staff_users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `staff_users` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `transactions`
 --
 
@@ -165,16 +201,14 @@ DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE `transactions` (
   `trans_id` int NOT NULL AUTO_INCREMENT,
   `customer_id` int NOT NULL,
-  `date` datetime NOT NULL,
-  `type` int NOT NULL,
+  `date` varchar(8) NOT NULL,
   `amount` decimal(12,2) NOT NULL,
-  `merchant_id` int DEFAULT NULL,
+  `merchant_id` int NOT NULL,
   PRIMARY KEY (`trans_id`),
   KEY `FK_customer_id_idx` (`customer_id`),
   KEY `FK_merchant_id_idx` (`merchant_id`),
-  CONSTRAINT `FK_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_merchant_id` FOREIGN KEY (`merchant_id`) REFERENCES `merchant` (`merchant_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `FK_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +217,7 @@ CREATE TABLE `transactions` (
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (2,9,'2024-02-27 00:00:00',1,2000.00,NULL);
+INSERT INTO `transactions` VALUES (2,9,'20240220',2000.00,1),(3,9,'20240225',1000.00,3),(4,9,'20240227',3000.00,1);
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -196,4 +230,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-28 16:20:19
+-- Dump completed on 2024-02-29 17:42:49
