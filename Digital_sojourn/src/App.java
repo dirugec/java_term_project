@@ -1,20 +1,28 @@
-import Models;
+import Models.Customer;
+import Models.Merchant_User;
+import Models.Admin_User;
+
+import db_services.DB_Admin_Users;
 import db_services.DB_Costumer;
 import db_services.DB_Merchant;
+import db_services.DB_Merchant_Users;
 import db_services.DB_Product;
 import db_services.DB_Transactions;
 
 public class App {
     private static int gUserType;
     private static int gUserID;
-    private gCustomer Customer;
-    private gMerchant Merchant;
-    private gAdmin Admin;
 
+    //private static Customer gCustomer;
+    //private static Merchant_User gMerchantUser;
+    
+    private static DB_Admin_Users dbAdminUser;
+    private static DB_Merchant_Users dbMerchantUser;
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
 
         DB_Costumer databaseCustomer = new DB_Costumer();
+        dbAdminUser = new DB_Admin_Users();
+        dbMerchantUser = new DB_Merchant_Users();
     
         // // TEST CREATE CUSTOMER
         // System.out.println(databaseCustomer.AddCustomer("John",
@@ -105,9 +113,9 @@ public class App {
                 gUserType = Integer.parseInt(System.console().readLine());
 
                 System.out.println("------------------------------");
-                System.out.println("Please enter ID Number: ");
+                System.out.print("Please enter ID Number: ");
                 gUserID = Integer.parseInt(System.console().readLine());
-                System.out.println("Please enter Password: ");
+                System.out.print("Please enter Password: ");
                 String strPassword = System.console().readLine();
 
                 switch (gUserType) {
@@ -120,8 +128,12 @@ public class App {
                     case 2:
                         displayMainMenuAdminUser();
                         break;
-                    case 3: // Login Customer
-                        
+                    case 3: // Login Admin
+                        // Call the GetPassword script
+                        System.out.println("Step 1");
+                        String dbPassword = dbAdminUser.GetAdminPassword(gUserID);
+                        System.out.println("Step 3");
+                        System.out.printf("DBPassword: %s", dbPassword);
                         break;
                     default:
                         break;
@@ -131,14 +143,6 @@ public class App {
             }
         } while(!blnValid);
         System.exit(0);
-    }
-
-    public void displayLoginMenuCustomer() {
-
-        gCustomer = new Customer();
-        gCustomer = dbCustomer.GetCustomer(gUserID);
-        System.out.println(prueba.toString());
-        // System.out.println(prueba.getFirstName());
     }
 
     public static void displayMainMenuPrimaryUser() {
