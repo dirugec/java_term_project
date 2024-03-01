@@ -10,9 +10,9 @@ import Models.Merchant;
 
 public class DB_Merchant {
 
-    Connection connection = DB_Service.connect();
+    static Connection connection = DB_Service.connect();
 
-    public Merchant GetMerchant(int merchant_id) {
+    public static Merchant GetMerchant(int merchant_id) {
 
         Merchant merchant = null;
 
@@ -34,7 +34,7 @@ public class DB_Merchant {
         return merchant;
     }
 
-    public ArrayList<Merchant> GetAllMerchants() {
+    public static ArrayList<Merchant> GetAllMerchants() {
 
         ArrayList<Merchant> merchants = new ArrayList<>();
 

@@ -5,12 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Models.Admin_User;
+import Models.Customer;
+
 public class DB_Admin_Users {
 
-    Connection connection = DB_Service.connect();
+    static Connection connection = DB_Service.connect();
 
     // // Get Admin User Password by Admin ID
-    public String GetAdminPassword(int admin_id) {
+    public static String GetAdminPassword(int admin_id) {
         String pwrd = "";
 
         try {
@@ -29,5 +32,38 @@ public class DB_Admin_Users {
                     e.getMessage());
         }
         return pwrd;
+    }
+
+    public static Admin_User GetAdminUser(int admin_id) {
+
+        Admin_User adminUser = null;
+
+        try {
+            String getAdminUserMySql = "SELECT admin_id, first_name, last_name,email, phone, role, password, active FROM admin_users WHERE admin_id = ?";
+            PreparedStatement getAdminUser = connection.prepareStatement(getAdminUserMySql);
+            getAdminUser.setInt(1, admin_id);
+            ResultSet getAdminUserResult = getAdminUser.executeQuery();
+            if (getAdminUserResult.next()) {
+                int adminId = getAdminUserResult.getInt(1);
+                String fisrtName = getAdminUserResult.getString(2);
+                String lastName = getAdminUserResult.getString(3);
+                String email = getAdminUserResult.getString(4);
+                int phone = getAdminUserResult.getInt(5);
+                String role = getAdminUserResult.getString(6);
+                String password = getAdminUserResult.getString(7);
+                int active = getAdminUserResult.getInt(8);
+
+                adminUser = new Admin_User(adminId, fisrtName, lastName, email, phone, role, password, active);
+
+                connection.close();
+
+            } else {
+                System.err.println("No Admin User found for admin_id: " + admin_id);
+            }
+        } catch (SQLException e) {
+            System.err.println("An error reading admin user has occured: " +
+                    e.getMessage());
+        }
+        return adminUser;
     }
 }

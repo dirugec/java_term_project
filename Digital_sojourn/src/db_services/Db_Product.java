@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import Models.Product;
 
 public class DB_Product {
-    Connection connection = DB_Service.connect();
+    static Connection connection = DB_Service.connect();
 
-    public Product GetProduct(int product_id) {
+    public static Product GetProduct(int product_id) {
         Product product = null;
 
         try {
@@ -34,7 +34,7 @@ public class DB_Product {
     }
 
     // TODO: GET PRODUCT BY MERCHANT
-    public ArrayList<Product> GetProductsByMercant(int merchant_id) {
+    public static ArrayList<Product> GetProductsByMercant(int merchant_id) {
         ArrayList<Product> productsByMerchant = new ArrayList<>();
 
         try {
