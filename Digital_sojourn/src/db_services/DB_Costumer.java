@@ -223,6 +223,28 @@ public class DB_Costumer {
         return success;
     }
 
+    // // Get customer Password by ID customer
+    public String GetCustomerPassword(int customer_id) {
+        String pwrd = "";
+
+        try {
+            String getCustomerPasswordMySql = "SELECT password FROM customers WHERE customer_id = ?";
+            PreparedStatement getCustomerPassword = connection.prepareStatement(getCustomerPasswordMySql);
+            getCustomerPassword.setInt(1, customer_id);
+            ResultSet getCustomerPasswordResult = getCustomerPassword.executeQuery();
+
+            if (getCustomerPasswordResult.next()) {
+                pwrd = getCustomerPasswordResult.getString("password");
+            } else {
+                System.err.println("No found customer_id: " + customer_id);
+            }
+        } catch (SQLException e) {
+            System.err.println("An error Getting the customer password has occured: " +
+                    e.getMessage());
+        }
+        return pwrd;
+    }
+
     // // Update Customer Password
     public boolean UpdatePassword(int customer_id, String password) {
 
