@@ -1,12 +1,10 @@
 package db_services;
 
+import Models.Merchant_User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import Models.Admin_User;
-import Models.Merchant_User;
 
 public class DB_Merchan_Users {
 
@@ -17,7 +15,7 @@ public class DB_Merchan_Users {
         String pwrd = "";
 
         try {
-            String getMerchantUserPasswordMySql = "SELECT password FROM customers WHERE customer_id = ?";
+            String getMerchantUserPasswordMySql = "SELECT password FROM merchant_users WHERE merchant_user_id = ?";
             PreparedStatement getMerchantUserPassword = connection.prepareStatement(getMerchantUserPasswordMySql);
             getMerchantUserPassword.setInt(1, merchant_user_id);
             ResultSet getMerchantUserPasswordResult = getMerchantUserPassword.executeQuery();
