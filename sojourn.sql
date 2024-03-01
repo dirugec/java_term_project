@@ -43,6 +43,7 @@ CREATE TABLE `admin_users` (
 
 LOCK TABLES `admin_users` WRITE;
 /*!40000 ALTER TABLE `admin_users` DISABLE KEYS */;
+INSERT INTO `admin_users` VALUES (10,'Deneb','Villanueva','deneb@gmail.com',12345654,'Front Desk','asdasd',1),(12,'Dumar','Ruge','dumar@gmail.com',1239999,'Admin','asdasd',1);
 /*!40000 ALTER TABLE `admin_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,7 +75,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (9,'John','Doe','john-doe@gamil.com',123123337,2000.00,NULL,'WhoAmI',1,1),(10,'Deneb','Arc','deneb@gmail.com',12345654,1150.00,NULL,'asdasd',2,1),(11,'Angel','Perez','angel@gmail.com',12345654,2000.00,9,'asdasd',2,1),(12,'Dumar','Ruge','dumar@gmail.com',1239999,1550.00,9,'asdasd',2,1),(13,'Jefferson','Ruge','jeffer@gmail.com',1239999,1250.00,9,'asdasd',2,1),(14,'Amanda','Londono','mandy@gmail.com',1230000,1000.00,9,'asdasd',2,1),(15,'Gilmer','Londono','totis@gmail.com',1230000,1000.00,9,'asdasd',2,1);
+INSERT INTO `customers` VALUES (9,'John','Doe','john-doe@gamil.com',123123337,2000.00,NULL,'WhoAmI',1,1),(11,'Angel','Perez','angel@gmail.com',12345654,2000.00,9,'asdasd',2,1),(13,'Jefferson','Ruge','jeffer@gmail.com',1239999,1250.00,9,'asdasd',2,1),(14,'Amanda','Londono','mandy@gmail.com',1230000,1000.00,9,'asdasd',2,1),(15,'Gilmer','Londono','totis@gmail.com',1230000,1000.00,9,'asdasd',2,1);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
