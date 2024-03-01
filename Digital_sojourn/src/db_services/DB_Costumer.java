@@ -11,10 +11,10 @@ import Models.Customer;
 
 public class DB_Costumer {
 
-    Connection connection = DB_Service.connect();
+    static Connection connection = DB_Service.connect();
 
     // CREATE Customer
-    public int AddCustomer(String first_name, String last_name, String email, int phone, double balance,
+    public static int AddCustomer(String first_name, String last_name, String email, int phone, double balance,
             int parent_id,
             String password, int active, int userType) {
         int customerId = -1;
@@ -60,7 +60,7 @@ public class DB_Costumer {
     }
 
     // READ Customer Info
-    public Customer GetCustomer(int customer_id) {
+    public static Customer GetCustomer(int customer_id) {
 
         Customer customer = null;
 
@@ -70,7 +70,7 @@ public class DB_Costumer {
             getCustomer.setInt(1, customer_id);
             ResultSet getCustomerResult = getCustomer.executeQuery();
             if (getCustomerResult.next()) {
-                int customerId = customer_id;
+                int customerId = getCustomerResult.getInt(1);
                 String fisrtName = getCustomerResult.getString(2);
                 String lastName = getCustomerResult.getString(3);
                 String email = getCustomerResult.getString(4);
@@ -96,7 +96,7 @@ public class DB_Costumer {
     }
 
     // Read All Customers
-    public ArrayList<Customer> GetAllCustomers() {
+    public static ArrayList<Customer> GetAllCustomers() {
 
         ArrayList<Customer> customers = new ArrayList<>();
 
@@ -129,7 +129,8 @@ public class DB_Costumer {
 
     // Updtae Customer Info
 
-    public boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name, String email) {
+    public static boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name,
+            String email) {
         boolean success = false;
 
         try {
@@ -154,8 +155,7 @@ public class DB_Costumer {
     }
 
     // // Update Customer Status Active/Desactive
-
-    public boolean UpdateActiveStatus(int customer_id, int active) {
+    public static boolean UpdateActiveStatus(int customer_id, int active) {
 
         boolean success = false;
 
@@ -177,7 +177,7 @@ public class DB_Costumer {
         return success;
     }
 
-    public double GetCustomerBalance(int customer_id) {
+    public static double GetCustomerBalance(int customer_id) {
 
         double balance = -1;
 
@@ -201,8 +201,7 @@ public class DB_Costumer {
     }
 
     // //Update customer Balance
-    public boolean UpdateBalance(int customer_id, double newBalance) {
-        boolean success = false;
+    public static String UpdateBalance(int customer_id, double newBalance) {
 
         try {
 
@@ -212,19 +211,17 @@ public class DB_Costumer {
             loadFunds.setDouble(1, newBalance);
             loadFunds.setInt(2, customer_id);
             loadFunds.executeUpdate();
-            success = true;
-
             connection.close();
+            return "success";
         } catch (SQLException e) {
-            System.err.println("An error updating customer balance has occured:" +
+            return ("An error updating customer balance has occured:" +
                     e.getMessage());
         }
 
-        return success;
     }
 
     // // Get customer Password by ID customer
-    public String GetCustomerPassword(int customer_id) {
+    public static String GetCustomerPassword(int customer_id) {
         String pwrd = "";
 
         try {
@@ -246,7 +243,7 @@ public class DB_Costumer {
     }
 
     // // Update Customer Password
-    public boolean UpdatePassword(int customer_id, String password) {
+    public static boolean UpdatePassword(int customer_id, String password) {
 
         boolean success = false;
 
@@ -269,7 +266,7 @@ public class DB_Costumer {
     }
 
     // // Get Family Members
-    public ArrayList<Customer> GetFamilyMembers(int customer_id) {
+    public static ArrayList<Customer> GetFamilyMembers(int customer_id) {
 
         ArrayList<Customer> familyMembers = new ArrayList<>();
 

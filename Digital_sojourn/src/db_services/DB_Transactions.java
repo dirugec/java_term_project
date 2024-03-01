@@ -11,9 +11,9 @@ import Models.Transaction;
 
 public class DB_Transactions {
 
-    Connection connection = DB_Service.connect();
+    static Connection connection = DB_Service.connect();
 
-    public int InsertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
+    public static int InsertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
 
         int transId = -1;
 
@@ -48,7 +48,7 @@ public class DB_Transactions {
         return transId;
     }
 
-    public ArrayList<Transaction> GetTransByCustomer(int customer_id, String initialDate, String finalDate) {
+    public static ArrayList<Transaction> GetTransByCustomer(int customer_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transCustomerList = new ArrayList<>();
 
@@ -78,7 +78,7 @@ public class DB_Transactions {
     }
 
     // //Get Transactions by Merchant
-    public ArrayList<Transaction> GetTransByMerchant(int merchant_id, String initialDate, String finalDate) {
+    public static ArrayList<Transaction> GetTransByMerchant(int merchant_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transMerchantList = new ArrayList<>();
 
