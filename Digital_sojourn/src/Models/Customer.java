@@ -10,11 +10,10 @@ public class Customer {
     private int parentId;
     private String password;
     private int active;
-    private int userType;
 
     // Constructor
     public Customer(int customerID, String firstName, String lastName, String email, int phone, double balance,
-            int parent_id, String password, int active, int userType) {
+            int parent_id, String password, int active) {
         this.customerID = customerID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -24,7 +23,7 @@ public class Customer {
         this.parentId = parent_id;
         this.password = password;
         this.active = active;
-        this.userType = userType;
+
     }
 
     // Getters and Setters
@@ -96,14 +95,6 @@ public class Customer {
         this.active = active;
     }
 
-    public int getUserType() {
-        return userType;
-    }
-
-    public void setUserType(int type) {
-        this.userType = type;
-    }
-
     // Override toString method
     @Override
     public String toString() {
@@ -116,8 +107,7 @@ public class Customer {
                 " Balance Account: " + balance +
                 " Parent ID: " + parentId +
                 " Password: " + password +
-                " Active: " + active +
-                " User Type:" + userType;
+                " Active: " + active;
 
     }
 }
