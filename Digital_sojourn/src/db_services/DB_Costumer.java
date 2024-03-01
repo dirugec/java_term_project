@@ -22,7 +22,7 @@ public class DB_Costumer {
         try {
             connection.setAutoCommit(false);
             // Add Customer
-            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, active, user_type) VALUES(?,?,?,?,?,?,?,?,?)";
+            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, active) VALUES(?,?,?,?,?,?,?,?)";
             PreparedStatement addCustomer = connection.prepareStatement(addCustomerMySql,
                     Statement.RETURN_GENERATED_KEYS); // preparableStatement make shure avoid the script injection
             // Statement.RETURN_GENERATED_KEY retunr the key generated
@@ -34,7 +34,7 @@ public class DB_Costumer {
             addCustomer.setInt(6, parent_id);
             addCustomer.setString(7, password);
             addCustomer.setInt(8, active);
-            addCustomer.setInt(9, userType);
+
             addCustomer.executeUpdate();
 
             // getting the customer id
@@ -65,7 +65,7 @@ public class DB_Costumer {
         Customer customer = null;
 
         try {
-            String getCustomerMySql = "SELECT customer_id, first_name, last_name,email, phone, balance, parent_id,password, active, user_type FROM customers WHERE customer_id = ?";
+            String getCustomerMySql = "SELECT customer_id, first_name, last_name,email, phone, balance, parent_id,password, active FROM customers WHERE customer_id = ?";
             PreparedStatement getCustomer = connection.prepareStatement(getCustomerMySql);
             getCustomer.setInt(1, customer_id);
             ResultSet getCustomerResult = getCustomer.executeQuery();
@@ -79,10 +79,9 @@ public class DB_Costumer {
                 int parentId = getCustomerResult.getInt(7);
                 String password = getCustomerResult.getString(8);
                 int active = getCustomerResult.getInt(9);
-                int userType = getCustomerResult.getInt(10);
 
                 customer = new Customer(customerId, fisrtName, lastName, email, phone,
-                        balance, parentId, password, active, userType);
+                        balance, parentId, password, active);
 
                 connection.close();
 
@@ -102,7 +101,7 @@ public class DB_Costumer {
         ArrayList<Customer> customers = new ArrayList<>();
 
         try {
-            String getAllCustomersMysql = "SELECT customer_id, first_name,last_name,email, phone, balance, parent_id,password, active, user_type FROM customers";
+            String getAllCustomersMysql = "SELECT customer_id, first_name,last_name,email, phone, balance, parent_id,password, active FROM customers";
             PreparedStatement getAllCustomers = connection.prepareStatement(getAllCustomersMysql);
             ResultSet getAllCustomerResult = getAllCustomers.executeQuery();
             while (getAllCustomerResult.next()) {
@@ -115,10 +114,9 @@ public class DB_Costumer {
                 int parentId = getAllCustomerResult.getInt("parent_id");
                 String password = getAllCustomerResult.getString("password");
                 int active = getAllCustomerResult.getInt("active");
-                int user_type = getAllCustomerResult.getInt("user_type");
 
                 customers.add(new Customer(customerId, fisrtName, lastName, email, phone,
-                        balance, parentId, password, active, user_type));
+                        balance, parentId, password, active));
 
             }
         } catch (SQLException e) {
@@ -255,7 +253,7 @@ public class DB_Costumer {
 
         try {
             String getFamilyMembersMysql = "SELECT customer_id, first_name,last_name,email, phone," +
-                    "balance, parent_id,password, active, user_type FROM customers WHERE parent_id = ?";
+                    "balance, parent_id,password, active FROM customers WHERE parent_id = ?";
             PreparedStatement getFamilyMembers = connection.prepareStatement(getFamilyMembersMysql);
             getFamilyMembers.setInt(1, customer_id);
             ResultSet getFamilyMembersResult = getFamilyMembers.executeQuery();
@@ -269,10 +267,9 @@ public class DB_Costumer {
                 int parentId = getFamilyMembersResult.getInt("parent_id");
                 String password = getFamilyMembersResult.getString("password");
                 int active = getFamilyMembersResult.getInt("active");
-                int user_type = getFamilyMembersResult.getInt("user_type");
 
                 familyMembers.add(new Customer(customerId, fisrtName, lastName, email, phone,
-                        balance, parentId, password, active, user_type));
+                        balance, parentId, password, active));
 
             }
         } catch (SQLException e) {
