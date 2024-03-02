@@ -1,49 +1,28 @@
-<<<<<<< HEAD
-import Models.Customer;
-import Models.Merchant_User;
-import Models.Admin_User;
-
-import db_services.DB_Admin_Users;
-=======
 
 import Models.Admin_User;
 import Models.Customer;
 import Models.Merchant;
 import Models.Merchant_User;
->>>>>>> 0f1dfa8891557b9fcd66d8485f3f9c5fabc82079
+import db_services.DB_Admin_Users;
 import db_services.DB_Costumer;
-import db_services.DB_Merchan_Users;
-import db_services.DB_Merchant;
 import db_services.DB_Merchant_Users;
+import db_services.DB_Merchant;
 import db_services.DB_Product;
 import db_services.DB_Transactions;
 
 public class App {
     private static int gUserType;
     private static int gUserID;
-<<<<<<< HEAD
-=======
     private static Customer gCustomer;
     private static Merchant gMerchant;
     private static Merchant_User gMerchantUser;
     private static Admin_User gAdmin;
->>>>>>> 0f1dfa8891557b9fcd66d8485f3f9c5fabc82079
 
-    //private static Customer gCustomer;
-    //private static Merchant_User gMerchantUser;
-    
-    private static DB_Admin_Users dbAdminUser;
-    private static DB_Merchant_Users dbMerchantUser;
     public static void main(String[] args) throws Exception {
+        System.out.println("Hello, World!");
 
         DB_Costumer databaseCustomer = new DB_Costumer();
-<<<<<<< HEAD
-        dbAdminUser = new DB_Admin_Users();
-        dbMerchantUser = new DB_Merchant_Users();
-    
-=======
 
->>>>>>> 0f1dfa8891557b9fcd66d8485f3f9c5fabc82079
         // // TEST CREATE CUSTOMER
         // System.out.println(databaseCustomer.AddCustomer("John",
         // "Doe",
@@ -107,40 +86,47 @@ public class App {
         // "20240228"));
 
         // // Test Merchan Users
-        DB_Merchan_Users db_Merchan_Users = new DB_Merchan_Users();
-        // // Get merchant user password
-        String gMerchantUserPass = db_Merchan_Users.GetMerchantUserPassword(1);
-        System.out.println(gMerchantUserPass);
+        // DB_Merchan_Users db_Merchan_Users = new DB_Merchan_Users();
+        // // // Get merchant user password
+        // String gMerchantUserPass = db_Merchan_Users.GetMerchantUserPassword(1);
+        // System.out.println(gMerchantUserPass);
+
+        // // Test Admin Users
+        DB_Admin_Users db_Admin_Users = new DB_Admin_Users();
+        // // Get ADmin password
+        // String gAdminUserPass = db_Admin_Users.GetAdminPassword(1);
+        // System.out.println(gAdminUserPass);
 
         // displayLoginMenu();
     }
 
-    // private static void displayHeader() {
-    // System.out.println("____/--------------------\\___");
-    // System.out.println("| |");
-    // System.out.println("| DIGITAL SOJOURN |");
-    // System.out.println("| |");
-    // System.out.println("----\\--------------------/----");
-    // }
+    private static void displayHeader() {
+        System.out.println("____/--------------------\\___");
+        System.out.println("| |");
+        System.out.println("| DIGITAL SOJOURN |");
+        System.out.println("| |");
+        System.out.println("----\\--------------------/----");
+    }
 
-    // public static void displayLoginMenu() {
-    // boolean blnValid = false;
-    // do {
-    // try {
-    // displayHeader();
-    // System.out.println("");
-    // System.out.println("------------------------------");
-    // System.out.println("[1] Guest");
-    // System.out.println("[2] Admin");
-    // System.out.println("[3] Merchant");
-    // System.out.println("[0] Exit");
-    // System.out.print("Please input User type or 0 to Exit: ");
-
-<<<<<<< HEAD
+    public static void displayLoginMenu() {
+        boolean blnValid = false;
+        do {
+            try {
+                displayHeader();
+                System.out.println("");
                 System.out.println("------------------------------");
-                System.out.print("Please enter ID Number: ");
+                System.out.println("[1] Guest");
+                System.out.println("[2] Admin");
+                System.out.println("[3] Merchant");
+                System.out.println("[0] Exit");
+                System.out.print("Please input User type or 0 to Exit: ");
+
+                gUserType = Integer.parseInt(System.console().readLine());
+
+                System.out.println("------------------------------");
+                System.out.println("Please enter ID Number: ");
                 gUserID = Integer.parseInt(System.console().readLine());
-                System.out.print("Please enter Password: ");
+                System.out.println("Please enter Password: ");
                 String strPassword = System.console().readLine();
 
                 switch (gUserType) {
@@ -153,12 +139,8 @@ public class App {
                     case 2:
                         displayMainMenuAdminUser();
                         break;
-                    case 3: // Login Admin
-                        // Call the GetPassword script
-                        System.out.println("Step 1");
-                        String dbPassword = dbAdminUser.GetAdminPassword(gUserID);
-                        System.out.println("Step 3");
-                        System.out.printf("DBPassword: %s", dbPassword);
+                    case 3: // Login Customer
+
                         break;
                     default:
                         break;
@@ -166,428 +148,378 @@ public class App {
             } catch (Exception e) {
                 System.out.println("Invalid input. Numbers only please.");
             }
-        } while(!blnValid);
+        } while (!blnValid);
         System.exit(0);
     }
+
+    // public void displayLoginMenuCustomer() {
+
+    // gCustomer = new Customer();
+    // gCustomer = dbCustomer.GetCustomer(gUserID);
+    // System.out.println(prueba.toString());
+    // // System.out.println(prueba.getFirstName());
+    // }
 
     public static void displayMainMenuPrimaryUser() {
         boolean blnValid = false;
         int iChoice = -1;
-=======
-    // gUserType = Integer.parseInt(System.console().readLine());
 
-    // System.out.println("------------------------------");
-    // System.out.println("Please enter ID Number: ");
-    // gUserID = Integer.parseInt(System.console().readLine());
-    // System.out.println("Please enter Password: ");
-    // String strPassword = System.console().readLine();
+        displayHeader();
+        do {
+            try {
+                System.out.println("");
+                System.out.println("------------------------------");
+                System.out.println("[1] Load Funds");
+                System.out.println("[2] View Transactions");
+                System.out.println("[3] Family Members");
+                System.out.println("[4] Settings");
+                System.out.println("[5] Back");
+                System.out.println("[0] Exit");
+                System.out.print("> ");
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        displayLoadFunds();
+                        break;
+                    case 2:
+                        displayViewTransactions();
+                        break;
+                    case 3:
+                        displayFamilyMembers();
+                        break;
+                    case 4:
+                        displaySettings();
+                        break;
+                    case 5:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
 
-    // switch (gUserType) {
-    // case 0:
-    // blnValid = true;
-    // break;
-    // case 1:
-    // displayMainMenuPrimaryUser();
-    // break;
-    // case 2:
-    // displayMainMenuAdminUser();
-    // break;
-    // case 3: // Login Customer
+    public static void displayMainMenuAdminUser() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            try {
+                System.out.println("");
+                System.out.println("------------------------------");
+                System.out.println("[1] Search Primary Guest");
+                System.out.println("[2] Settings");
+                System.out.println("[3] Back");
+                System.out.println("[0] Exit");
+                System.out.print("> ");
 
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // System.exit(0);
-    // }
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        displayLoadFunds();
+                        break;
+                    case 2:
+                        displayViewTransactions();
+                        break;
+                    case 3:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
 
-    // // public void displayLoginMenuCustomer() {
->>>>>>> 0f1dfa8891557b9fcd66d8485f3f9c5fabc82079
+    public static void displayMainMenuMerchantUser() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            try {
+                System.out.println("");
+                System.out.println("------------------------------");
+                System.out.println("[1] Accomplish Transaction");
+                System.out.println("[2] View Transaction History");
+                System.out.println("[3] Settings");
+                System.out.println("[4] Back");
+                System.out.println("[0] Exit");
+                System.out.print("> ");
 
-    // // gCustomer = new Customer();
-    // // gCustomer = dbCustomer.GetCustomer(gUserID);
-    // // System.out.println(prueba.toString());
-    // // // System.out.println(prueba.getFirstName());
-    // // }
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        displayLoadFunds();
+                        break;
+                    case 2:
+                        displayViewTransactions();
+                        break;
+                    case 3:
+                        displayViewTransactions();
+                        break;
+                    case 4:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
 
-    // public static void displayMainMenuPrimaryUser() {
-    // boolean blnValid = false;
-    // int iChoice = -1;
+    private static void displayLoadFunds() {
+        boolean blnValid = false;
 
-    // displayHeader();
-    // do {
-    // try {
-    // System.out.println("");
-    // System.out.println("------------------------------");
-    // System.out.println("[1] Load Funds");
-    // System.out.println("[2] View Transactions");
-    // System.out.println("[3] Family Members");
-    // System.out.println("[4] Settings");
-    // System.out.println("[5] Back");
-    // System.out.println("[0] Exit");
-    // System.out.print("> ");
-    // iChoice = Integer.parseInt(System.console().readLine());
-    // switch (iChoice) {
-    // case 0:
-    // System.exit(0);
-    // break;
-    // case 1:
-    // displayLoadFunds();
-    // break;
-    // case 2:
-    // displayViewTransactions();
-    // break;
-    // case 3:
-    // displayFamilyMembers();
-    // break;
-    // case 4:
-    // displaySettings();
-    // break;
-    // case 5:
-    // blnValid = true;
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // }
+        do {
+            try {
+                System.out.println("");
+                System.out.println("------------------------------");
 
-    // public static void displayMainMenuAdminUser() {
-    // boolean blnValid = false;
-    // int iChoice = -1;
-    // do {
-    // try {
-    // System.out.println("");
-    // System.out.println("------------------------------");
-    // System.out.println("[1] Search Primary Guest");
-    // System.out.println("[2] Settings");
-    // System.out.println("[3] Back");
-    // System.out.println("[0] Exit");
-    // System.out.print("> ");
+                switch (gUserType) {
+                    case 1:
+                        break;
+                    case 2:
+                        System.out.print("Please enter Primary User ID: ");
+                        gUserID = Integer.parseInt(System.console().readLine());
+                        break;
 
-    // iChoice = Integer.parseInt(System.console().readLine());
-    // switch (iChoice) {
-    // case 0:
-    // System.exit(0);
-    // break;
-    // case 1:
-    // displayLoadFunds();
-    // break;
-    // case 2:
-    // displayViewTransactions();
-    // break;
-    // case 3:
-    // blnValid = true;
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // }
+                }
+                // if (gUserType == 2) { // if User Type is Admin
+                // System.out.print("Please enter Primary User ID: ");
+                // gUserID = Integer.parseInt(System.console().readLine());
+                // }
+                System.out.print("Please enter amount to load: $");
+                int iAmount = Integer.parseInt(System.console().readLine());
 
-    // public static void displayMainMenuMerchantUser() {
-    // boolean blnValid = false;
-    // int iChoice = -1;
-    // do {
-    // try {
-    // System.out.println("");
-    // System.out.println("------------------------------");
-    // System.out.println("[1] Accomplish Transaction");
-    // System.out.println("[2] View Transaction History");
-    // System.out.println("[3] Settings");
-    // System.out.println("[4] Back");
-    // System.out.println("[0] Exit");
-    // System.out.print("> ");
+                // Call Script: Load Funds
 
-    // iChoice = Integer.parseInt(System.console().readLine());
-    // switch (iChoice) {
-    // case 0:
-    // System.exit(0);
-    // break;
-    // case 1:
-    // displayLoadFunds();
-    // break;
-    // case 2:
-    // displayViewTransactions();
-    // break;
-    // case 3:
-    // displayViewTransactions();
-    // break;
-    // case 4:
-    // blnValid = true;
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // }
+                double currentBalance = DB_Costumer.GetCustomerBalance(gUserID);
+                double newBalance = currentBalance + iAmount;
 
-    // private static void displayLoadFunds() {
-    // // boolean blnValid = false;
+                String updateBalaceResult = DB_Costumer.UpdateBalance(gUserID,
+                        newBalance);
 
-    // // switch (gUserType) {
+                if (updateBalaceResult == "success") {
 
-    // // case 1:
-    // // do {
+                    System.out.printf("$%d has been added to %d\n\n", iAmount, gUserID);
+                    blnValid = true;
 
-    // // try{
+                } else {
+                    System.out.println(updateBalaceResult + "\n");
 
-    // // }catch{
+                }
 
-    // // }
+            } catch (Exception e) {
+                System.out.println("Invalid input.");
+            }
+        } while (!blnValid);
 
-    // // } while (!blnValid);
+    }
 
-    // // case 2:
-    // // do {
-    // // try {
-    // // System.out.println("");
-    // // System.out.println("------------------------------");
-    // // if (gUserType == 2) { // if User Type is Admin
-    // // System.out.print("Please enter Primary User ID: ");
-    // // gUserID = Integer.parseInt(System.console().readLine());
-    // // }
-    // // System.out.print("Please enter amount to load: $");
-    // // int iAmount = Integer.parseInt(System.console().readLine());
+    private static void displayViewTransactions() {
+        boolean blnValid = false;
 
-    // // // Call Script: Load Funds
+        do {
+            try {
+                System.out.println("");
+                System.out.println("------------------------------");
+                System.out.print("Please enter start date MM/DD/YYYY: ");
+                String startDate = System.console().readLine();
+                // validate startDate
+                System.out.print("Please enter start date MM/DD/YYYY: ");
+                String endDate = System.console().readLine();
+                // validate endDate
 
-    // // double currentBalance = DB_Costumer.GetCustomerBalance(gUserID);
-    // // double newBalance = currentBalance + iAmount;
+                // Call script to get transactions given date
 
-    // // String updateBalaceResult = DB_Costumer.UpdateBalance(gUserID,
-    // newBalance);
+                // Loop through the result set
 
-    // // if (updateBalaceResult == "success") {
+                System.out.println("-------------------------------------------------------------------------------");
+                System.out.println("Date\t\tMerchant\t\tProduct\t\t\tAmount\t\t");
+                blnValid = true;
+            } catch (Exception e) {
+                System.out.println("Invalid input.");
+            }
+        } while (!blnValid);
+    }
 
-    // // System.out.printf("$%d has been added to %d\n\n", iAmount, gUserID);
-    // // blnValid = true;
+    private static void displayFamilyMembers() {
 
-    // // } else {
-    // // System.out.println(updateBalaceResult + "\n");
+        // Call Family Member script
 
-    // // }
+        // Loop through the result set and display the family members
 
-    // // } catch (Exception e) {
-    // // System.out.println("Invalid input.");
-    // // }
-    // // } while (!blnValid);
+        boolean blnValid = false;
+        char cChoice;
+        do {
+            try {
 
-    // // default:
-    // // break;
-    // // }
+                System.out.println("-------------------------------------------------------------------------------");
+                System.out.println("Name\t\tEmail\t\tPhone\t\t\tBalance\t\t\n\n");
 
-    // }
+                System.out.print("[A] Add\t[U] Update\t[V] View Transactions\t[D] Deactivate\t[B] Back\t[E] Exit\n");
 
-    // private static void displayViewTransactions() {
-    // boolean blnValid = false;
+                System.out.print("> ");
+                cChoice = System.console().readLine().charAt(0);
 
-    // do {
-    // try {
-    // System.out.println("");
-    // System.out.println("------------------------------");
-    // System.out.print("Please enter start date MM/DD/YYYY: ");
-    // String startDate = System.console().readLine();
-    // // validate startDate
-    // System.out.print("Please enter start date MM/DD/YYYY: ");
-    // String endDate = System.console().readLine();
-    // // validate endDate
+                System.out.print("Enter number of family member to deactivate: ");
+                int iCustomerID = Integer.parseInt(System.console().readLine());
+                switch (cChoice) {
+                    case 'E':
+                        System.exit(0);
+                        break;
+                    case 'A':
+                        addFamilyMember();
+                        break;
+                    case 'U':
+                        updateFamilyMember();
+                        break;
+                    case 'V':
+                        viewFamilyTransactions();
+                        break;
+                    case 'D':
 
-    // // Call script to get transactions given date
+                        break;
+                    case 'B':
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
 
-    // // Loop through the result set
+    private static void displaySettings() {
+        // Call Customer Details script
 
-    // System.out.println("-------------------------------------------------------------------------------");
-    // System.out.println("Date\t\tMerchant\t\tProduct\t\t\tAmount\t\t");
-    // blnValid = true;
-    // } catch (Exception e) {
-    // System.out.println("Invalid input.");
-    // }
-    // } while (!blnValid);
-    // }
+        // Display the details
 
-    // private static void displayFamilyMembers() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            try {
+                System.out.println("-------------------------------------------------------------------------------");
+                System.out.println("Name\t\tEmail\t\tPhone\t\t\tBalance\t\t\n\n");
 
-    // // Call Family Member script
+                System.out.print("[1] Update Details\t[2] Change Password\t[3] Back\t[0] Exit\n");
+                System.out.print("> ");
 
-    // // Loop through the result set and display the family members
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        updateCustomerDetails();
+                        break;
+                    case 2:
+                        changePassword();
+                        break;
+                    case 3:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
 
-    // boolean blnValid = false;
-    // char cChoice;
-    // do {
-    // try {
+    private static void updateCustomerDetails() {
+        // Call Customer Details script
 
-    // System.out.println("-------------------------------------------------------------------------------");
-    // System.out.println("Name\t\tEmail\t\tPhone\t\t\tBalance\t\t\n\n");
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            try {
+                System.out.println("-------------------------------------------------------------------------------");
+                System.out.println("[1] Name\t\t[2] Email\t\t[3] Phone\t\t\t[4] Balance\t\t\n\n");
+                System.out.println("[5] Back\t\t[0] Exit\t\t\n\n");
+                System.out.print("> ");
 
-    // System.out.print("[A] Add\t[U] Update\t[V] View Transactions\t[D]
-    // Deactivate\t[B] Back\t[E] Exit\n");
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        // Enter new name
+                        // Confirm with user
+                        // Save to the Customer object
+                        break;
+                    case 2:
+                        // Enter new email
+                        // Confirm with user
+                        // Save to the Customer object
+                        break;
+                    case 3:
+                        // Enter new phone
+                        // Confirm with user
+                        // Save to the Customer object
+                        break;
+                    case 4:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
 
-    // System.out.print("> ");
-    // cChoice = System.console().readLine().charAt(0);
+    private static void changePassword() {
+        System.out.println("------------------------------");
+        // Receive the new password
+        System.out.print("Please enter Primary User ID: ");
+        String strNewPassword = System.console().readLine();
+        // Receive the confirm password
+        System.out.print("Please enter Primary User ID: ");
+        String strConfirmPassword = System.console().readLine();
+        // Compare the New and Confirm Password to be equal
+        if (strNewPassword.equals(strConfirmPassword)) {
+            // Call Customer Update script with new password
+        }
+    }
 
-    // System.out.print("Enter number of family member to deactivate: ");
-    // int iCustomerID = Integer.parseInt(System.console().readLine());
-    // switch (cChoice) {
-    // case 'E':
-    // System.exit(0);
-    // break;
-    // case 'A':
-    // addFamilyMember();
-    // break;
-    // case 'U':
-    // updateFamilyMember();
-    // break;
-    // case 'V':
-    // viewFamilyTransactions();
-    // break;
-    // case 'D':
+    private static void deactivateFamilyMember() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deactivateFamilyMember'");
+    }
 
-    // break;
-    // case 'B':
-    // blnValid = true;
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // }
+    private static void viewFamilyTransactions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'viewFamilyTransactions'");
+    }
 
-    // private static void displaySettings() {
-    // // Call Customer Details script
+    private static void updateFamilyMember() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'viewFamilyMembers'");
+    }
 
-    // // Display the details
-
-    // boolean blnValid = false;
-    // int iChoice = -1;
-    // do {
-    // try {
-    // System.out.println("-------------------------------------------------------------------------------");
-    // System.out.println("Name\t\tEmail\t\tPhone\t\t\tBalance\t\t\n\n");
-
-    // System.out.print("[1] Update Details\t[2] Change Password\t[3] Back\t[0]
-    // Exit\n");
-    // System.out.print("> ");
-
-    // iChoice = Integer.parseInt(System.console().readLine());
-    // switch (iChoice) {
-    // case 0:
-    // System.exit(0);
-    // break;
-    // case 1:
-    // updateCustomerDetails();
-    // break;
-    // case 2:
-    // changePassword();
-    // break;
-    // case 3:
-    // blnValid = true;
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // }
-
-    // private static void updateCustomerDetails() {
-    // // Call Customer Details script
-
-    // boolean blnValid = false;
-    // int iChoice = -1;
-    // do {
-    // try {
-    // System.out.println("-------------------------------------------------------------------------------");
-    // System.out.println("[1] Name\t\t[2] Email\t\t[3] Phone\t\t\t[4]
-    // Balance\t\t\n\n");
-    // System.out.println("[5] Back\t\t[0] Exit\t\t\n\n");
-    // System.out.print("> ");
-
-    // iChoice = Integer.parseInt(System.console().readLine());
-    // switch (iChoice) {
-    // case 0:
-    // System.exit(0);
-    // break;
-    // case 1:
-    // // Enter new name
-    // // Confirm with user
-    // // Save to the Customer object
-    // break;
-    // case 2:
-    // // Enter new email
-    // // Confirm with user
-    // // Save to the Customer object
-    // break;
-    // case 3:
-    // // Enter new phone
-    // // Confirm with user
-    // // Save to the Customer object
-    // break;
-    // case 4:
-    // blnValid = true;
-    // break;
-    // default:
-    // break;
-    // }
-    // } catch (Exception e) {
-    // System.out.println("Invalid input. Numbers only please.");
-    // }
-    // } while (!blnValid);
-    // }
-
-    // private static void changePassword() {
-    // System.out.println("------------------------------");
-    // // Receive the new password
-    // System.out.print("Please enter Primary User ID: ");
-    // String strNewPassword = System.console().readLine();
-    // // Receive the confirm password
-    // System.out.print("Please enter Primary User ID: ");
-    // String strConfirmPassword = System.console().readLine();
-    // // Compare the New and Confirm Password to be equal
-    // if (strNewPassword.equals(strConfirmPassword)) {
-    // // Call Customer Update script with new password
-    // }
-    // }
-
-    // private static void deactivateFamilyMember() {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method
-    // 'deactivateFamilyMember'");
-    // }
-
-    // private static void viewFamilyTransactions() {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method
-    // 'viewFamilyTransactions'");
-    // }
-
-    // private static void updateFamilyMember() {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method
-    // 'viewFamilyMembers'");
-    // }
-
-    // private static void addFamilyMember() {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method
-    // 'addFamilyMember'");
-    // }
+    private static void addFamilyMember() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method " +
+                "'addFamilyMember'");
+    }
 }
