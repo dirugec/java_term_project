@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Models.Admin_User;
+import Models.Merchant_User;
+
 public class DB_Merchant_Users {
 
     Connection connection = DB_Service.connect();
@@ -30,4 +33,38 @@ public class DB_Merchant_Users {
         }
         return pwrd;
     }
+    /*
+    public static Merchant_User GetMerchantUser(int merchant_user_id) {
+        Merchant_User merchantUser = null;
+
+        try {
+            String getMerchantUserMySql = "SELECT merchant_user_id, merchant_id, first_name, last_name, email, phone, role, password, active FROM merchant_users WHERE merchant_user_id = ?";
+            PreparedStatement getMerchantUser = connection.prepareStatement(getMerchantUserMySql);
+            getMerchantUser.setInt(1, merchant_user_id);
+            ResultSet getMerchantUserResult = getMerchantUser.executeQuery();
+            if (getMerchantUserResult.next()) {
+                int merchantUserID = getMerchantUserResult.getInt(1);
+                int merchantID = getMerchantUserResult.getInt(2);
+                String firstName = getMerchantUserResult.getString(3);
+                String lastName = getMerchantUserResult.getString(4);
+                String email = getMerchantUserResult.getString(5);
+                int phone = getMerchantUserResult.getInt(6);
+                String role = getMerchantUserResult.getString(7);
+                String password = getMerchantUserResult.getString(8);
+                int active = getMerchantUserResult.getInt(9);
+
+                merchantUser = new Merchant_User(merchantUserID, merchantID, firstName, lastName, email, phone, role, password, active);
+
+                connection.close();
+
+            } else {
+                System.err.println("No Admin User found for admin_id: " + merchant_user_id);
+            }
+        } catch (SQLException e) {
+            System.err.println("An error reading admin user has occured: " +
+                    e.getMessage());
+        }
+        return merchantUser;
+    }
+    */
 }

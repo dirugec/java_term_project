@@ -17,15 +17,10 @@ public class DB_Admin_Users {
         String pwrd = "";
 
         try {
-            System.out.println("Step 2a");
             String getAdminPasswordMySql = "SELECT password FROM admin_users WHERE admin_id = ?";
-            System.out.println("Step 2b");
             PreparedStatement getAdminPassword = connection.prepareStatement(getAdminPasswordMySql);
-            System.out.println("Step 2c");
             getAdminPassword.setInt(1, admin_id);
-            System.out.println("Step 2d");
             ResultSet getAdminPasswordResult = getAdminPassword.executeQuery();
-            System.out.println("Step 2e");
 
             if (getAdminPasswordResult.next()) {
                 pwrd = getAdminPasswordResult.getString("password");

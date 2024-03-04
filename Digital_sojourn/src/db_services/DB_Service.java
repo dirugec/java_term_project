@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 
 public class DB_Service {
 
-    static String url = "jdbc:mysql://localhost:3306/sojurn_db";
+    static String url = "jdbc:mysql://localhost:3306/sojourn_db";
     static String user = "resort";
     static String password = "resort1234";
 

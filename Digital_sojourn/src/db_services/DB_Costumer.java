@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import Models.Customer;
+import Models.Transaction;
 
 public class DB_Costumer {
 
@@ -17,7 +18,7 @@ public class DB_Costumer {
     public static int AddCustomer(String first_name, String last_name, String email, int phone, double balance,
             int parent_id,
             String password, int active, int userType) {
-        int customerId = -1;
+            int customerId = -1;
 
         try {
             connection.setAutoCommit(false);
@@ -61,9 +62,7 @@ public class DB_Costumer {
 
     // READ Customer Info
     public static Customer GetCustomer(int customer_id) {
-
         Customer customer = null;
-
         try {
             String getCustomerMySql = "SELECT customer_id, first_name, last_name,email, phone, balance, parent_id,password, active FROM customers WHERE customer_id = ?";
             PreparedStatement getCustomer = connection.prepareStatement(getCustomerMySql);
@@ -83,7 +82,7 @@ public class DB_Costumer {
                 customer = new Customer(customerId, fisrtName, lastName, email, phone,
                         balance, parentId, password, active);
 
-                connection.close();
+                //connection.close();
 
             } else {
                 System.err.println("No customer found for customer_id: " + customer_id);
@@ -211,7 +210,7 @@ public class DB_Costumer {
             loadFunds.setDouble(1, newBalance);
             loadFunds.setInt(2, customer_id);
             loadFunds.executeUpdate();
-            connection.close();
+            //connection.close();
             return "success";
         } catch (SQLException e) {
             return ("An error updating customer balance has occured:" +

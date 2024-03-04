@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `sojurn_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `sojurn_db`;
+CREATE DATABASE  IF NOT EXISTS `sojourn_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `sojourn_db`;
 -- MySQL dump 10.13  Distrib 8.0.25, for macos11 (x86_64)
 --
 -- Host: localhost    Database: sojurn_db
@@ -30,7 +30,7 @@ CREATE TABLE `admin_users` (
   `last_name` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
   `phone` int NOT NULL,
-  `roll` varchar(45) NOT NULL,
+  `role` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`admin_id`)
@@ -105,6 +105,7 @@ CREATE TABLE `detail_trans` (
 
 LOCK TABLES `detail_trans` WRITE;
 /*!40000 ALTER TABLE `detail_trans` DISABLE KEYS */;
+INSERT INTO `detail_trans` VALUES (1,2,'20240220',5,22.95,1),(2,2,'20240220',6,24.50,1),(3,3,'20240225',4,27.95,1),(4,3,'20240225',7,20.00,1),(5,4,'20240227',8,18.00,1),(6,4,'20240227',9,25.00,1),(7,5,'20240220',5,22.95,1),(8,5,'20240220',6,24.50,1),(9,6,'20240301',10,6.00,1),(10,6,'20240301',11,22.00,1);
 /*!40000 ALTER TABLE `detail_trans` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +147,7 @@ CREATE TABLE `merchant_users` (
   `last_name` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
   `phone` int NOT NULL,
-  `roll` varchar(45) NOT NULL,
+  `role` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`merchant_user_id`),
@@ -161,6 +162,7 @@ CREATE TABLE `merchant_users` (
 
 LOCK TABLES `merchant_users` WRITE;
 /*!40000 ALTER TABLE `merchant_users` DISABLE KEYS */;
+INSERT INTO `merchant_users` VALUES (1,4,'Massimo','Bottura','mbottura@gmail.com',12345654,'Chef','asdasd',1),(2,5,'Leonor','Espinosa','lespinosa@gmail.com',1239999,'Chef','asdasd',1);
 /*!40000 ALTER TABLE `merchant_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +190,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (4,'AJIACO',27.95,5),(5,'PASTA CARBONARA',22.95,4),(6,'PASTA BOLOGNESA',24.50,4);
+INSERT INTO `products` VALUES (4,'Ajiaco',27.95,5),(5,'Pasta Carbonara',22.95,4),(6,'Pasta Bolognesa',24.50,4),(7,'Carne Asada',20.00,5),(8,'Lomo de Cerdo',18.00,5), (9,'Cazuela de Mariscos',25.00,5),(10,'Chorizo con Arepa',6.00,5),(11,'Casareccia',22.00,4),(12,'Salsiccia',18.50,4),(13,'Cavolo Nero',16.00,4);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,7 +220,7 @@ CREATE TABLE `transactions` (
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (2,9,'20240220',2000.00,1),(3,9,'20240225',1000.00,3),(4,9,'20240227',3000.00,1);
+INSERT INTO `transactions` VALUES (2,9,'20240220',47.45,4),(3,11,'20240225',47.95,5),(4,13,'20240227',43.00,5),(5,9,'20240301',47.45,4),(6,9,'20240229',28.00,5);
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
