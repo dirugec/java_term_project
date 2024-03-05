@@ -13,6 +13,7 @@ public class DB_Transactions {
 
     static Connection connection = DB_Service.connect();
 
+    // Insert transactions
     public static int InsertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
 
         int transId = -1;
@@ -48,6 +49,42 @@ public class DB_Transactions {
         return transId;
     }
 
+    // Insert detail transactions
+    public static int InsertDetailTransaction(int trans_id, int product_id, double price, double quantity) {
+
+        int detailTransID = -1;
+
+        try {
+            String insertDetailTransMysql = "INSERT INTO detail_trans(trans_id, product_id, price, quantity) VALUES(?,?,?,?)";
+            PreparedStatement insertDetailTrans = connection.prepareStatement(insertDetailTransMysql);
+            insertDetailTrans.setInt(1, trans_id);
+            insertDetailTrans.setInt(2, product_id);
+            insertDetailTrans.setDouble(3, price);
+            insertDetailTrans.setDouble(4, quantity);
+
+            insertDetailTrans.executeQuery();
+
+            ResultSet insertDetailTransResult = insertDetailTrans.getGeneratedKeys();
+            if (insertDetailTransResult.next()) {
+                detailTransID = insertDetailTransResult.getInt(1);
+            }
+
+            if (detailTransID > 1) {
+                connection.commit();
+
+            }
+
+            connection.close();
+
+        } catch (SQLException e) {
+            System.err.println("An error inserting detail transaction has occured : " + e.getMessage());
+        }
+
+        return detailTransID;
+
+    }
+
+    // Get Transactions by customer id
     public static ArrayList<Transaction> GetTransByCustomer(int customer_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transCustomerList = new ArrayList<>();

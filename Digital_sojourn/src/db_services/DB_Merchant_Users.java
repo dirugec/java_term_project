@@ -10,7 +10,7 @@ import Models.Merchant_User;
 
 public class DB_Merchant_Users {
 
-    Connection connection = DB_Service.connect();
+    static Connection connection = DB_Service.connect();
 
     // // Get Admin User Password by Admin ID
     public String GetMerchantUserPassword(int merchant_user_id) {
@@ -33,7 +33,8 @@ public class DB_Merchant_Users {
         }
         return pwrd;
     }
-    /*
+
+    // Get Merchant User Object
     public static Merchant_User GetMerchantUser(int merchant_user_id) {
         Merchant_User merchantUser = null;
 
@@ -53,18 +54,19 @@ public class DB_Merchant_Users {
                 String password = getMerchantUserResult.getString(8);
                 int active = getMerchantUserResult.getInt(9);
 
-                merchantUser = new Merchant_User(merchantUserID, merchantID, firstName, lastName, email, phone, role, password, active);
+                merchantUser = new Merchant_User(merchantUserID, merchantID, firstName, lastName, email, phone, role,
+                        password, active);
 
                 connection.close();
 
             } else {
-                System.err.println("No Admin User found for admin_id: " + merchant_user_id);
+                System.err.println("No Merchant User found for merchant_user_id: " + merchant_user_id);
             }
         } catch (SQLException e) {
-            System.err.println("An error reading admin user has occured: " +
+            System.err.println("An error reading Merchant user has occured: " +
                     e.getMessage());
         }
         return merchantUser;
     }
-    */
+
 }

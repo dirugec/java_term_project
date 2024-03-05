@@ -25,8 +25,9 @@ public class App {
     private static DB_Admin_Users dbAdminUser;
     private static DB_Costumer dbCustomer;
     private static DB_Merchant_Users dbMerchantUser;
+
     public static void main(String[] args) throws Exception {
-        
+
         dbCustomer = new DB_Costumer();
         dbAdminUser = new DB_Admin_Users();
         dbMerchantUser = new DB_Merchant_Users();
@@ -152,10 +153,10 @@ public class App {
                     displayMainMenuGuest();
                     break;
                 case 2: // Admin
-                
+
                     break;
                 case 3: // Merchant
-                
+
                     break;
                 default:
                     break;
@@ -175,12 +176,13 @@ public class App {
                 System.out.print("Please enter Password (Enter X to go back): ");
                 String strPassword = System.console().readLine();
                 String dbPassword;
-                
+
                 // Allows the user to go back to the main menu
                 if (strPassword.equals("X")) {
                     gUserType = 0;
-                };
-                
+                }
+                ;
+
                 // Verify login credentials
                 switch (gUserType) {
                     case 0:
@@ -196,7 +198,8 @@ public class App {
                             System.out.println("Valid Password");
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
-                        };
+                        }
+                        ;
                         break;
                     case 2: // Login Admin
                         // Call the GetPassword script
@@ -374,37 +377,32 @@ public class App {
                 System.out.println("");
                 System.out.println("------------------------------");
 
-                /*
-                switch (gUserType) {
-                    case 1:
-                        break;
-                    case 2:
-                        System.out.print("Please enter Primary User ID: ");
-                        gUserID = Integer.parseInt(System.console().readLine());
-                        break;
-
-                }
-                */
                 if (gUserType == 2) { // if User Type is Admin
                     System.out.print("Please enter Primary User ID: ");
                     gUserID = Integer.parseInt(System.console().readLine());
+                    gCustomer = DB_Costumer.GetCustomer(gUserID); // TODO: if the user logged in is an admin user we
+                                                                  // should call the method getcustomer and create the
+                                                                  // object gCustomer
                 }
+
                 System.out.print("Please enter amount to load: $");
-                int iAmount = Integer.parseInt(System.console().readLine());
+                double iAmount = Double.parseDouble(System.console().readLine()); // TODO: Changed the dattype from int
+                                                                                  // to double for the amount
 
                 // Call Script: Load Funds
-                //double currentBalance = DB_Costumer.GetCustomerBalance(gUserID);
                 double newBalance = gCustomer.getBalance() + iAmount;
                 String updateBalanceResult = DB_Costumer.UpdateBalance(gUserID, newBalance);
                 if (updateBalanceResult == "success") {
-                    gCustomer = dbCustomer.GetCustomer(gUserID);
-                    System.out.printf("$%f has been added to %d\n\n", dbCustomer.GetCustomerBalance(gUserID), gUserID);
+                    // gCustomer = DB_Costumer.GetCustomer(gUserID); // TODO: gcustomer is already
+                    // created when the customer was logged in
+                    System.out.printf("$%.2f has been added to %d\n", iAmount, gUserID);
+                    System.out.printf("The new balance is $%.2f \n\n", DB_Costumer.GetCustomerBalance(gUserID));
                     blnValid = true;
                 } else {
                     System.out.println(updateBalanceResult + "\n");
                 }
             } catch (Exception e) {
-                System.out.println("Invalid input.");
+                System.out.println("Invalid input. " + e);
             }
         } while (!blnValid);
 
@@ -420,25 +418,39 @@ public class App {
                 System.out.println("");
                 System.out.println("------------------------------");
                 System.out.print("Please enter start date MM/DD/YYYY: ");
-                String startDate = System.console().readLine();
+                String iStartDate = System.console().readLine();
+
+                String[] arrOfiStartDate = iStartDate.split("/", 3);
+                String mysqlStartDate = arrOfiStartDate[2] + arrOfiStartDate[0] + arrOfiStartDate[1];
+
                 // validate startDate
-                
-                System.out.print("Please enter start date MM/DD/YYYY: ");
-                String endDate = System.console().readLine();
+
+                System.out.print("Please enter end date MM/DD/YYYY: ");
+                String iEndDate = System.console().readLine();
+
+                // Modifying the string input for use it in a mysql script
+                String[] arrOfiEndtDate = iEndDate.split("/", 3);
+                String mysqlEndDate = arrOfiEndtDate[2] + arrOfiEndtDate[0] +
+                        arrOfiEndtDate[1];
                 // validate endDate
 
                 // Call script to get transactions given date
-                arrayTransactions = dbTransactions.GetTransByCustomer(gUserID, startDate, endDate);
+                arrayTransactions = DB_Transactions.GetTransByCustomer(gUserID,
+                        mysqlStartDate, mysqlEndDate);
+                System.out.println(arrayTransactions);
                 // Loop through the result set
 
                 System.out.println("-------------------------------------------------------------------------------");
+
+                // TODO: Format String Transaction Info
+                // TODO: intead use tabs we can create a string format to align the text
                 System.out.println("Date\t\tMerchant\t\tProduct\t\t\tAmount\t\t");
                 for (Transaction transaction : arrayTransactions) {
                     System.out.println(transaction);
                 }
                 blnValid = true;
             } catch (Exception e) {
-                System.out.println("Invalid input.");
+                System.out.println("Invalid input. " + e);
             }
         } while (!blnValid);
     }
@@ -501,9 +513,11 @@ public class App {
         int iChoice = -1;
         do {
             try {
+                String format = "%-15s %-15s %-20s %-15s %-15s \n";
                 System.out.println("-------------------------------------------------------------------------------");
-                System.out.println("First Name\t\tLast Name\t\tEmail\t\tPhone\t\t\tBalance");
-                System.out.printf("%s\t\t%s\t\t%s\t\t%s\t\t\t%s\t\t\n\n", gCustomer.getFirstName(), gCustomer.getLastName(), gCustomer.getEmail(), gCustomer.getPhone(), gCustomer.getBalance());
+                System.out.printf(format, "First Name", "Last Name", "Email", "Phone", "Balance");
+                System.out.printf(format + "\n\n", gCustomer.getFirstName(),
+                        gCustomer.getLastName(), gCustomer.getEmail(), gCustomer.getPhone(), gCustomer.getBalance());
 
                 System.out.print("[1] Update Details\t[2] Change Password\t[3] Back\t[0] Exit\n\n");
                 System.out.print("> ");
@@ -543,7 +557,8 @@ public class App {
             try {
                 System.out.println("-------------------------------------------------------------------------------");
                 System.out.println("First Name\t\tLast Name\t\tEmail\t\tPhone");
-                System.out.printf("[1] %s\t\t[2] %s\t\t[3] %s\t\t[4] %d\n", gCustomer.getFirstName(), gCustomer.getLastName(), gCustomer.getEmail(),gCustomer.getPhone());
+                System.out.printf("[1] %s\t\t[2] %s\t\t[3] %s\t\t[4] %d\n", gCustomer.getFirstName(),
+                        gCustomer.getLastName(), gCustomer.getEmail(), gCustomer.getPhone());
                 System.out.println("[5] Back\t\t[0] Exit\t\t\n\n");
                 System.out.print("Please choose a detail to edit: ");
 
@@ -567,7 +582,7 @@ public class App {
                             } else { // If user chose not to save
                                 blnConfirmSave = true;
                             }
-                        } while(!blnConfirmSave);   
+                        } while (!blnConfirmSave);
                         break;
                     case 2: // Enter last name
                         System.out.print("Please enter new last name: ");
@@ -584,7 +599,7 @@ public class App {
                             } else { // If user chose not to save
                                 blnConfirmSave = true;
                             }
-                        } while(!blnConfirmSave); 
+                        } while (!blnConfirmSave);
                         break;
                     case 3: // Enter new email
                         System.out.print("Please enter new email: ");
@@ -601,7 +616,7 @@ public class App {
                             } else { // If user chose not to save
                                 blnConfirmSave = true;
                             }
-                        } while(!blnConfirmSave); 
+                        } while (!blnConfirmSave);
                         break;
                     case 4: // Enter new phone
                         System.out.print("Please enter new phone: ");
@@ -614,11 +629,11 @@ public class App {
                                 System.out.println("Please enter Y/N");
                             } else if (strConfirm.equals("Y")) { // Save to the Customer object
                                 blnConfirmSave = true;
-                                tempCustomer.setPhone(strTempDetail);
+                                tempCustomer.setPhone(Integer.parseInt(strTempDetail));
                             } else { // If user chose not to save
                                 blnConfirmSave = true;
                             }
-                        } while(!blnConfirmSave); 
+                        } while (!blnConfirmSave);
                         break;
                     case 5:
                         blnValid = true;
@@ -630,7 +645,8 @@ public class App {
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValid);
-        dbCustomer.updateCustomerInfo(gUserID, gCustomer.getPhone(), gCustomer.getFirstName(), gCustomer.getLastName(), gCustomer.getEmail());
+        dbCustomer.updateCustomerInfo(gUserID, gCustomer.getPhone(), gCustomer.getFirstName(), gCustomer.getLastName(),
+                gCustomer.getEmail());
     }
 
     private static void changePassword() {
