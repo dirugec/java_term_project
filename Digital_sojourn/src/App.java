@@ -44,9 +44,9 @@ public class App {
         // 1)); //
 
         // TEST READ CUSTOMER BY ID
-        // Customer prueba = databaseCustomer.GetCustomer(9);
-        // System.out.println(prueba.toString());
-        // System.out.println(prueba.getFirstName());
+        Customer prueba = dbCustomer.GetCustomer(9);
+        System.out.println(prueba.toString());
+        System.out.println(prueba.getFirstName());
 
         // Update Customer basic info
         // databaseCustomer.updateCustomerInfo(8, 12345000, "Angel", "Martinez",
@@ -106,7 +106,7 @@ public class App {
         // String gAdminUserPass = db_Admin_Users.GetAdminPassword(1);
         // System.out.println(gAdminUserPass);
 
-        displayLoginMenu();
+        // displayLoginMenu();
     }
 
     private static void displayHeader() {
@@ -682,5 +682,8 @@ public class App {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method " +
                 "'addFamilyMember'");
+    }
+
+    private static void processTransaction() {
     }
 }
