@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import Models.Det_Transaction;
 import Models.Transaction;
 
 public class DB_Transactions {
@@ -90,7 +91,15 @@ public class DB_Transactions {
         ArrayList<Transaction> transCustomerList = new ArrayList<>();
 
         try {
-            String getTransbyCustomerMySql = "SELECT * FROM transactions WHERE customer_id= ? AND date BETWEEN ? AND ?";
+            String getTransbyCustomerMySql = " SELECT t.trans_id, t.customer_id,  c.first_name || \" \" || c.last_name as customer_name , t.date, t.amount,t.merchant_id, m.name\n"
+                    + //
+                    "FROM transactions t\n" + //
+                    "INNER JOIN customers c\n" + //
+                    "ON(t.customer_id=c.customer_id)\n" + //
+                    "INNER JOIN merchant m\n" + //
+                    "ON (t.merchant_id = m.merchant_id)\n" + //
+                    "WHERE t.customer_id= ? \n" + //
+                    "AND date BETWEEN ? AND ?; ";
             PreparedStatement getTransByCustomer = connection.prepareStatement(getTransbyCustomerMySql);
             getTransByCustomer.setInt(1, customer_id);
             getTransByCustomer.setString(2, initialDate);
@@ -98,13 +107,16 @@ public class DB_Transactions {
             ResultSet getTransByCustomerResult = getTransByCustomer.executeQuery();
             while (getTransByCustomerResult.next()) {
 
-                int transID = getTransByCustomerResult.getInt("trans_id");
+                int transID = getTransByCustomerResult.getInt("t.trans_id");
                 int customerID = getTransByCustomerResult.getInt("customer_id");
+                String customerName = getTransByCustomerResult.getString("customer_name");
                 String dateTrans = getTransByCustomerResult.getString("date");
                 double amount = getTransByCustomerResult.getDouble("amount");
                 int merchantID = getTransByCustomerResult.getInt("merchant_id");
+                String merchantName = getTransByCustomerResult.getString("name");
 
-                transCustomerList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID));
+                transCustomerList.add(new Transaction(transID, customerID, customerName, dateTrans, amount, merchantID,
+                        merchantName));
             }
 
         } catch (SQLException e) {
@@ -134,7 +146,7 @@ public class DB_Transactions {
                 double amount = getTransByMerchantResult.getDouble("amount");
                 int merchantID = getTransByMerchantResult.getInt("merchant_id");
 
-                transMerchantList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID));
+                transMerchantList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID,));
             }
 
         } catch (SQLException e) {
@@ -144,4 +156,37 @@ public class DB_Transactions {
         return transMerchantList;
     }
 
+    public static ArrayList<Det_Transaction> GetDetTransaction(int transID) {
+        ArrayList<Det_Transaction> transDetailList = new ArrayList<>();
+
+        try {
+            String getTransDetailMysql = "SELECT d.det_trans_id, d.trans_id, d.product_id, p.name, d.price, d.quantity \n"
+                    + //
+                    "FROM `detail_trans` d \n" + //
+                    "INNER JOIN products p\n" + //
+                    "ON(d.product_id = p.product_id)\n" + //
+                    "WHERE d.trans_id = ?;";
+            PreparedStatement getTransDetail = connection.prepareStatement(getTransDetailMysql);
+            getTransDetail.setInt(1, transID);
+            ResultSet getTransDetailResult = getTransDetail.executeQuery();
+            while (getTransDetailResult.next()) {
+                int detailTransID = getTransDetailResult.getInt("det_trans_id");
+                int trans_ID = getTransDetailResult.getInt("trans_id");
+                int productID = getTransDetailResult.getInt("product_id");
+                String productName = getTransDetailResult.getString("name");
+                double price = getTransDetailResult.getDouble("price");
+                double quantity = getTransDetailResult.getDouble("quantity");
+
+                transDetailList
+                        .add(new Det_Transaction(detailTransID, trans_ID, productID, productName, price, quantity));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("An error getting transaction detail has occured: " +
+                    e.getMessage());
+            // TODO: handle exception
+        }
+        return transDetailList;
+
+    }
 }

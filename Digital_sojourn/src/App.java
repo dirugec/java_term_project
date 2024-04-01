@@ -1,8 +1,11 @@
 
 import java.util.ArrayList;
 
+import com.mysql.cj.exceptions.ExceptionFactory;
+
 import Models.Admin_User;
 import Models.Customer;
+import Models.Det_Transaction;
 import Models.Merchant;
 import Models.Merchant_User;
 import Models.Transaction;
@@ -44,9 +47,9 @@ public class App {
         // 1)); //
 
         // TEST READ CUSTOMER BY ID
-        Customer prueba = dbCustomer.GetCustomer(9);
-        System.out.println(prueba.toString());
-        System.out.println(prueba.getFirstName());
+        // Customer prueba = dbCustomer.GetCustomer(9);
+        // System.out.println(prueba.toString());
+        // System.out.println(prueba.getFirstName());
 
         // Update Customer basic info
         // databaseCustomer.updateCustomerInfo(8, 12345000, "Angel", "Martinez",
@@ -64,7 +67,7 @@ public class App {
         // // Get family members
         // System.out.println(databaseCustomer.GetFamilyMembers(9));
 
-        DB_Merchant databaseMerchant = new DB_Merchant();
+        // DB_Merchant databaseMerchant = new DB_Merchant();
         // // Test get Merchant
         // System.out.println(databaseMerchant.GetMerchant(1));
 
@@ -80,7 +83,7 @@ public class App {
         // System.out.println(databaseProduct.GetProductsByMercant(3));
 
         // // Test Transactions
-        DB_Transactions dataTranstacion = new DB_Transactions();
+        // DB_Transactions dataTranstacion = new DB_Transactions();
 
         // // Insert Transaction
         // System.out.println(dataTranstacion.InsertTransaction(9, "20240227", 2, 300,
@@ -101,12 +104,12 @@ public class App {
         // System.out.println(gMerchantUserPass);
 
         // // Test Admin Users
-        DB_Admin_Users db_Admin_Users = new DB_Admin_Users();
+        // DB_Admin_Users db_Admin_Users = new DB_Admin_Users();
         // // Get ADmin password
         // String gAdminUserPass = db_Admin_Users.GetAdminPassword(1);
         // System.out.println(gAdminUserPass);
 
-        // displayLoginMenu();
+        displayLoginMenu();
     }
 
     private static void displayHeader() {
@@ -380,77 +383,107 @@ public class App {
                 if (gUserType == 2) { // if User Type is Admin
                     System.out.print("Please enter Primary User ID: ");
                     gUserID = Integer.parseInt(System.console().readLine());
-                    gCustomer = DB_Costumer.GetCustomer(gUserID); // TODO: if the user logged in is an admin user we
-                                                                  // should call the method getcustomer and create the
-                                                                  // object gCustomer
+                    gCustomer = DB_Costumer.GetCustomer(gUserID);
                 }
 
                 System.out.print("Please enter amount to load: $");
-                double iAmount = Double.parseDouble(System.console().readLine()); // TODO: Changed the dattype from int
-                                                                                  // to double for the amount
+                double iAmount = Double.parseDouble(System.console().readLine());
 
                 // Call Script: Load Funds
                 double newBalance = gCustomer.getBalance() + iAmount;
                 String updateBalanceResult = DB_Costumer.UpdateBalance(gUserID, newBalance);
                 if (updateBalanceResult == "success") {
-                    // gCustomer = DB_Costumer.GetCustomer(gUserID); // TODO: gcustomer is already
-                    // created when the customer was logged in
-                    System.out.printf("$%.2f has been added to %d\n", iAmount, gUserID);
-                    System.out.printf("The new balance is $%.2f \n\n", DB_Costumer.GetCustomerBalance(gUserID));
+                    System.out.printf("$%,.2f has been added to %d %s\n", iAmount, gUserID,
+                            gCustomer.getFirstName() + " " + gCustomer.getLastName());
+                    System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.GetCustomerBalance(gUserID));
                     blnValid = true;
                 } else {
                     System.out.println(updateBalanceResult + "\n");
                 }
             } catch (Exception e) {
-                System.out.println("Invalid input. " + e);
+                System.out.println("Invalid input. Numbers only please ");
             }
         } while (!blnValid);
 
     }
 
+    private static void validateDateFormat(String dateString) {
+        System.out.println(dateString);
+    }
+
+    @SuppressWarnings("static-access")
     private static void displayViewTransactions() {
         DB_Transactions dbTransactions = new DB_Transactions();
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
+        ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
 
         boolean blnValid = false;
         do {
             try {
                 System.out.println("");
                 System.out.println("------------------------------");
+
                 System.out.print("Please enter start date MM/DD/YYYY: ");
                 String iStartDate = System.console().readLine();
+
+                // TODO: REFACTORIZE THE CODE TO USE A METHOD OR CLASS AND CHECK DATE FORMAT
+
+                // Input validation RegEx
+                while (!iStartDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+                    System.out.println("Use the format MM/DD/YYYY ");
+                    System.out.print("Please enter start date MM/DD/YYYY: ");
+                    iStartDate = System.console().readLine();
+                }
 
                 String[] arrOfiStartDate = iStartDate.split("/", 3);
                 String mysqlStartDate = arrOfiStartDate[2] + arrOfiStartDate[0] + arrOfiStartDate[1];
 
-                // validate startDate
-
+                // Input validation RegEx
                 System.out.print("Please enter end date MM/DD/YYYY: ");
                 String iEndDate = System.console().readLine();
+                // TODO: REFACTORIZE THE CODE TO USE A METHOD OR CLASS AND CHECK DATE FORMAT
+                while (!iEndDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+                    System.out.println("Use the format MM/DD/YYYY ");
+                    System.out.print("Please enter end date MM/DD/YYYY: ");
+                    iEndDate = System.console().readLine();
+                }
+                // Valite end date after or same as start date
+                while ((iEndDate.compareTo(iStartDate) < 0)) {
+                    System.out.println("End date should be the same or after start date");
+                    System.out.print("Please enter end date MM/DD/YYYY: ");
+                    iEndDate = System.console().readLine();
+                }
 
                 // Modifying the string input for use it in a mysql script
                 String[] arrOfiEndtDate = iEndDate.split("/", 3);
                 String mysqlEndDate = arrOfiEndtDate[2] + arrOfiEndtDate[0] +
                         arrOfiEndtDate[1];
-                // validate endDate
 
                 // Call script to get transactions given date
-                arrayTransactions = DB_Transactions.GetTransByCustomer(gUserID,
+                arrayTransactions = dbTransactions.GetTransByCustomer(gUserID,
                         mysqlStartDate, mysqlEndDate);
-                System.out.println(arrayTransactions);
-                // Loop through the result set
 
-                System.out.println("-------------------------------------------------------------------------------");
+                // Loop through the result set and display the transactions
 
-                // TODO: Format String Transaction Info
-                // TODO: intead use tabs we can create a string format to align the text
-                System.out.println("Date\t\tMerchant\t\tProduct\t\t\tAmount\t\t");
                 for (Transaction transaction : arrayTransactions) {
-                    System.out.println(transaction);
+                    System.out.printf("\n%-10s %-15s %-6s\n", "Date", "Merchant", "Amount");
+                    System.out.println("-".repeat(40));
+                    System.out.printf("%-10s %-25s %-6.2f \n", transaction.getDateTrans(),
+                            transaction.getMerchantName(), transaction.getAmount());
+                    System.out.println("\n*********  Det Transaction *********");
+
+                    det_TransactionsList = dbTransactions.GetDetTransaction(transaction.getTransID());
+                    for (Det_Transaction det_Transaction : det_TransactionsList) {
+                        System.out.printf("Product: %-25s Price: %6.2f Quantity: %4.2f\n",
+                                det_Transaction.getProduct_name(),
+                                det_Transaction.getProduct_price(), det_Transaction.getQuantity());
+
+                    }
+                    System.out.println("*".repeat(40));
+                    blnValid = true;
                 }
-                blnValid = true;
             } catch (Exception e) {
-                System.out.println("Invalid input. " + e);
+                System.out.println("Invalid input.  " + e);
             }
         } while (!blnValid);
     }
