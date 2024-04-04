@@ -15,7 +15,7 @@ public class DB_Transactions {
     static Connection connection = DB_Service.connect();
 
     // Insert transactions
-    public static int InsertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
+    public static int insertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
 
         int transId = -1;
 
@@ -51,7 +51,7 @@ public class DB_Transactions {
     }
 
     // Insert detail transactions
-    public static int InsertDetailTransaction(int trans_id, int product_id, double price, double quantity) {
+    public static int insertDetailTransaction(int trans_id, int product_id, double price, double quantity) {
 
         int detailTransID = -1;
 
@@ -86,7 +86,7 @@ public class DB_Transactions {
     }
 
     // Get Transactions by customer id
-    public static ArrayList<Transaction> GetTransByCustomer(int customer_id, String initialDate, String finalDate) {
+    public static ArrayList<Transaction> getTransByCustomer(int customer_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transCustomerList = new ArrayList<>();
 
@@ -127,7 +127,7 @@ public class DB_Transactions {
     }
 
     // //Get Transactions by Merchant
-    public static ArrayList<Transaction> GetTransByMerchant(int merchant_id, String initialDate, String finalDate) {
+    public static ArrayList<Transaction> getTransByMerchant(int merchant_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transMerchantList = new ArrayList<>();
 
@@ -146,7 +146,7 @@ public class DB_Transactions {
                 double amount = getTransByMerchantResult.getDouble("amount");
                 int merchantID = getTransByMerchantResult.getInt("merchant_id");
 
-                transMerchantList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID,));
+                transMerchantList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID));
             }
 
         } catch (SQLException e) {
@@ -156,7 +156,7 @@ public class DB_Transactions {
         return transMerchantList;
     }
 
-    public static ArrayList<Det_Transaction> GetDetTransaction(int transID) {
+    public static ArrayList<Det_Transaction> getDetTransaction(int transID) {
         ArrayList<Det_Transaction> transDetailList = new ArrayList<>();
 
         try {
@@ -184,7 +184,7 @@ public class DB_Transactions {
         } catch (SQLException e) {
             System.err.println("An error getting transaction detail has occured: " +
                     e.getMessage());
-            // TODO: handle exception
+
         }
         return transDetailList;
 

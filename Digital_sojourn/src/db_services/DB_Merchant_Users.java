@@ -13,7 +13,7 @@ public class DB_Merchant_Users {
     static Connection connection = DB_Service.connect();
 
     // // Get Admin User Password by Admin ID
-    public String GetMerchantUserPassword(int merchant_user_id) {
+    public String getMerchantUserPassword(int merchant_user_id) {
         String pwrd = "";
 
         try {
@@ -35,7 +35,7 @@ public class DB_Merchant_Users {
     }
 
     // Get Merchant User Object
-    public static Merchant_User GetMerchantUser(int merchant_user_id) {
+    public static Merchant_User getMerchantUser(int merchant_user_id) {
         Merchant_User merchantUser = null;
 
         try {

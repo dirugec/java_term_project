@@ -13,7 +13,7 @@ public class DB_Admin_Users {
     static Connection connection = DB_Service.connect();
 
     // // Get Admin User Password by Admin ID
-    public static String GetAdminPassword(int admin_id) {
+    public static String getAdminPassword(int admin_id) {
         String pwrd = "";
 
         try {
@@ -34,7 +34,7 @@ public class DB_Admin_Users {
         return pwrd;
     }
 
-    public static Admin_User GetAdminUser(int admin_id) {
+    public static Admin_User getAdminUser(int admin_id) {
 
         Admin_User adminUser = null;
 

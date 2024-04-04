@@ -35,80 +35,6 @@ public class App {
         dbAdminUser = new DB_Admin_Users();
         dbMerchantUser = new DB_Merchant_Users();
 
-        // // TEST CREATE CUSTOMER
-        // System.out.println(databaseCustomer.AddCustomer("John",
-        // "Doe",
-        // "john-doe@gamil.com",
-        // 123123337,
-        // 0.00,
-        // 2,
-        // "WhoAmI",
-        // 1,
-        // 1)); //
-
-        // TEST READ CUSTOMER BY ID
-        // Customer prueba = dbCustomer.GetCustomer(9);
-        // System.out.println(prueba.toString());
-        // System.out.println(prueba.getFirstName());
-
-        // Update Customer basic info
-        // databaseCustomer.updateCustomerInfo(8, 12345000, "Angel", "Martinez",
-        // "wiky@gmail.com");
-
-        // // Test get all customers
-        // System.out.println(databaseCustomer.GetAllCustomers());
-
-        // Test get customer balance
-        // System.out.println(databaseCustomer.GetCustomerBalance(1));
-
-        // // Update Balance
-        // System.out.println(databaseCustomer.UpdateBalance(9, 2000));
-
-        // // Get family members
-        // System.out.println(databaseCustomer.GetFamilyMembers(9));
-
-        // DB_Merchant databaseMerchant = new DB_Merchant();
-        // // Test get Merchant
-        // System.out.println(databaseMerchant.GetMerchant(1));
-
-        // // Test get all Merchants
-        // System.out.println(databaseMerchant.GetAllMerchants());
-
-        // DB_Product databaseProduct = new DB_Product();
-
-        // // Test get Product
-        // System.out.println(databaseProduct.GetProduct(1));
-
-        // // Test product list for merchant
-        // System.out.println(databaseProduct.GetProductsByMercant(3));
-
-        // // Test Transactions
-        // DB_Transactions dataTranstacion = new DB_Transactions();
-
-        // // Insert Transaction
-        // System.out.println(dataTranstacion.InsertTransaction(9, "20240227", 2, 300,
-        // -1));
-
-        // // get transactions by customer
-        // System.out.println(dataTranstacion.GetTransByCustomer(9, "20240222",
-        // "20240228"));
-
-        // // Get transactions by merchant
-        // System.out.println(dataTranstacion.GetTransByMerchant(1, "20240222",
-        // "20240228"));
-
-        // // Test Merchan Users
-        // DB_Merchan_Users db_Merchan_Users = new DB_Merchan_Users();
-        // // // Get merchant user password
-        // String gMerchantUserPass = db_Merchan_Users.GetMerchantUserPassword(1);
-        // System.out.println(gMerchantUserPass);
-
-        // // Test Admin Users
-        // DB_Admin_Users db_Admin_Users = new DB_Admin_Users();
-        // // Get ADmin password
-        // String gAdminUserPass = db_Admin_Users.GetAdminPassword(1);
-        // System.out.println(gAdminUserPass);
-
         displayLoginMenu();
     }
 
@@ -193,11 +119,11 @@ public class App {
                         break;
                     case 1: // Login Customer
                         // Call the GetPassword script
-                        dbPassword = dbCustomer.GetCustomerPassword(gUserID);
+                        dbPassword = dbCustomer.getCustomerPassword(gUserID);
                         if (dbPassword.equals(strPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
-                            gCustomer = dbCustomer.GetCustomer(gUserID);
+                            gCustomer = dbCustomer.getCustomer(gUserID);
                             System.out.println("Valid Password");
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
@@ -206,7 +132,7 @@ public class App {
                         break;
                     case 2: // Login Admin
                         // Call the GetPassword script
-                        dbPassword = dbAdminUser.GetAdminPassword(gUserID);
+                        dbPassword = dbAdminUser.getAdminPassword(gUserID);
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
@@ -216,7 +142,7 @@ public class App {
                         break;
                     case 3: // Login Merchant
                         // Call the GetPassword script
-                        dbPassword = dbMerchantUser.GetMerchantUserPassword(gUserID);
+                        dbPassword = dbMerchantUser.getMerchantUserPassword(gUserID);
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
@@ -383,7 +309,7 @@ public class App {
                 if (gUserType == 2) { // if User Type is Admin
                     System.out.print("Please enter Primary User ID: ");
                     gUserID = Integer.parseInt(System.console().readLine());
-                    gCustomer = DB_Costumer.GetCustomer(gUserID);
+                    gCustomer = DB_Costumer.getCustomer(gUserID);
                 }
 
                 System.out.print("Please enter amount to load: $");
@@ -391,11 +317,11 @@ public class App {
 
                 // Call Script: Load Funds
                 double newBalance = gCustomer.getBalance() + iAmount;
-                String updateBalanceResult = DB_Costumer.UpdateBalance(gUserID, newBalance);
+                String updateBalanceResult = DB_Costumer.updateBalance(gUserID, newBalance);
                 if (updateBalanceResult == "success") {
                     System.out.printf("$%,.2f has been added to %d %s\n", iAmount, gUserID,
                             gCustomer.getFirstName() + " " + gCustomer.getLastName());
-                    System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.GetCustomerBalance(gUserID));
+                    System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.getCustomerBalance(gUserID));
                     blnValid = true;
                 } else {
                     System.out.println(updateBalanceResult + "\n");
@@ -407,11 +333,6 @@ public class App {
 
     }
 
-    private static void validateDateFormat(String dateString) {
-        System.out.println(dateString);
-    }
-
-    @SuppressWarnings("static-access")
     private static void displayViewTransactions() {
         DB_Transactions dbTransactions = new DB_Transactions();
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
@@ -426,9 +347,7 @@ public class App {
                 System.out.print("Please enter start date MM/DD/YYYY: ");
                 String iStartDate = System.console().readLine();
 
-                // TODO: REFACTORIZE THE CODE TO USE A METHOD OR CLASS AND CHECK DATE FORMAT
-
-                // Input validation RegEx
+                // Input validation start date RegEx
                 while (!iStartDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
                     System.out.println("Use the format MM/DD/YYYY ");
                     System.out.print("Please enter start date MM/DD/YYYY: ");
@@ -438,10 +357,10 @@ public class App {
                 String[] arrOfiStartDate = iStartDate.split("/", 3);
                 String mysqlStartDate = arrOfiStartDate[2] + arrOfiStartDate[0] + arrOfiStartDate[1];
 
-                // Input validation RegEx
+                // Input validation end date RegEx
                 System.out.print("Please enter end date MM/DD/YYYY: ");
                 String iEndDate = System.console().readLine();
-                // TODO: REFACTORIZE THE CODE TO USE A METHOD OR CLASS AND CHECK DATE FORMAT
+
                 while (!iEndDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
                     System.out.println("Use the format MM/DD/YYYY ");
                     System.out.print("Please enter end date MM/DD/YYYY: ");
@@ -460,7 +379,7 @@ public class App {
                         arrOfiEndtDate[1];
 
                 // Call script to get transactions given date
-                arrayTransactions = dbTransactions.GetTransByCustomer(gUserID,
+                arrayTransactions = dbTransactions.getTransByCustomer(gUserID,
                         mysqlStartDate, mysqlEndDate);
 
                 // Loop through the result set and display the transactions
@@ -472,7 +391,7 @@ public class App {
                             transaction.getMerchantName(), transaction.getAmount());
                     System.out.println("\n*********  Det Transaction *********");
 
-                    det_TransactionsList = dbTransactions.GetDetTransaction(transaction.getTransID());
+                    det_TransactionsList = dbTransactions.getDetTransaction(transaction.getTransID());
                     for (Det_Transaction det_Transaction : det_TransactionsList) {
                         System.out.printf("Product: %-25s Price: %6.2f Quantity: %4.2f\n",
                                 det_Transaction.getProduct_name(),
@@ -490,40 +409,76 @@ public class App {
 
     private static void displayFamilyMembers() {
 
-        // Call Family Member script
-
-        // Loop through the result set and display the family members
-
         boolean blnValid = false;
         char cChoice;
+        // TODO: Re think the logic of this method, just add family member with customer
+        // add or remove family member with customer id
+
         do {
+
+            // Call Family Member script
+            ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
+            arrayFamilyMembers = DB_Costumer.getFamilyMembers(gCustomer.getCustomerID());
+            int index = 1;
+
+            System.out.println("----------------------------------------------------------------------------------");
+            System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s\n", "#", "First Name", "Last Name", "Email", "Phone",
+                    "Balance");
+            System.out.println("----------------------------------------------------------------------------------");
+            // Loop through the result set and display the family members
+            for (Customer familyMember : arrayFamilyMembers) {
+                System.out.printf("%-4d %-15s %-15s %-20s %-15s %-15s\n", index, familyMember.getFirstName(),
+                        familyMember.getLastName(),
+                        familyMember.getEmail(), familyMember.getPhone(), familyMember.getBalance());
+                index++;
+            }
+
             try {
-
-                System.out.println("-------------------------------------------------------------------------------");
-                System.out.println("Name\t\tEmail\t\tPhone\t\t\tBalance\t\t\n\n");
-
+                System.out
+                        .println("----------------------------------------------------------------------------------");
                 System.out.print("[A] Add\t[U] Update\t[V] View Transactions\t[D] Deactivate\t[B] Back\t[E] Exit\n");
 
                 System.out.print("> ");
                 cChoice = System.console().readLine().charAt(0);
 
-                System.out.print("Enter number of family member to deactivate: ");
-                int iCustomerID = Integer.parseInt(System.console().readLine());
                 switch (cChoice) {
                     case 'E':
                         System.exit(0);
                         break;
                     case 'A':
-                        addFamilyMember();
+                        // TODO: WORKING HERE!!!
+                        System.out.print("Please enter the id of the new family member:");
+                        int iNewFamilyMemberID = Integer.parseInt(System.console().readLine());
+                        // Call the script to get the customer details
+                        Customer newFamilyMember = DB_Costumer.getCustomer(iNewFamilyMemberID);
+                        System.out.println("The new family member is: " + newFamilyMember.getFirstName() + " " +
+                                newFamilyMember.getLastName() + " " + newFamilyMember.getEmail() + " " +
+                                newFamilyMember.getPhone() + " " + newFamilyMember.getBalance() + "\n");
+
+                        System.out.println("Is this the correct family member? Y/N");
+                        if (System.console().readLine().charAt(0) == 'Y'
+                                || System.console().readLine().charAt(0) == 'y') {
+                            // Call the script to update the family member's parent_ID field in the customer
+                            // table
+                            DB_Costumer.updateParentId(iNewFamilyMemberID, gCustomer.getCustomerID());
+                        } else {
+                            System.out.println("Family member not added");
+                        }
+
                         break;
+
+                    // TODO: ELIMINATE THIS CASE
                     case 'U':
                         updateFamilyMember();
                         break;
+
                     case 'V':
                         viewFamilyTransactions();
                         break;
                     case 'D':
-
+                        System.out.print("Enter number of family member to deactivate: ");
+                        int iCustomerID = Integer.parseInt(System.console().readLine());
+                        deactivateFamilyMember();
                         break;
                     case 'B':
                         blnValid = true;
@@ -711,11 +666,14 @@ public class App {
         throw new UnsupportedOperationException("Unimplemented method 'viewFamilyMembers'");
     }
 
-    private static void addFamilyMember() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method " +
-                "'addFamilyMember'");
-    }
+    // TODO: This method is unnecessary id the same functionality of addCustomer
+    // method
+
+    // private static void addFamilyMember() {
+    // // TODO Auto-generated method stub
+    // throw new UnsupportedOperationException("Unimplemented method " +
+    // "'addFamilyMember'");
+    // }
 
     private static void processTransaction() {
     }

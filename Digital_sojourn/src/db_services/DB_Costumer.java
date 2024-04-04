@@ -14,11 +14,17 @@ public class DB_Costumer {
 
     static Connection connection = DB_Service.connect();
 
-    // CREATE Customer
-    public static int AddCustomer(String first_name, String last_name, String email, int phone, double balance,
-            int parent_id,
-            String password, int active, int userType) {
-            int customerId = -1;
+    /**
+     * This method is used to add a new customer to the database.
+     *
+     * @param customer This is the customer object to be added. It should contain
+     *                 all the necessary information like name, address, etc.
+     * @return boolean This returns true if the customer was successfully added, and
+     *         false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
+    public static int addCustomer(Customer customer) {
+        int customerId = -1;
 
         try {
             connection.setAutoCommit(false);
@@ -27,14 +33,14 @@ public class DB_Costumer {
             PreparedStatement addCustomer = connection.prepareStatement(addCustomerMySql,
                     Statement.RETURN_GENERATED_KEYS); // preparableStatement make shure avoid the script injection
             // Statement.RETURN_GENERATED_KEY retunr the key generated
-            addCustomer.setString(1, first_name);
-            addCustomer.setString(2, last_name);
-            addCustomer.setString(3, email);
-            addCustomer.setInt(4, phone);
-            addCustomer.setDouble(5, balance);
-            addCustomer.setInt(6, parent_id);
-            addCustomer.setString(7, password);
-            addCustomer.setInt(8, active);
+            addCustomer.setString(1, customer.getFirstName());
+            addCustomer.setString(2, customer.getLastName());
+            addCustomer.setString(3, customer.getEmail());
+            addCustomer.setInt(4, customer.getPhone());
+            addCustomer.setDouble(5, customer.getBalance());
+            addCustomer.setInt(6, customer.getParentId());
+            addCustomer.setString(7, customer.getPassword());
+            addCustomer.setInt(8, customer.getActive());
 
             addCustomer.executeUpdate();
 
@@ -61,7 +67,7 @@ public class DB_Costumer {
     }
 
     // READ Customer Info
-    public static Customer GetCustomer(int customer_id) {
+    public static Customer getCustomer(int customer_id) {
         Customer customer = null;
         try {
             String getCustomerMySql = "SELECT customer_id, first_name, last_name,email, phone, balance, parent_id,password, active FROM customers WHERE customer_id = ?";
@@ -82,7 +88,7 @@ public class DB_Costumer {
                 customer = new Customer(customerId, fisrtName, lastName, email, phone,
                         balance, parentId, password, active);
 
-                //connection.close();
+                // connection.close();
 
             } else {
                 System.err.println("No customer found for customer_id: " + customer_id);
@@ -95,7 +101,7 @@ public class DB_Costumer {
     }
 
     // Read All Customers
-    public static ArrayList<Customer> GetAllCustomers() {
+    public static ArrayList<Customer> getAllCustomers() {
 
         ArrayList<Customer> customers = new ArrayList<>();
 
@@ -154,7 +160,7 @@ public class DB_Costumer {
     }
 
     // // Update Customer Status Active/Desactive
-    public static boolean UpdateActiveStatus(int customer_id, int active) {
+    public static boolean updateActiveStatus(int customer_id, int active) {
 
         boolean success = false;
 
@@ -176,7 +182,7 @@ public class DB_Costumer {
         return success;
     }
 
-    public static double GetCustomerBalance(int customer_id) {
+    public static double getCustomerBalance(int customer_id) {
 
         double balance = -1;
 
@@ -200,7 +206,7 @@ public class DB_Costumer {
     }
 
     // //Update customer Balance
-    public static String UpdateBalance(int customer_id, double newBalance) {
+    public static String updateBalance(int customer_id, double newBalance) {
 
         try {
 
@@ -210,7 +216,7 @@ public class DB_Costumer {
             loadFunds.setDouble(1, newBalance);
             loadFunds.setInt(2, customer_id);
             loadFunds.executeUpdate();
-            //connection.close();
+            // connection.close();
             return "success";
         } catch (SQLException e) {
             return ("An error updating customer balance has occured:" +
@@ -220,7 +226,7 @@ public class DB_Costumer {
     }
 
     // // Get customer Password by ID customer
-    public static String GetCustomerPassword(int customer_id) {
+    public static String getCustomerPassword(int customer_id) {
         String pwrd = "";
 
         try {
@@ -242,7 +248,7 @@ public class DB_Costumer {
     }
 
     // // Update Customer Password
-    public static boolean UpdatePassword(int customer_id, String password) {
+    public static boolean updatePassword(int customer_id, String password) {
 
         boolean success = false;
 
@@ -265,7 +271,7 @@ public class DB_Costumer {
     }
 
     // // Get Family Members
-    public static ArrayList<Customer> GetFamilyMembers(int customer_id) {
+    public static ArrayList<Customer> getFamilyMembers(int customer_id) {
 
         ArrayList<Customer> familyMembers = new ArrayList<>();
 
@@ -297,6 +303,29 @@ public class DB_Costumer {
 
         return familyMembers;
 
+    }
+
+    // // Add family member
+    public static boolean updateParentId(int customer_id, int parent_id) {
+        boolean success = false;
+
+        // TODO: Add a check to make sure the parent_id is not the same as the
+        // customer_id And the parent id is null
+
+        try {
+            String updateParentIdMysql = "UPDATE customers SET parent_id = ? WHERE customer_id = ?";
+            PreparedStatement updateParentId = connection.prepareStatement(updateParentIdMysql);
+            updateParentId.setInt(1, parent_id);
+            updateParentId.setInt(2, customer_id);
+            updateParentId.executeUpdate();
+            success = true;
+            connection.close();
+
+        } catch (SQLException e) {
+            System.err.println("An error updating parent_id has occured: " +
+                    e.getMessage());
+        }
+        return success;
     }
 
 }

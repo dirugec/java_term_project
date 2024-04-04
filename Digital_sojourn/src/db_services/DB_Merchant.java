@@ -12,7 +12,7 @@ public class DB_Merchant {
 
     static Connection connection = DB_Service.connect();
 
-    public static Merchant GetMerchant(int merchant_id) {
+    public static Merchant getMerchant(int merchant_id) {
 
         Merchant merchant = null;
 
@@ -34,7 +34,7 @@ public class DB_Merchant {
         return merchant;
     }
 
-    public static ArrayList<Merchant> GetAllMerchants() {
+    public static ArrayList<Merchant> getAllMerchants() {
 
         ArrayList<Merchant> merchants = new ArrayList<>();
 
