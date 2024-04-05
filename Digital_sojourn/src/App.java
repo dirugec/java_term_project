@@ -85,7 +85,7 @@ public class App {
 
                     break;
                 case 3: // Merchant
-
+                    displayMainMenuMerchantUser()
                     break;
                 default:
                     break;
@@ -258,46 +258,6 @@ public class App {
         } while (!blnValid);
     }
 
-    public static void displayMainMenuMerchantUser() {
-        boolean blnValid = false;
-        int iChoice = -1;
-        do {
-            try {
-                System.out.println("");
-                System.out.println("------------------------------");
-                System.out.println("[1] Accomplish Transaction");
-                System.out.println("[2] View Transaction History");
-                System.out.println("[3] Settings");
-                System.out.println("[4] Back");
-                System.out.println("[0] Exit");
-                System.out.print("> ");
-
-                iChoice = Integer.parseInt(System.console().readLine());
-                switch (iChoice) {
-                    case 0:
-                        System.exit(0);
-                        break;
-                    case 1:
-                        displayLoadFunds();
-                        break;
-                    case 2:
-                        displayViewTransactions();
-                        break;
-                    case 3:
-                        displayViewTransactions();
-                        break;
-                    case 4:
-                        blnValid = true;
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                System.out.println("Invalid input. Numbers only please.");
-            }
-        } while (!blnValid);
-    }
-
     private static void displayLoadFunds() {
         boolean blnValid = false;
 
@@ -366,7 +326,7 @@ public class App {
                     System.out.print("Please enter end date MM/DD/YYYY: ");
                     iEndDate = System.console().readLine();
                 }
-                // Valite end date after or same as start date
+                // Validate end date after or same as start date
                 while ((iEndDate.compareTo(iStartDate) < 0)) {
                     System.out.println("End date should be the same or after start date");
                     System.out.print("Please enter end date MM/DD/YYYY: ");
@@ -379,11 +339,9 @@ public class App {
                         arrOfiEndtDate[1];
 
                 // Call script to get transactions given date
-                arrayTransactions = dbTransactions.getTransByCustomer(gUserID,
-                        mysqlStartDate, mysqlEndDate);
+                arrayTransactions = dbTransactions.getTransByCustomer(gUserID, mysqlStartDate, mysqlEndDate);
 
                 // Loop through the result set and display the transactions
-
                 for (Transaction transaction : arrayTransactions) {
                     System.out.printf("\n%-10s %-15s %-6s\n", "Date", "Merchant", "Amount");
                     System.out.println("-".repeat(40));
@@ -422,8 +380,7 @@ public class App {
             int index = 1;
 
             System.out.println("----------------------------------------------------------------------------------");
-            System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s\n", "#", "First Name", "Last Name", "Email", "Phone",
-                    "Balance");
+            System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s\n", "#", "First Name", "Last Name", "Email", "Phone", "Balance");
             System.out.println("----------------------------------------------------------------------------------");
             // Loop through the result set and display the family members
             for (Customer familyMember : arrayFamilyMembers) {
@@ -675,6 +632,59 @@ public class App {
     // "'addFamilyMember'");
     // }
 
+    // ********** MERCHANT USER INTERFACE **********
+
+    public static void displayMainMenuMerchantUser() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            try {
+                System.out.println("");
+                System.out.println("------------------------------");
+                System.out.println("[1] Accomplish Transaction");
+                System.out.println("[2] View Transaction History");
+                System.out.println("[3] Settings");
+                System.out.println("[4] Back");
+                System.out.println("[0] Exit");
+                System.out.print("> ");
+
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        processTransaction();
+                        break;
+                    case 2:
+                        displayViewTransactions();
+                        break;
+                    case 3:
+                        displayViewTransactions();
+                        break;
+                    case 4:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
+
+
     private static void processTransaction() {
+        // Display Product List
+        // Choose Product
+        // Input Quantity
+        // Save into ArrayList ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
+        // Choose another Product or 
+
+        // Finish Transaction
+        // Display Total Transaction and ask for Confirmation
+        // Insert into Transaction table
+        // Insert into Detail Transaction table
     }
 }
