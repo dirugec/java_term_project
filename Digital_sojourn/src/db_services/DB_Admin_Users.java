@@ -6,14 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Models.Admin_User;
-import Models.Customer;
 
 public class DB_Admin_Users {
 
     static Connection connection = DB_Service.connect();
 
     // // Get Admin User Password by Admin ID
-    public static String getAdminPassword(int admin_id) {
+    public String getAdminPassword(int admin_id) {
         String pwrd = "";
 
         try {

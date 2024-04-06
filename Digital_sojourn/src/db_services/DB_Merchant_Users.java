@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import Models.Admin_User;
 import Models.Merchant_User;
 
 public class DB_Merchant_Users {

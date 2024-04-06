@@ -1,8 +1,6 @@
 
 import java.util.ArrayList;
 
-import com.mysql.cj.exceptions.ExceptionFactory;
-
 import Models.Admin_User;
 import Models.Customer;
 import Models.Det_Transaction;
@@ -28,12 +26,14 @@ public class App {
     private static DB_Admin_Users dbAdminUser;
     private static DB_Costumer dbCustomer;
     private static DB_Merchant_Users dbMerchantUser;
+    private static DB_Transactions dbTransactions;
 
     public static void main(String[] args) throws Exception {
 
         dbCustomer = new DB_Costumer();
         dbAdminUser = new DB_Admin_Users();
         dbMerchantUser = new DB_Merchant_Users();
+        dbTransactions = new DB_Transactions();
 
         displayLoginMenu();
     }
@@ -85,7 +85,7 @@ public class App {
 
                     break;
                 case 3: // Merchant
-                    displayMainMenuMerchantUser()
+                    displayMainMenuMerchantUser();
                     break;
                 default:
                     break;
@@ -107,10 +107,9 @@ public class App {
                 String dbPassword;
 
                 // Allows the user to go back to the main menu
-                if (strPassword.equals("X")) {
+                if (strPassword.toUpperCase().equals("X")) {
                     gUserType = 0;
                 }
-                ;
 
                 // Verify login credentials
                 switch (gUserType) {
@@ -194,7 +193,7 @@ public class App {
                         displayViewTransactions();
                         break;
                     case 4:
-                        displayFamilyMembers();
+                        FamilyMembersManage();
                         break;
                     case 5:
                         displaySettings();
@@ -269,7 +268,7 @@ public class App {
                 if (gUserType == 2) { // if User Type is Admin
                     System.out.print("Please enter Primary User ID: ");
                     gUserID = Integer.parseInt(System.console().readLine());
-                    gCustomer = DB_Costumer.getCustomer(gUserID);
+                    gCustomer = dbCustomer.getCustomer(gUserID);
                 }
 
                 System.out.print("Please enter amount to load: $");
@@ -294,7 +293,7 @@ public class App {
     }
 
     private static void displayViewTransactions() {
-        DB_Transactions dbTransactions = new DB_Transactions();
+
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
         ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
 
@@ -365,88 +364,112 @@ public class App {
         } while (!blnValid);
     }
 
-    private static void displayFamilyMembers() {
+    private static ArrayList<Customer> displayFamilyMembers() {
+        ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
+        arrayFamilyMembers = dbCustomer.getFamilyMembers(gCustomer.getCustomerID());
+        int index = 1;
+
+        System.out.println("-".repeat(100));
+        System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s %-10s\n", "#", "First Name", "Last Name", "Email",
+                "Phone",
+                "Balance", "Active");
+        System.out.println("-".repeat(100));
+
+        // Loop through the result set and display the family members
+        for (Customer familyMember : arrayFamilyMembers) {
+            System.out.printf("%-4d %-15s %-15s %-20s %-15s $%,.2f %10s\n", index, familyMember.getFirstName(),
+                    familyMember.getLastName(),
+                    familyMember.getEmail(), familyMember.getPhone(), familyMember.getBalance(),
+                    (familyMember.getActive() == 1) ? "Active" : "Inactive");
+            index++;
+        }
+        return arrayFamilyMembers;
+    }
+
+    private static void FamilyMembersManage() {
 
         boolean blnValid = false;
         char cChoice;
-        // TODO: Re think the logic of this method, just add family member with customer
-        // add or remove family member with customer id
+        ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
 
         do {
 
-            // Call Family Member script
-            ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
-            arrayFamilyMembers = DB_Costumer.getFamilyMembers(gCustomer.getCustomerID());
-            int index = 1;
-
-            System.out.println("----------------------------------------------------------------------------------");
-            System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s\n", "#", "First Name", "Last Name", "Email", "Phone", "Balance");
-            System.out.println("----------------------------------------------------------------------------------");
-            // Loop through the result set and display the family members
-            for (Customer familyMember : arrayFamilyMembers) {
-                System.out.printf("%-4d %-15s %-15s %-20s %-15s %-15s\n", index, familyMember.getFirstName(),
-                        familyMember.getLastName(),
-                        familyMember.getEmail(), familyMember.getPhone(), familyMember.getBalance());
-                index++;
-            }
-
             try {
-                System.out
-                        .println("----------------------------------------------------------------------------------");
-                System.out.print("[A] Add\t[U] Update\t[V] View Transactions\t[D] Deactivate\t[B] Back\t[E] Exit\n");
+                arrayFamilyMembers = displayFamilyMembers();// Call display Family Members method
+                System.out.println("-".repeat(100));
+                System.out.printf("%25s %12s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions",
+                        "[B] Back");
 
+                // Prompt the user for the choice
                 System.out.print("> ");
                 cChoice = System.console().readLine().charAt(0);
 
-                switch (cChoice) {
-                    case 'E':
-                        System.exit(0);
-                        break;
-                    case 'A':
-                        // TODO: WORKING HERE!!!
-                        System.out.print("Please enter the id of the new family member:");
-                        int iNewFamilyMemberID = Integer.parseInt(System.console().readLine());
-                        // Call the script to get the customer details
-                        Customer newFamilyMember = DB_Costumer.getCustomer(iNewFamilyMemberID);
-                        System.out.println("The new family member is: " + newFamilyMember.getFirstName() + " " +
-                                newFamilyMember.getLastName() + " " + newFamilyMember.getEmail() + " " +
-                                newFamilyMember.getPhone() + " " + newFamilyMember.getBalance() + "\n");
+                switch (Character.toUpperCase(cChoice)) {
 
-                        System.out.println("Is this the correct family member? Y/N");
-                        if (System.console().readLine().charAt(0) == 'Y'
-                                || System.console().readLine().charAt(0) == 'y') {
-                            // Call the script to update the family member's parent_ID field in the customer
-                            // table
-                            DB_Costumer.updateParentId(iNewFamilyMemberID, gCustomer.getCustomerID());
-                        } else {
-                            System.out.println("Family member not added");
+                    case 'A':
+                        // Add Family Member
+                        System.out.print("Please enter the id of the new family member: ");
+                        int iNewFamilyMemberID = Integer.parseInt(System.console().readLine());
+
+                        // Check if the family member is already in the list with a stream and lambda
+                        // expression to check if the customerID is in the list
+                        if (arrayFamilyMembers.stream().anyMatch(x -> x.getCustomerID() == iNewFamilyMemberID)) {
+                            System.out.println("The family member is already in the list");
+                            break;
+                        }
+
+                        // Call the method to get the customer details
+                        Customer newFamilyMember = dbCustomer.getCustomer(iNewFamilyMemberID);
+
+                        System.out.println("\nThe new family member is:");
+
+                        System.out.printf("%-15s %-15s %-20s %-15s %-15s\n", "First Name", "Last Name",
+                                "Email", "Phone", "Balance");
+                        System.out.printf("%-15s %-15s %-20s %-15s $%,.2f\n",
+                                newFamilyMember.getFirstName(),
+                                newFamilyMember.getLastName(), newFamilyMember.getEmail(),
+                                newFamilyMember.getPhone(), newFamilyMember.getBalance());
+
+                        System.out.print("Is this the correct family member? Y/N: ");
+                        if (Character.toLowerCase(System.console().readLine().charAt(0)) == 'y') {
+                            // Call the script to add the family member
+                            dbCustomer.updateParentId(iNewFamilyMemberID, gCustomer.getCustomerID());
+
                         }
 
                         break;
+                    case 'D':
 
-                    // TODO: ELIMINATE THIS CASE
-                    case 'U':
-                        updateFamilyMember();
+                        System.out.print("Enter number of family member to deactivate or activate: ");
+                        int iFamilyNumber = Integer.parseInt(System.console().readLine());
+
+                        // Check if the family member number is valid
+                        if (iFamilyNumber > arrayFamilyMembers.size() || iFamilyNumber < 1) {
+                            System.out.println("Invalid family member number");
+                            break;
+                        } else {
+                            // Call the method to deactivate the family member
+                            deactivateFamilyMember(arrayFamilyMembers.get(iFamilyNumber - 1));
+                        }
+
                         break;
-
                     case 'V':
                         viewFamilyTransactions();
                         break;
-                    case 'D':
-                        System.out.print("Enter number of family member to deactivate: ");
-                        int iCustomerID = Integer.parseInt(System.console().readLine());
-                        deactivateFamilyMember();
-                        break;
                     case 'B':
+                        // clear the screen
+                        System.out.flush();
                         blnValid = true;
                         break;
                     default:
                         break;
                 }
+
             } catch (Exception e) {
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValid);
+
     }
 
     private static void displaySettings() {
@@ -591,7 +614,7 @@ public class App {
             }
         } while (!blnValid);
         dbCustomer.updateCustomerInfo(gUserID, gCustomer.getPhone(), gCustomer.getFirstName(), gCustomer.getLastName(),
-                gCustomer.getEmail());
+                gCustomer.getEmail(), gCustomer.getActive());
     }
 
     private static void changePassword() {
@@ -608,29 +631,52 @@ public class App {
         }
     }
 
-    private static void deactivateFamilyMember() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deactivateFamilyMember'");
+    private static void deactivateFamilyMember(Customer customer) {
+
+        System.out.printf("\nThe family member you want to %s is:\n",
+                (customer.getActive() == 1) ? "deactivate" : "activate");
+        System.out.printf("\n%-15s %-15s %-20s %-15s $%,.2f\n", customer.getFirstName(),
+                customer.getLastName(), customer.getEmail(), customer.getPhone(), customer.getBalance());
+        System.out.println("\nAre you sure? Y/N: ");
+        char cChoice = System.console().readLine().charAt(0);
+
+        if (Character.toLowerCase(cChoice) == 'y') {
+            // Call the script to deactivate the family member
+            dbCustomer.updateCustomerInfo(customer.getCustomerID(), customer.getPhone(), customer.getFirstName(),
+                    customer.getLastName(), customer.getEmail(), (customer.getActive() == 1) ? 0 : 1);
+        }
+
     }
 
     private static void viewFamilyTransactions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'viewFamilyTransactions'");
+        ArrayList<Transaction> arrayFamilyTrans = new ArrayList<Transaction>();
+
+        boolean blnValid = false;
+
+        do {
+            try {
+                arrayFamilyTrans = dbTransactions.getFamilyTransList(gCustomer.getCustomerID());
+
+                System.out.printf("\n%-10s %-13s %-20s %-10s %-20s %-10s\n", "Trans ID", "Customer ID", "Customer",
+                        "Date", "Merchant", "Amount");
+                System.out.println("-".repeat(100));
+                // Loop through the result set and display the transactions
+                for (Transaction transaction : arrayFamilyTrans) {
+
+                    System.out.printf("%-10d %-13d %-20s %-10s %-20s %,.2f\n", transaction.getTransID(),
+                            transaction.getCustomerID(), transaction.getCustomerName(), transaction.getDateTrans(),
+                            transaction.getMerchantName(), transaction.getAmount());
+
+                }
+
+                System.out.println("-".repeat(100));
+                blnValid = true;
+            } catch (Exception e) {
+                // Display error message
+                System.out.println("Error getting family transactions: " + e);
+            }
+        } while (!blnValid);
     }
-
-    private static void updateFamilyMember() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'viewFamilyMembers'");
-    }
-
-    // TODO: This method is unnecessary id the same functionality of addCustomer
-    // method
-
-    // private static void addFamilyMember() {
-    // // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method " +
-    // "'addFamilyMember'");
-    // }
 
     // ********** MERCHANT USER INTERFACE **********
 
@@ -674,13 +720,13 @@ public class App {
         } while (!blnValid);
     }
 
-
     private static void processTransaction() {
         // Display Product List
         // Choose Product
         // Input Quantity
-        // Save into ArrayList ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
-        // Choose another Product or 
+        // Save into ArrayList ArrayList<Det_Transaction> det_TransactionsList = new
+        // ArrayList<Det_Transaction>();
+        // Choose another Product or
 
         // Finish Transaction
         // Display Total Transaction and ask for Confirmation

@@ -86,7 +86,7 @@ public class DB_Transactions {
     }
 
     // Get Transactions by customer id
-    public static ArrayList<Transaction> getTransByCustomer(int customer_id, String initialDate, String finalDate) {
+    public ArrayList<Transaction> getTransByCustomer(int customer_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transCustomerList = new ArrayList<>();
 
@@ -126,6 +126,45 @@ public class DB_Transactions {
         return transCustomerList;
     }
 
+    public ArrayList<Transaction> getFamilyTransList(int parentId) {
+        ArrayList<Transaction> familyTransList = new ArrayList<>();
+
+        try {
+            String getFamilyTransListMysql = "SELECT t.trans_id, t.customer_id, c.first_name || \" \" || c.last_name as customer_name, t.date, t.amount, t.merchant_id, m.name as merchant_name "
+                    +
+                    "FROM transactions t " +
+                    "INNER JOIN customers c " +
+                    "ON (t.customer_id= c.customer_id) " +
+                    "INNER JOIN merchant m " +
+                    "ON (t.merchant_id = m.merchant_id) " +
+                    "WHERE t.customer_id IN " +
+                    "(SELECT customer_id FROM customers WHERE customer_id = ? or parent_id = ?) " +
+                    "ORDER BY t.date;";
+            PreparedStatement getFamilyTransList = connection.prepareStatement(getFamilyTransListMysql);
+            getFamilyTransList.setInt(1, parentId);
+            getFamilyTransList.setInt(2, parentId);
+            ResultSet getFamilyTransListResult = getFamilyTransList.executeQuery();
+            while (getFamilyTransListResult.next()) {
+                int transID = getFamilyTransListResult.getInt("trans_id");
+                int customerID = getFamilyTransListResult.getInt("customer_id");
+                String customerName = getFamilyTransListResult.getString("customer_name");
+                String dateTrans = getFamilyTransListResult.getString("date");
+                double amount = getFamilyTransListResult.getDouble("amount");
+                int merchantID = getFamilyTransListResult.getInt("merchant_id");
+                String merchantName = getFamilyTransListResult.getString("merchant_name");
+
+                familyTransList.add(new Transaction(transID, customerID, customerName, dateTrans, amount, merchantID,
+                        merchantName));
+            }
+        } catch (Exception e) {
+
+            System.err.println("An error getting family transaction list has occured: " +
+                    e.getMessage());
+        }
+        return familyTransList;
+
+    }
+
     // //Get Transactions by Merchant
     public static ArrayList<Transaction> getTransByMerchant(int merchant_id, String initialDate, String finalDate) {
 
@@ -156,7 +195,7 @@ public class DB_Transactions {
         return transMerchantList;
     }
 
-    public static ArrayList<Det_Transaction> getDetTransaction(int transID) {
+    public ArrayList<Det_Transaction> getDetTransaction(int transID) {
         ArrayList<Det_Transaction> transDetailList = new ArrayList<>();
 
         try {

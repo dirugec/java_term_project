@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import Models.Customer;
-import Models.Transaction;
 
 public class DB_Costumer {
 
@@ -67,7 +66,7 @@ public class DB_Costumer {
     }
 
     // READ Customer Info
-    public static Customer getCustomer(int customer_id) {
+    public Customer getCustomer(int customer_id) {
         Customer customer = null;
         try {
             String getCustomerMySql = "SELECT customer_id, first_name, last_name,email, phone, balance, parent_id,password, active FROM customers WHERE customer_id = ?";
@@ -134,22 +133,22 @@ public class DB_Costumer {
 
     // Updtae Customer Info
 
-    public static boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name,
-            String email) {
+    public boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name,
+            String email, int active) {
         boolean success = false;
 
         try {
-            String updateCustomerMysql = "UPDATE customers SET first_name = ?, last_name= ? , email = ?, phone = ? WHERE customer_id = ?";
+            String updateCustomerMysql = "UPDATE customers SET first_name = ?, last_name= ? , email = ?, phone = ?, active = ? WHERE customer_id = ?";
             PreparedStatement updateCustomer = connection.prepareStatement(updateCustomerMysql);
             updateCustomer.setString(1, first_name);
             updateCustomer.setString(2, last_name);
             updateCustomer.setString(3, email);
             updateCustomer.setInt(4, phone);
-            updateCustomer.setInt(5, customer_id);
+            updateCustomer.setInt(5, active);
+            updateCustomer.setInt(6, customer_id);
             updateCustomer.executeUpdate();
             success = true;
 
-            connection.close();
         } catch (SQLException e) {
 
             System.err.println("An error updating customer has occured: " +
@@ -226,7 +225,7 @@ public class DB_Costumer {
     }
 
     // // Get customer Password by ID customer
-    public static String getCustomerPassword(int customer_id) {
+    public String getCustomerPassword(int customer_id) {
         String pwrd = "";
 
         try {
@@ -271,7 +270,7 @@ public class DB_Costumer {
     }
 
     // // Get Family Members
-    public static ArrayList<Customer> getFamilyMembers(int customer_id) {
+    public ArrayList<Customer> getFamilyMembers(int customer_id) {
 
         ArrayList<Customer> familyMembers = new ArrayList<>();
 
@@ -306,20 +305,22 @@ public class DB_Costumer {
     }
 
     // // Add family member
-    public static boolean updateParentId(int customer_id, int parent_id) {
+    public boolean updateParentId(int customer_id, int parent_id) {
         boolean success = false;
 
-        // TODO: Add a check to make sure the parent_id is not the same as the
-        // customer_id And the parent id is null
-
         try {
+
+            if (parent_id == customer_id) {
+                System.err.println("\nFamily member can't be his/her own parent\n");
+                return false;
+            }
+
             String updateParentIdMysql = "UPDATE customers SET parent_id = ? WHERE customer_id = ?";
             PreparedStatement updateParentId = connection.prepareStatement(updateParentIdMysql);
             updateParentId.setInt(1, parent_id);
             updateParentId.setInt(2, customer_id);
             updateParentId.executeUpdate();
             success = true;
-            connection.close();
 
         } catch (SQLException e) {
             System.err.println("An error updating parent_id has occured: " +
