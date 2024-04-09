@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.mysql.cj.xdevapi.PreparableStatement;
+
 import Models.Customer;
 
 public class DB_Costumer {
@@ -66,16 +68,27 @@ public class DB_Costumer {
 
     }
 
-    public boolean checkIfCustomerExist(int customerID){
+    public boolean checkIfCustomerExist(int customerID) {
 
         boolean customerExist = false;
+        int count = 0;
 
         try {
-            String checkCustomerExistMysql = ""
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+            String checkCustomerExistMysql = "SELECT COUNT(*) FROM customers WHERE customer_id = ?;";
+            PreparedStatement getCheckCustomerExist = connection.prepareStatement(checkCustomerExistMysql);
+            getCheckCustomerExist.setInt(1, customerID);
+            ResultSet getCheckCustomerExistResult = getCheckCustomerExist.executeQuery();
+            if (getCheckCustomerExistResult.next()) {
+                count = getCheckCustomerExistResult.getInt(1);
+                if (count > 0) {
+                    customerExist = true;
+                }
+            }
 
+        } catch (Exception e) {
+            System.err.println("An error checking if customer exist: " + e.getMessage());
+        }
+        return customerExist;
     }
 
     // READ Customer Info
@@ -100,8 +113,6 @@ public class DB_Costumer {
 
                 customer = new Customer(customerId, fisrtName, lastName, email, phone,
                         balance, parentId, password, active, userType);
-
-                // connection.close();
 
             } else {
                 System.err.println("No customer found for customer_id: " + customer_id);

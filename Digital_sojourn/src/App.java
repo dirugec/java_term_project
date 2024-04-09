@@ -71,7 +71,7 @@ public class App {
                 if (gUserType == 0) { // Exit App
                     blnValidInput = true;
                 } else if ((gUserType > 0) && (gUserType < 4)) {
-                    //blnValidInput = true;
+                    // blnValidInput = true;
                     blnVerifiedPassword = verifyPassword();
                     if (blnVerifiedPassword) {
                         switch (gUserType) {
@@ -430,7 +430,8 @@ public class App {
             try {
                 arrayFamilyMembers = displayFamilyMembers();// Call display Family Members method
                 System.out.println("-".repeat(100));
-                System.out.printf("%25s %12s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions", "[B] Back");
+                System.out.printf("%25s %12s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions",
+                        "[B] Back");
 
                 // Prompt the user for the choice
                 System.out.print("> ");
@@ -739,7 +740,7 @@ public class App {
                         System.exit(0);
                         break;
                     case 1:
-                        //blnValid = true;
+                        // blnValid = true;
                         processTransaction();
                         break;
                     case 2:
@@ -774,7 +775,8 @@ public class App {
             System.out.print("Product List");
             System.out.println("-".repeat(25));
             for (Product product : arrProductList) {
-                System.out.printf("Product ID: %-4s Product: %-25s Price: %6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+                System.out.printf("Product ID: %-4s Product: %-25s Price: %6.2f\n", product.getProductID(),
+                        product.getName(), product.getPrice());
             }
             try {
                 // Choose Product
@@ -788,7 +790,7 @@ public class App {
                         blnInList = true;
                     }
                     iIterator++;
-                } while((!blnInList) || (iIterator < arrProductList.size()));
+                } while ((!blnInList) || (iIterator < arrProductList.size()));
                 // Input Quantity
                 if (blnInList) {
                     System.out.print("Enter Quantity: ");
@@ -799,10 +801,10 @@ public class App {
                         // Ask if choose another or finish transaction
                         System.out.print("Choose another product Y/N?  ");
                         cChoice = System.console().readLine().charAt(0);
-                        if ((cChoice == 'Y') || (cChoice =='y')) {
+                        if ((cChoice == 'Y') || (cChoice == 'y')) {
                             // Loop again to present product list
                             blnYesNoValid = true;
-                        } else if ((cChoice == 'N') || (cChoice =='n')) {
+                        } else if ((cChoice == 'N') || (cChoice == 'n')) {
                             blnValid = true;
                             blnYesNoValid = true;
                         } else {
@@ -816,48 +818,51 @@ public class App {
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValid);
-        
+
         // Display Total Transaction and ask for Confirmation
         System.out.print("-".repeat(25));
         System.out.print("Shopping Cart");
         System.out.println("-".repeat(25));
         double dTotalAmount = 0.0d;
         for (Product product : arrTotalCart) {
-            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
+                    product.getName(), product.getPrice());
             dTotalAmount += dTotalAmount + (iQuantity * product.getPrice());
         }
         System.out.println("-".repeat(50));
         System.out.printf("TOTAL: $%6.2f\n", dTotalAmount);
-        
+
         do {
             System.out.print("Confirm purchase Y/N?  ");
             cChoice = System.console().readLine().charAt(0);
-            if ((cChoice == 'Y') || (cChoice =='y')) {
+            if ((cChoice == 'Y') || (cChoice == 'y')) {
                 // Get Guest ID
                 System.out.print("Please enter GuestID: ");
                 iChoice = Integer.parseInt(System.console().readLine());
                 // Validate if GuestID exists in DB
                 Customer tempCustomer = dbCustomer.getCustomer(iChoice);
-                //System.out.println(tempCustomer.toString());
+                // System.out.println(tempCustomer.toString());
                 if (tempCustomer != null) { // If Customer exists
                     // Commit purchase to Transaction and Detailed Transaction table
                     LocalDate txnDate = LocalDate.now();
                     DateTimeFormatter txnDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
                     String strTransactionDate = txnDate.format(txnDateFormat);
-                    int iTransactionID = DB_Transactions.insertTransaction(iQuantity, strTransactionDate, dTotalAmount, gMerchantUser.getMerchantID());
+                    int iTransactionID = DB_Transactions.insertTransaction(iQuantity, strTransactionDate, dTotalAmount,
+                            gMerchantUser.getMerchantID());
                     // Go through the Shopping Cart to add each product to the detailed transaction
                     for (Product product : arrTotalCart) {
-                        System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+                        System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
+                                product.getName(), product.getPrice());
                         dTotalAmount += dTotalAmount + (iQuantity * product.getPrice());
                     }
                     DB_Transactions.insertDetailTransaction(iTransactionID, iChoice, cChoice, iQuantity);
                     System.out.print("Transaction debited");
-                } else { 
+                } else {
                     System.out.print("Customer does not exist");
                 }
                 blnYesNoValid = true;
                 // Deduct total purchase from Guest debit
-            } else if ((cChoice == 'N') || (cChoice =='n')) {
+            } else if ((cChoice == 'N') || (cChoice == 'n')) {
                 blnValid = true;
                 blnYesNoValid = true;
             } else {
