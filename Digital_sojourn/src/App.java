@@ -762,6 +762,7 @@ public class App {
     }
 
     private static void processTransaction() {
+        // TEST COMMENT 1
         ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
         ArrayList<Product> arrTotalCart = new ArrayList<Product>();
         boolean blnValid = false;
