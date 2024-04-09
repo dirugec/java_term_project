@@ -42,6 +42,8 @@ public class App {
 
         // comment out for testing
 
+        // comment 2
+
         displayLoginMenu();
     }
 
