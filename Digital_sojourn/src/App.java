@@ -219,6 +219,8 @@ public class App {
         int iChoice = -1;
         do {
             try {
+                // TODO: Change menu group by customer, merchant, admin
+                // TODO: working here
                 System.out.println("");
                 System.out.println("------------------------------");
                 System.out.println("[1] Create New Guest");
@@ -394,21 +396,20 @@ public class App {
     private static ArrayList<Customer> displayFamilyMembers() {
         ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
         arrayFamilyMembers = dbCustomer.getFamilyMembers(gCustomer.getCustomerID());
-        int index = 1;
 
         System.out.println("-".repeat(100));
-        System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s %-10s\n", "#", "First Name", "Last Name", "Email",
+        System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s %-10s\n", "ID", "First Name", "Last Name", "Email",
                 "Phone",
                 "Balance", "Active");
         System.out.println("-".repeat(100));
 
         // Loop through the result set and display the family members
         for (Customer familyMember : arrayFamilyMembers) {
-            System.out.printf("%-4d %-15s %-15s %-20s %-15s $%,.2f %10s\n", index, familyMember.getFirstName(),
+            System.out.printf("%-4d %-15s %-15s %-20s %-15s $%,.2f %10s\n", familyMember.getCustomerID(),
+                    familyMember.getFirstName(),
                     familyMember.getLastName(),
                     familyMember.getEmail(), familyMember.getPhone(), familyMember.getBalance(),
                     (familyMember.getActive() == 1) ? "Active" : "Inactive");
-            index++;
         }
         return arrayFamilyMembers;
     }
@@ -467,16 +468,20 @@ public class App {
                         break;
                     case 'D':
 
-                        System.out.print("Enter number of family member to deactivate or activate: ");
+                        System.out.print("Enter ID of family member to deactivate or activate: ");
                         int iFamilyNumber = Integer.parseInt(System.console().readLine());
 
-                        // Check if the family member number is valid
-                        if (iFamilyNumber > arrayFamilyMembers.size() || iFamilyNumber < 1) {
-                            System.out.println("Invalid family member number");
+                        // Check if the family member is not in the list
+                        if (!arrayFamilyMembers.stream().anyMatch(x -> x.getCustomerID() == iFamilyNumber)) {
+                            System.out.println("The family member ID is not in the list");
                             break;
                         } else {
+                            // Gettting the customer object from the array
+                            Customer modifyCustomer = arrayFamilyMembers.stream()
+                                    .filter(x -> x.getCustomerID() == iFamilyNumber).findFirst().get();
                             // Call the method to deactivate the family member
-                            deactivateFamilyMember(arrayFamilyMembers.get(iFamilyNumber - 1));
+                            deactivateFamilyMember(modifyCustomer);
+
                         }
 
                         break;
@@ -608,6 +613,7 @@ public class App {
 
     private static void deactivateFamilyMember(Customer customer) {
 
+        System.out.println("-".repeat(100));
         System.out.printf("\nThe family member you want to %s is:\n",
                 (customer.getActive() == 1) ? "deactivate" : "activate");
         System.out.printf("\n%-15s %-15s %-20s %-15s $%,.2f\n", customer.getFirstName(),
@@ -619,6 +625,7 @@ public class App {
             // Call the script to deactivate the family member
             dbCustomer.updateCustomerInfo(customer.getCustomerID(), customer.getPhone(), customer.getFirstName(),
                     customer.getLastName(), customer.getEmail(), (customer.getActive() == 1) ? 0 : 1);
+
         }
 
     }
@@ -632,14 +639,15 @@ public class App {
             try {
                 arrayFamilyTrans = dbTransactions.getFamilyTransList(gCustomer.getCustomerID());
 
-                System.out.printf("\n%-10s %-13s %-20s %-10s %-20s %-10s\n", "Trans ID", "Customer ID", "Customer",
-                        "Date", "Merchant", "Amount");
+                System.out.printf("\n%-10s %-13s %-20s %-20s %-10s %-20s %-10s\n", "Trans ID", "ID",
+                        "First Name", "Last Name", "Date", "Merchant", "Amount");
                 System.out.println("-".repeat(100));
                 // Loop through the result set and display the transactions
                 for (Transaction transaction : arrayFamilyTrans) {
 
-                    System.out.printf("%-10d %-13d %-20s %-10s %-20s %,.2f\n", transaction.getTransID(),
-                            transaction.getCustomerID(), transaction.getCustomerName(), transaction.getDateTrans(),
+                    System.out.printf("%-10d %-13d %-20s %-20s %-10s %-20s %,.2f\n", transaction.getTransID(),
+                            transaction.getCustomerID(), transaction.getCustomerFirstName(),
+                            transaction.getCustomerLastName(), transaction.getDateTrans(),
                             transaction.getMerchantName(), transaction.getAmount());
 
                 }

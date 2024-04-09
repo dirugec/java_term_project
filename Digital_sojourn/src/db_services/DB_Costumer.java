@@ -66,6 +66,18 @@ public class DB_Costumer {
 
     }
 
+    public boolean checkIfCustomerExist(int customerID){
+
+        boolean customerExist = false;
+
+        try {
+            String checkCustomerExistMysql = ""
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+    }
+
     // READ Customer Info
     public Customer getCustomer(int customer_id) {
         Customer customer = null;
@@ -141,7 +153,7 @@ public class DB_Costumer {
         boolean success = false;
 
         try {
-            String updateCustomerMysql = "UPDATE customers SET first_name = ?, last_name= ? , email = ?, phone = ?, active = ? WHERE customer_id = ?";
+            String updateCustomerMysql = "UPDATE customers SET first_name = ?, last_name= ? , email = ?, phone = ?, active = ? WHERE customer_id = ?;";
             PreparedStatement updateCustomer = connection.prepareStatement(updateCustomerMysql);
             updateCustomer.setString(1, first_name);
             updateCustomer.setString(2, last_name);
@@ -279,7 +291,7 @@ public class DB_Costumer {
 
         try {
             String getFamilyMembersMysql = "SELECT customer_id, first_name,last_name,email, phone," +
-                    "balance, parent_id,password, active, user_type FROM customers WHERE parent_id = ?";
+                    "balance, parent_id,password,user_type, active  FROM customers WHERE parent_id = ?";
             PreparedStatement getFamilyMembers = connection.prepareStatement(getFamilyMembersMysql);
             getFamilyMembers.setInt(1, customer_id);
             ResultSet getFamilyMembersResult = getFamilyMembers.executeQuery();
@@ -292,11 +304,11 @@ public class DB_Costumer {
                 double balance = getFamilyMembersResult.getDouble("balance");
                 int parentId = getFamilyMembersResult.getInt("parent_id");
                 String password = getFamilyMembersResult.getString("password");
-                int active = getFamilyMembersResult.getInt("active");
                 int userType = getFamilyMembersResult.getInt("user_type");
+                int active = getFamilyMembersResult.getInt("active");
 
                 familyMembers.add(new Customer(customerId, fisrtName, lastName, email, phone,
-                        balance, parentId, password, active, userType));
+                        balance, parentId, password, userType, active));
 
             }
         } catch (SQLException e) {

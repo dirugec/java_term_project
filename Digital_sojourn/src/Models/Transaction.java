@@ -4,20 +4,23 @@ public class Transaction {
 
     private int transID;
     private int customerID;
-    private String customerName;
+    private String customerFirstName;
+    private String customerLastName;
     private String dateTrans;
     private double amount;
     private int merchantID;
     private String merchantName;
 
-    public Transaction(int transID, int customerID, String customerName, String dateTrans, double amount,
+    public Transaction(int transID, int customerID, String customerFirstName, String customerLastName, String dateTrans,
+            double amount,
             int merchantID, String merchantName) {
         this.transID = transID;
         this.customerID = customerID;
         this.dateTrans = dateTrans;
         this.amount = amount;
         this.merchantID = merchantID;
-        this.customerName = customerName;
+        this.customerFirstName = customerFirstName;
+        this.customerLastName = customerLastName;
         this.merchantName = merchantName;
     }
 
@@ -41,8 +44,12 @@ public class Transaction {
         return customerID;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getCustomerFirstName() {
+        return customerFirstName;
+    }
+
+    public String getCustomerLastName() {
+        return customerLastName;
     }
 
     public void setCustomerID(int customerID) {
@@ -82,7 +89,8 @@ public class Transaction {
     public String toString() {
         return "Trans ID: " + transID +
                 " Customer ID: " + customerID +
-                " Customer Name: " + customerName +
+                " First Name: " + customerFirstName +
+                " Last Name: " + customerLastName +
                 " Date Trans: " + dateTrans +
                 " Amount: " + amount +
                 " Merchant ID: " + merchantID +
