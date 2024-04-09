@@ -6,8 +6,8 @@ public class Product {
     private double price;
     private int merchantID;
 
-    public Product(int priductID, String name, double price, int merchantID) {
-        this.productID = priductID;
+    public Product(int productID, String name, double price, int merchantID) {
+        this.productID = productID;
         this.name = name;
         this.price = price;
         this.merchantID = merchantID;
@@ -15,6 +15,10 @@ public class Product {
 
     public int getProductID() {
         return productID;
+    }
+
+    public void setProductID(int productID) {
+        this.productID = productID;
     }
 
     public String getName() {
