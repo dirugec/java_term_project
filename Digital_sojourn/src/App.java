@@ -1,5 +1,8 @@
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 import Models.Admin_User;
 import Models.Customer;
@@ -7,6 +10,7 @@ import Models.Det_Transaction;
 import Models.Merchant;
 import Models.Merchant_User;
 import Models.Transaction;
+import Models.Product;
 import db_services.DB_Admin_Users;
 import db_services.DB_Costumer;
 import db_services.DB_Merchant_Users;
@@ -25,6 +29,7 @@ public class App {
 
     private static DB_Admin_Users dbAdminUser;
     private static DB_Costumer dbCustomer;
+    private static DB_Product dbProduct;
     private static DB_Merchant_Users dbMerchantUser;
     private static DB_Transactions dbTransactions;
 
@@ -63,11 +68,26 @@ public class App {
                 System.out.print("Please enter your choice: ");
 
                 gUserType = Integer.parseInt(System.console().readLine());
-                if (gUserType == 0) {
+                if (gUserType == 0) { // Exit App
                     blnValidInput = true;
                 } else if ((gUserType > 0) && (gUserType < 4)) {
-                    blnValidInput = true;
+                    //blnValidInput = true;
                     blnVerifiedPassword = verifyPassword();
+                    if (blnVerifiedPassword) {
+                        switch (gUserType) {
+                            case 1: // Guest
+                                displayMainMenuGuest();
+                                break;
+                            case 2: // Admin
+                                displayMainMenuAdminUser();
+                                break;
+                            case 3: // Merchant
+                                displayMainMenuMerchantUser();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 } else {
                     System.out.println("Invalid input. Select from choices.\n");
                 }
@@ -75,22 +95,6 @@ public class App {
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValidInput);
-
-        if (blnVerifiedPassword) {
-            switch (gUserType) {
-                case 1: // Guest
-                    displayMainMenuGuest();
-                    break;
-                case 2: // Admin
-                    displayMainMenuAdminUser();
-                    break;
-                case 3: // Merchant
-                    displayMainMenuMerchantUser();
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     public static boolean verifyPassword() {
@@ -145,6 +149,7 @@ public class App {
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
+                            gMerchantUser = DB_Merchant_Users.getMerchantUser(gUserID);
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
                         }
@@ -424,8 +429,7 @@ public class App {
             try {
                 arrayFamilyMembers = displayFamilyMembers();// Call display Family Members method
                 System.out.println("-".repeat(100));
-                System.out.printf("%25s %12s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions",
-                        "[B] Back");
+                System.out.printf("%25s %12s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions", "[B] Back");
 
                 // Prompt the user for the choice
                 System.out.print("> ");
@@ -727,6 +731,7 @@ public class App {
                         System.exit(0);
                         break;
                     case 1:
+                        //blnValid = true;
                         processTransaction();
                         break;
                     case 2:
@@ -742,21 +747,115 @@ public class App {
                         break;
                 }
             } catch (Exception e) {
-                System.out.println("Invalid input. Numbers only please.");
+                System.out.println("MerchantError: Invalid input. Numbers only please.");
             }
         } while (!blnValid);
     }
 
     private static void processTransaction() {
-        // Display Product List
-        // Choose Product
-        // Input Quantity
-        // Save into ArrayList ArrayList<Det_Transaction> det_TransactionsList = new
-        // ArrayList<Det_Transaction>();
-        // Choose another Product or
-
-        // Finish Transaction
+        ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
+        ArrayList<Product> arrTotalCart = new ArrayList<Product>();
+        boolean blnValid = false;
+        boolean blnYesNoValid = false;
+        int iChoice = -1;
+        int iQuantity = 0;
+        char cChoice;
+        do {
+            // Display Product List
+            System.out.print("-".repeat(25));
+            System.out.print("Product List");
+            System.out.println("-".repeat(25));
+            for (Product product : arrProductList) {
+                System.out.printf("Product ID: %-4s Product: %-25s Price: %6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+            }
+            try {
+                // Choose Product
+                System.out.print("Choose Product: ");
+                iChoice = Integer.parseInt(System.console().readLine());
+                // Check if iChoice is in Product List
+                int iIterator = 0;
+                boolean blnInList = false;
+                do {
+                    if (iChoice == arrProductList.get(iIterator).getProductID()) {
+                        blnInList = true;
+                    }
+                    iIterator++;
+                } while((!blnInList) || (iIterator < arrProductList.size()));
+                // Input Quantity
+                if (blnInList) {
+                    System.out.print("Enter Quantity: ");
+                    iQuantity = Integer.parseInt(System.console().readLine());
+                    // Save into shoppingCart variable
+                    arrTotalCart.add(DB_Product.getProduct(iChoice));
+                    do {
+                        // Ask if choose another or finish transaction
+                        System.out.print("Choose another product Y/N?  ");
+                        cChoice = System.console().readLine().charAt(0);
+                        if ((cChoice == 'Y') || (cChoice =='y')) {
+                            // Loop again to present product list
+                            blnYesNoValid = true;
+                        } else if ((cChoice == 'N') || (cChoice =='n')) {
+                            blnValid = true;
+                            blnYesNoValid = true;
+                        } else {
+                            System.out.println("Error: Please enter Y/N");
+                        }
+                    } while (!blnYesNoValid);
+                } else {
+                    System.out.println("Please select ProductID from Product List");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+        
         // Display Total Transaction and ask for Confirmation
+        System.out.print("-".repeat(25));
+        System.out.print("Shopping Cart");
+        System.out.println("-".repeat(25));
+        double dTotalAmount = 0.0d;
+        for (Product product : arrTotalCart) {
+            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+            dTotalAmount += dTotalAmount + (iQuantity * product.getPrice());
+        }
+        System.out.println("-".repeat(50));
+        System.out.printf("TOTAL: $%6.2f\n", dTotalAmount);
+        
+        do {
+            System.out.print("Confirm purchase Y/N?  ");
+            cChoice = System.console().readLine().charAt(0);
+            if ((cChoice == 'Y') || (cChoice =='y')) {
+                // Get Guest ID
+                System.out.print("Please enter GuestID: ");
+                iChoice = Integer.parseInt(System.console().readLine());
+                // Validate if GuestID exists in DB
+                Customer tempCustomer = dbCustomer.getCustomer(iChoice);
+                //System.out.println(tempCustomer.toString());
+                if (tempCustomer != null) { // If Customer exists
+                    // Commit purchase to Transaction and Detailed Transaction table
+                    LocalDate txnDate = LocalDate.now();
+                    DateTimeFormatter txnDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+                    String strTransactionDate = txnDate.format(txnDateFormat);
+                    int iTransactionID = DB_Transactions.insertTransaction(iQuantity, strTransactionDate, dTotalAmount, gMerchantUser.getMerchantID());
+                    // Go through the Shopping Cart to add each product to the detailed transaction
+                    for (Product product : arrTotalCart) {
+                        System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+                        dTotalAmount += dTotalAmount + (iQuantity * product.getPrice());
+                    }
+                    DB_Transactions.insertDetailTransaction(iTransactionID, iChoice, cChoice, iQuantity);
+                    System.out.print("Transaction debited");
+                } else { 
+                    System.out.print("Customer does not exist");
+                }
+                blnYesNoValid = true;
+                // Deduct total purchase from Guest debit
+            } else if ((cChoice == 'N') || (cChoice =='n')) {
+                blnValid = true;
+                blnYesNoValid = true;
+            } else {
+                System.out.println("Error: Please enter Y/N");
+            }
+        } while (!blnYesNoValid);
         // Insert into Transaction table
         // Insert into Detail Transaction table
     }

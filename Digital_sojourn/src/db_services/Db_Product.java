@@ -38,6 +38,7 @@ public class DB_Product {
         ArrayList<Product> productsByMerchant = new ArrayList<>();
 
         try {
+            System.out.println("Product 0");
             String getProductsByMerchantMySql = "SELECT product_id, name, price, merchant_id FROM products WHERE merchant_id = ?";
             PreparedStatement getProductByMerchant = connection.prepareStatement(getProductsByMerchantMySql);
             getProductByMerchant.setInt(1, merchant_id);
@@ -50,7 +51,7 @@ public class DB_Product {
 
                 productsByMerchant.add(new Product(productID, name, price, merchantID));
             }
-        } catch (SQLException e) {
+        } catch (SQLException e) { // TODO: Was not called when there is no return query
             System.err.println("No Products found for Merchant id: " + merchant_id);
         }
         return productsByMerchant;

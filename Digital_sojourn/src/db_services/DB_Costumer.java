@@ -95,8 +95,7 @@ public class DB_Costumer {
                 System.err.println("No customer found for customer_id: " + customer_id);
             }
         } catch (SQLException e) {
-            System.err.println("An error reading customer has occured: " +
-                    e.getMessage());
+            System.err.println("An error reading customer has occured: " + e.getMessage());
         }
         return customer;
     }
