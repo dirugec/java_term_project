@@ -40,6 +40,8 @@ public class App {
         dbMerchantUser = new DB_Merchant_Users();
         dbTransactions = new DB_Transactions();
 
+        // comment out for testing
+
         displayLoginMenu();
     }
 
