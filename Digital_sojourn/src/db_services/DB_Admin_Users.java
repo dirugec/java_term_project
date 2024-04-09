@@ -33,7 +33,7 @@ public class DB_Admin_Users {
         return pwrd;
     }
 
-    public static Admin_User getAdminUser(int admin_id) {
+    public Admin_User getAdminUser(int admin_id) {
 
         Admin_User adminUser = null;
 

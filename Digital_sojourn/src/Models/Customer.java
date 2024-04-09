@@ -9,11 +9,12 @@ public class Customer {
     private double balance;
     private int parentId;
     private String password;
+    private int userType;
     private int active;
 
     // Constructor
     public Customer(int customerID, String firstName, String lastName, String email, int phone, double balance,
-            int parent_id, String password, int active) {
+            int parent_id, String password, int userType, int active) {
         this.customerID = customerID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -22,7 +23,20 @@ public class Customer {
         this.balance = balance;
         this.parentId = parent_id;
         this.password = password;
+        this.userType = userType;
         this.active = active;
+
+    }
+
+    public Customer(String firstName, String lastName, String email, int phone, String password, int userType) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.userType = userType;
+        this.balance = 0;
+        this.active = 1;
 
     }
 
@@ -95,6 +109,14 @@ public class Customer {
         this.active = active;
     }
 
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
+
     // Override toString method
     @Override
     public String toString() {
@@ -107,7 +129,8 @@ public class Customer {
                 " Balance Account: " + balance +
                 " Parent ID: " + parentId +
                 " Password: " + password +
-                " Active: " + active;
+                " Active: " + active +
+                " User Type: " + (userType == 1 ? "Guest" : "Family Member");
 
     }
 }

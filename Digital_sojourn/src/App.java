@@ -82,7 +82,7 @@ public class App {
                     displayMainMenuGuest();
                     break;
                 case 2: // Admin
-
+                    displayMainMenuAdminUser();
                     break;
                 case 3: // Merchant
                     displayMainMenuMerchantUser();
@@ -127,7 +127,6 @@ public class App {
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
                         }
-                        ;
                         break;
                     case 2: // Login Admin
                         // Call the GetPassword script
@@ -135,6 +134,7 @@ public class App {
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
+                            gAdmin = dbAdminUser.getAdminUser(gUserID);
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
                         }
@@ -210,6 +210,10 @@ public class App {
         } while (!blnValid);
     }
 
+    public static void displayViewPrimaryGuestDetails() {
+
+    }
+
     public static void displayMainMenuAdminUser() {
         boolean blnValid = false;
         int iChoice = -1;
@@ -217,9 +221,11 @@ public class App {
             try {
                 System.out.println("");
                 System.out.println("------------------------------");
-                System.out.println("[1] Search Primary Guest");
-                System.out.println("[2] Settings");
-                System.out.println("[3] Back");
+                System.out.println("[1] Create New Guest");
+                System.out.println("[2] Load Funds to Guest");
+                System.out.println("[3] View Guest Transactions");
+                System.out.println("[4] Admin Settings");
+                System.out.println("[5] Back");
                 System.out.println("[0] Exit");
                 System.out.print("> ");
 
@@ -229,12 +235,20 @@ public class App {
                         System.exit(0);
                         break;
                     case 1:
-                        displayLoadFunds();
+                        displayCreateGuestUser();
                         break;
                     case 2:
-                        displayViewTransactions();
+                        displayLoadFunds();
                         break;
                     case 3:
+                        displayViewTransactions();
+                        break;
+                    case 4:
+                        // TODO: Change display settings and make it more generic or make an specific
+                        // method for admin?
+                        // displayAdminSettings();
+                        break;
+                    case 5:
                         blnValid = true;
                         break;
                     default:
@@ -279,7 +293,7 @@ public class App {
                 double newBalance = gCustomer.getBalance() + iAmount;
                 String updateBalanceResult = DB_Costumer.updateBalance(gUserID, newBalance);
                 if (updateBalanceResult == "success") {
-                    System.out.printf("$%,.2f has been added to %d %s\n", iAmount, gUserID,
+                    System.out.printf("$%,.2f has been added to %s\n", iAmount,
                             gCustomer.getFirstName() + " " + gCustomer.getLastName());
                     System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.getCustomerBalance(gUserID));
                     blnValid = true;
@@ -303,6 +317,12 @@ public class App {
             try {
                 System.out.println("");
                 System.out.println("-".repeat(50));
+
+                if (gUserType == 2) { // if User Type is Admin
+                    System.out.print("Please enter Primary User ID: ");
+                    gUserID = Integer.parseInt(System.console().readLine());
+                    gCustomer = dbCustomer.getCustomer(gUserID);
+                }
 
                 System.out.print("Please enter start date MM/DD/YYYY: ");
                 String iStartDate = System.console().readLine();
@@ -341,10 +361,16 @@ public class App {
                 // Call script to get transactions given date
                 arrayTransactions = dbTransactions.getTransByCustomer(gUserID, mysqlStartDate, mysqlEndDate);
 
+                System.out.println();
+                System.out.println("-".repeat(70));
+                System.out.println("Transactions for " + gCustomer.getFirstName() + " " + gCustomer.getLastName()
+                        + " from " + iStartDate + " to " + iEndDate);
+                System.out.println("-".repeat(70));
+
                 // Loop through the result set and display the transactions
                 for (Transaction transaction : arrayTransactions) {
                     System.out.printf("\n%-10s %-25s %-6s\n", "Date", "Merchant", "Amount");
-                    System.out.println("-".repeat(50));
+                    System.out.println("-".repeat(70));
                     System.out.printf("%-10s %-25s %-6.2f \n", transaction.getDateTrans(),
                             transaction.getMerchantName(), transaction.getAmount());
                     System.out.printf("\n%50s\n", "*********  Det Transaction *********");
@@ -628,9 +654,6 @@ public class App {
     }
 
     private static void displaySettings() {
-        // Call Customer Details script
-
-        // Display the details
 
         boolean blnValid = false;
         int iChoice = -1;
@@ -737,4 +760,42 @@ public class App {
         // Insert into Transaction table
         // Insert into Detail Transaction table
     }
+
+    // ******** ADMINISTRATOR USER INTERFACE **********
+
+    private static void displayCreateGuestUser() {
+
+        boolean blnValid = false;
+        System.out.println("------------------------------");
+        System.out.println("Enter the following details to create a new user");
+        System.out.print("First Name: ");
+        String strFirstName = System.console().readLine();
+        System.out.print("Last Name: ");
+        String strLastName = System.console().readLine();
+        System.out.print("Email: ");
+        String strEmail = System.console().readLine();
+        System.out.print("Phone: ");
+        int iPhone = Integer.parseInt(System.console().readLine());
+        System.out.print("Password: ");
+        String strPassword = System.console().readLine();
+
+        // Display the details entered
+        System.out.println("-".repeat(80));
+        System.out.printf("%-15s %-15s %-20s %-15s\n", "First Name", "Last Name", "Email", "Phone");
+        System.out.printf("%-15s %-15s %-20s %-15s\n", strFirstName, strLastName, strEmail, iPhone);
+        System.out.println("-".repeat(80));
+        System.out.print("Is this information correct? Y/N: ");
+        char cChoice = System.console().readLine().charAt(0);
+
+        if (Character.toLowerCase(cChoice) == 'y') {
+            // Call the script to create the new user
+            Customer newCustomer = new Customer(strFirstName, strLastName, strEmail, iPhone, strPassword, 1);
+
+            dbCustomer.addCustomer(newCustomer);
+            blnValid = true;
+        }
+        blnValid = true;
+
+    }
+
 }
