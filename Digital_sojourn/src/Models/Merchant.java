@@ -1,5 +1,10 @@
 package Models;
 
+/**
+ * This class is used to create a Merchant object with the following attributes:
+ * merchantId, name
+ * 
+ */
 public class Merchant {
     private int merchantId;
     private String name;

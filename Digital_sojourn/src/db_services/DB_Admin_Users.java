@@ -8,10 +8,17 @@ import java.sql.SQLException;
 import Models.Admin_User;
 
 public class DB_Admin_Users {
-
+    // Connect to the database
     static Connection connection = DB_Service.connect();
 
-    // // Get Admin User Password by Admin ID
+    /**
+     * This method is used to get the admin password of the admin user
+     * 
+     * @param admin_id the id of the admin user
+     * @return String password of the admin user
+     * @throws SQLException if an error occurs while getting the admin password from
+     *                      the database
+     */
     public String getAdminPassword(int admin_id) {
         String pwrd = "";
 
@@ -33,6 +40,14 @@ public class DB_Admin_Users {
         return pwrd;
     }
 
+    /**
+     * This method is used to get the admin user from the database
+     * 
+     * @param admin_id the id of the admin user
+     * @return Admin_User object
+     * @throws SQLException if an error occurs while getting the admin user from the
+     *                      database
+     */
     public Admin_User getAdminUser(int admin_id) {
 
         Admin_User adminUser = null;

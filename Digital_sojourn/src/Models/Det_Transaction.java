@@ -1,5 +1,11 @@
 package Models;
 
+/**
+ * This class is used to create a Det_Transaction object with the following
+ * attributes
+ * det_trans_id, transID, productID, product_name, product_price, quantity
+ * 
+ */
 public class Det_Transaction {
     private int det_trans_id;
     private int transID;

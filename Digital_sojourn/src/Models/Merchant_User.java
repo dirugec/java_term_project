@@ -1,6 +1,11 @@
-
 package Models;
 
+/**
+ * This class is used to create a Merchant_User object with the following
+ * attributes: merchantUserID, merchantID, firstName, lastName, email, phone,
+ * role, password, active
+ * 
+ */
 public class Merchant_User {
 
     private int merchantUserID;

@@ -1,5 +1,11 @@
 package Models;
 
+/**
+ * This class is used to create a Customer object with the following attributes:
+ * customerID, firstName, lastName, email, phone, balance, parentId, password,
+ * userType, active
+ * 
+ */
 public class Customer {
     private int customerID;
     private String firstName;

@@ -1,5 +1,11 @@
 package Models;
 
+/**
+ * This class is used to create an Admin_User object with the following
+ * attributes:
+ * adminID, firstName, lastName, email, phone, role, password, active
+ * 
+ */
 public class Admin_User {
 
     private int adminID;
