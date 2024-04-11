@@ -30,7 +30,7 @@ public class DB_Costumer {
         try {
             connection.setAutoCommit(false);
             // Add Customer
-            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, user_type active) VALUES(?,?,?,?,?,?,?,?,?)";
+            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, user_type, active) VALUES(?,?,?,?,?,?,?,?,?)";
             PreparedStatement addCustomer = connection.prepareStatement(addCustomerMySql,
                     Statement.RETURN_GENERATED_KEYS); // preparableStatement make shure avoid the script injection
             // Statement.RETURN_GENERATED_KEY retunr the key generated
@@ -42,7 +42,7 @@ public class DB_Costumer {
             addCustomer.setInt(6, customer.getParentId());
             addCustomer.setString(7, customer.getPassword());
             addCustomer.setInt(8, customer.getUserType());
-            addCustomer.setInt(8, customer.getActive());
+            addCustomer.setInt(9, customer.getActive());
 
             addCustomer.executeUpdate();
 
@@ -68,6 +68,15 @@ public class DB_Costumer {
 
     }
 
+    /**
+     * This method is used to check if a customer exists in the database.
+     * 
+     * @param customerID This is the customer ID to be checked.
+     * @return boolean This returns true if the customer exists, and false
+     *         otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public boolean checkIfCustomerExist(int customerID) {
 
         boolean customerExist = false;
@@ -91,7 +100,14 @@ public class DB_Costumer {
         return customerExist;
     }
 
-    // READ Customer Info
+    /**
+     * This method is used to get a customer from the database.
+     * 
+     * @param customer_id This is the customer ID to be retrieved.
+     * @return Customer This returns a customer object.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public Customer getCustomer(int customer_id) {
         Customer customer = null;
         try {
@@ -123,7 +139,13 @@ public class DB_Costumer {
         return customer;
     }
 
-    // Read All Customers
+    /**
+     * This method is used to get all customers from the database.
+     * 
+     * @return ArrayList<Customer> This returns a list of all customers.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public static ArrayList<Customer> getAllCustomers() {
 
         ArrayList<Customer> customers = new ArrayList<>();
@@ -156,8 +178,19 @@ public class DB_Costumer {
         return customers;
     }
 
-    // Updtae Customer Info
-
+    /**
+     * This method is used to update customer information in the database.
+     * 
+     * @param customer_id
+     * @param phone
+     * @param first_name
+     * @param last_name
+     * @param email
+     * @param active
+     * @return boolean This returns true if the customer was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
     public boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name,
             String email, int active) {
         boolean success = false;
@@ -183,7 +216,17 @@ public class DB_Costumer {
         return success;
     }
 
-    // // Update Customer Status Active/Desactive
+    /**
+     * This method is used to update the active status of a customer in the
+     * database.
+     * 
+     * @param customer_id
+     * @param active
+     * @return boolean This returns true if the customer was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public static boolean updateActiveStatus(int customer_id, int active) {
 
         boolean success = false;
