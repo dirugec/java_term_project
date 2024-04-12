@@ -23,8 +23,7 @@ public class DB_Transactions {
             connection.setAutoCommit(false);
 
             String insertTransMysql = "INSERT INTO transactions(customer_id, date, amount, merchant_id) VALUES(?,?,?,?)";
-            PreparedStatement insertTrans = connection.prepareStatement(insertTransMysql,
-                    Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement insertTrans = connection.prepareStatement(insertTransMysql, Statement.RETURN_GENERATED_KEYS);
             insertTrans.setInt(1, customer_id);
             insertTrans.setString(2, dateTrans);
             insertTrans.setDouble(3, amount);
@@ -39,10 +38,9 @@ public class DB_Transactions {
 
             if (transId > 1) {
                 connection.commit();
-
             }
 
-            connection.close();
+            //connection.close();
 
         } catch (SQLException e) {
             System.err.println("An error inserting transaction has occured : " + e.getMessage());
@@ -57,28 +55,24 @@ public class DB_Transactions {
 
         try {
             String insertDetailTransMysql = "INSERT INTO detail_trans(trans_id, product_id, price, quantity) VALUES(?,?,?,?)";
-            PreparedStatement insertDetailTrans = connection.prepareStatement(insertDetailTransMysql);
+            PreparedStatement insertDetailTrans = connection.prepareStatement(insertDetailTransMysql, Statement.RETURN_GENERATED_KEYS);
             insertDetailTrans.setInt(1, trans_id);
             insertDetailTrans.setInt(2, product_id);
             insertDetailTrans.setDouble(3, price);
             insertDetailTrans.setDouble(4, quantity);
 
-            insertDetailTrans.executeQuery();
+            insertDetailTrans.executeUpdate();
 
             ResultSet insertDetailTransResult = insertDetailTrans.getGeneratedKeys();
             if (insertDetailTransResult.next()) {
                 detailTransID = insertDetailTransResult.getInt(1);
             }
-
             if (detailTransID > 1) {
                 connection.commit();
-
             }
-
-            connection.close();
-
+            //connection.close();
         } catch (SQLException e) {
-            System.err.println("An error inserting detail transaction has occured : " + e.getMessage());
+            System.err.println("ERROR [Detail Transaction]: " + e.getMessage());
         }
 
         return detailTransID;
@@ -171,25 +165,38 @@ public class DB_Transactions {
         ArrayList<Transaction> transMerchantList = new ArrayList<>();
 
         try {
-            String getTransbyMerchantMySql = "SELECT * FROM transactions WHERE merchant_id= ? AND date BETWEEN ? AND ?";
-            PreparedStatement getTransByMerchant = connection.prepareStatement(getTransbyMerchantMySql);
-            getTransByMerchant.setInt(1, merchant_id);
-            getTransByMerchant.setString(2, initialDate);
-            getTransByMerchant.setString(3, finalDate);
-            ResultSet getTransByMerchantResult = getTransByMerchant.executeQuery();
-            while (getTransByMerchantResult.next()) {
+            String getTransbyCustomerMySql = " SELECT t.trans_id, t.customer_id,  c.first_name, c.last_name, t.date, t.amount,t.merchant_id, m.name\n"
+                    + //
+                    "FROM transactions t\n" + //
+                    "INNER JOIN customers c\n" + //
+                    "ON(t.customer_id=c.customer_id)\n" + //
+                    "INNER JOIN merchant m\n" + //
+                    "ON (t.merchant_id = m.merchant_id)\n" + //
+                    "WHERE m.merchant_id= ? \n" + //
+                    "AND date BETWEEN ? AND ?; ";
+            PreparedStatement getTransByCustomer = connection.prepareStatement(getTransbyCustomerMySql);
+            getTransByCustomer.setInt(1, merchant_id);
+            getTransByCustomer.setString(2, initialDate);
+            getTransByCustomer.setString(3, finalDate);
+            ResultSet getTransByCustomerResult = getTransByCustomer.executeQuery();
+            while (getTransByCustomerResult.next()) {
 
-                int transID = getTransByMerchantResult.getInt("trans_id");
-                int customerID = getTransByMerchantResult.getInt("customer_id");
-                String dateTrans = getTransByMerchantResult.getString("date");
-                double amount = getTransByMerchantResult.getDouble("amount");
-                int merchantID = getTransByMerchantResult.getInt("merchant_id");
+                int transID = getTransByCustomerResult.getInt("t.trans_id");
+                int customerID = getTransByCustomerResult.getInt("customer_id");
+                String customerFirstName = getTransByCustomerResult.getString("first_name");
+                String customerLastName = getTransByCustomerResult.getString("last_name");
+                String dateTrans = getTransByCustomerResult.getString("date");
+                double amount = getTransByCustomerResult.getDouble("amount");
+                int merchantID = getTransByCustomerResult.getInt("merchant_id");
+                String merchantName = getTransByCustomerResult.getString("name");
 
-                transMerchantList.add(new Transaction(transID, customerID, dateTrans, amount, merchantID));
+                transMerchantList.add(new Transaction(transID, customerID, customerFirstName, customerLastName,
+                        dateTrans, amount, merchantID,
+                        merchantName));
             }
 
         } catch (SQLException e) {
-            System.err.println("An error getting merchant transaction list has occured: " +
+            System.err.println("ERROR [TransactionByMerchant]: " +
                     e.getMessage());
         }
         return transMerchantList;

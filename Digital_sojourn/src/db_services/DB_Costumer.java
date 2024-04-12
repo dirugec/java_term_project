@@ -230,10 +230,9 @@ public class DB_Costumer {
     }
 
     // //Update customer Balance
-    public static String updateBalance(int customer_id, double newBalance) {
-
+    public static boolean updateBalance(int customer_id, double newBalance) {
+        boolean blnUpdateBalance = false;
         try {
-
             connection.setAutoCommit(true);
             String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
             PreparedStatement loadFunds = connection.prepareStatement(loadFundsMysql);
@@ -241,12 +240,11 @@ public class DB_Costumer {
             loadFunds.setInt(2, customer_id);
             loadFunds.executeUpdate();
             // connection.close();
-            return "success";
+            blnUpdateBalance = true;
         } catch (SQLException e) {
-            return ("An error updating customer balance has occured:" +
-                    e.getMessage());
+            System.out.println("ERROR: " + e.getMessage());
         }
-
+        return blnUpdateBalance;
     }
 
     // // Get customer Password by ID customer

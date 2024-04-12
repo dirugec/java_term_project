@@ -40,13 +40,6 @@ public class App {
         dbMerchantUser = new DB_Merchant_Users();
         dbTransactions = new DB_Transactions();
 
-        // comment out for testing
-
-        // comment 2
-        // coment 3
-        // comment 4
-        // comment 5
-
         displayLoginMenu();
     }
 
@@ -305,14 +298,11 @@ public class App {
 
                 // Call Script: Load Funds
                 double newBalance = gCustomer.getBalance() + iAmount;
-                String updateBalanceResult = DB_Costumer.updateBalance(gUserID, newBalance);
-                if (updateBalanceResult == "success") {
+                if (DB_Costumer.updateBalance(gUserID, newBalance)) {
                     System.out.printf("$%,.2f has been added to %s\n", iAmount,
                             gCustomer.getFirstName() + " " + gCustomer.getLastName());
                     System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.getCustomerBalance(gUserID));
                     blnValid = true;
-                } else {
-                    System.out.println(updateBalanceResult + "\n");
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input. Numbers only please ");
@@ -374,7 +364,6 @@ public class App {
 
                 // Call script to get transactions given date
                 arrayTransactions = dbTransactions.getTransByCustomer(gUserID, mysqlStartDate, mysqlEndDate);
-
                 System.out.println();
                 System.out.println("-".repeat(70));
                 System.out.println("Transactions for " + gCustomer.getFirstName() + " " + gCustomer.getLastName()
@@ -747,11 +736,10 @@ public class App {
                         System.exit(0);
                         break;
                     case 1:
-                        // blnValid = true;
                         processTransaction();
                         break;
                     case 2:
-                        displayViewTransactions();
+                        displayViewMerchantTransactions();
                         break;
                     case 3:
                         displayViewTransactions();
@@ -769,18 +757,15 @@ public class App {
     }
 
     private static void processTransaction() {
-        // TEST COMMENT 1
-        // TEST COMMENT 2
-        // TEST COMMENT 3
-        // TEST COMMENT 4
-        // TEST COMMENT 5
         ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
         ArrayList<Product> arrTotalCart = new ArrayList<Product>();
+        ArrayList<Integer> arrQuantity = new ArrayList<Integer>();
         boolean blnValid = false;
         boolean blnYesNoValid = false;
         int iChoice = -1;
         int iQuantity = 0;
         char cChoice;
+        
         do {
             // Display Product List
             System.out.print("-".repeat(25));
@@ -809,6 +794,7 @@ public class App {
                     iQuantity = Integer.parseInt(System.console().readLine());
                     // Save into shoppingCart variable
                     arrTotalCart.add(DB_Product.getProduct(iChoice));
+                    arrQuantity.add(iQuantity);
                     do {
                         // Ask if choose another or finish transaction
                         System.out.print("Choose another product Y/N?  ");
@@ -831,60 +817,146 @@ public class App {
             }
         } while (!blnValid);
 
-        // Display Total Transaction and ask for Confirmation
-        System.out.print("-".repeat(25));
-        System.out.print("Shopping Cart");
-        System.out.println("-".repeat(25));
-        double dTotalAmount = 0.0d;
-        for (Product product : arrTotalCart) {
-            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
-                    product.getName(), product.getPrice());
-            dTotalAmount += dTotalAmount + (iQuantity * product.getPrice());
-        }
-        System.out.println("-".repeat(50));
-        System.out.printf("TOTAL: $%6.2f\n", dTotalAmount);
-
+        blnYesNoValid = false;
         do {
+            // Display Total Transaction and ask for Confirmation
+            System.out.print("-".repeat(43));
+            System.out.print("Shopping Cart");
+            System.out.println("-".repeat(43));
+            double dSubTotal = 0.0d;
+            double dTotalAmount = 0.0d;
+            for (int i = 0; i < arrTotalCart.size(); i++) {
+                Product product = arrTotalCart.get(i);
+                dSubTotal = (arrQuantity.get(i) * product.getPrice());
+                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f Quantity: %-4s SubTotal: $%6.2f\n", product.getProductID(),
+                        product.getName(), product.getPrice(), arrQuantity.get(i), dSubTotal);
+                dTotalAmount = dTotalAmount + dSubTotal;
+            }
+            System.out.println("-".repeat(100));
+            System.out.print(" ".repeat(85));
+            System.out.printf("TOTAL: $%6.2f\n", dTotalAmount);
+
             System.out.print("Confirm purchase Y/N?  ");
             cChoice = System.console().readLine().charAt(0);
             if ((cChoice == 'Y') || (cChoice == 'y')) {
                 // Get Guest ID
-                System.out.print("Please enter GuestID: ");
-                iChoice = Integer.parseInt(System.console().readLine());
+                System.out.print("Please enter Guest ID: ");
+                int iGuestID = Integer.parseInt(System.console().readLine());
                 // Validate if GuestID exists in DB
-                Customer tempCustomer = dbCustomer.getCustomer(iChoice);
-                // System.out.println(tempCustomer.toString());
-                if (tempCustomer != null) { // If Customer exists
-                    // Commit purchase to Transaction and Detailed Transaction table
-                    LocalDate txnDate = LocalDate.now();
-                    DateTimeFormatter txnDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-                    String strTransactionDate = txnDate.format(txnDateFormat);
-                    int iTransactionID = DB_Transactions.insertTransaction(iQuantity, strTransactionDate, dTotalAmount,
-                            gMerchantUser.getMerchantID());
-                    // Go through the Shopping Cart to add each product to the detailed transaction
-                    for (Product product : arrTotalCart) {
-                        System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
-                                product.getName(), product.getPrice());
-                        dTotalAmount += dTotalAmount + (iQuantity * product.getPrice());
+                boolean blnCustomerExists = dbCustomer.checkIfCustomerExist(iGuestID);
+                if (blnCustomerExists) { // If Customer exists
+                    // Check if Customer has enough funds for purchase
+                    Customer tempCustomer = dbCustomer.getCustomer(iGuestID);
+                    if (tempCustomer.getBalance() >= dTotalAmount) {
+                        // Commit purchase to Transaction and Detailed Transaction table
+                        LocalDate txnDate = LocalDate.now();
+                        DateTimeFormatter txnDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+                        String strTransactionDate = txnDate.format(txnDateFormat);
+                        int iTransactionID = DB_Transactions.insertTransaction(iGuestID, strTransactionDate, dTotalAmount,
+                                gMerchantUser.getMerchantID());
+                        // Go through the Shopping Cart to add each product to the detailed transaction
+                        for (int i = 0; i < arrTotalCart.size(); i++) {
+                            Product product = arrTotalCart.get(i);
+                            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
+                                    product.getName(), product.getPrice());
+                            DB_Transactions.insertDetailTransaction(iTransactionID, product.getProductID(), product.getPrice(), arrQuantity.get(i));
+                        }
+                        // Deduct amount from Guest balance
+                        double newBalance = tempCustomer.getBalance() - dTotalAmount;
+                        if (DB_Costumer.updateBalance(iGuestID, newBalance)) {
+                            System.out.println("SUCCESS: Transaction debited");
+                        }
+                        blnYesNoValid = true;
+                    } else {
+                        System.out.println("ERROR: Not enough funds");
                     }
-                    DB_Transactions.insertDetailTransaction(iTransactionID, iChoice, cChoice, iQuantity);
-                    System.out.print("Transaction debited");
-                } else {
-                    System.out.print("Customer does not exist");
+                    
+                } else { // If customer does not exist
+                    System.out.println("ERROR: Guest does not exist");
                 }
-                blnYesNoValid = true;
                 // Deduct total purchase from Guest debit
             } else if ((cChoice == 'N') || (cChoice == 'n')) {
-                blnValid = true;
                 blnYesNoValid = true;
             } else {
-                System.out.println("Error: Please enter Y/N");
+                System.out.println("ERROR: Please enter Y/N");
             }
         } while (!blnYesNoValid);
-        // Insert into Transaction table
-        // Insert into Detail Transaction table
     }
 
+    private static void displayViewMerchantTransactions() {
+        ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
+        ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
+
+        boolean blnValid = false;
+        do {
+            try {
+                System.out.println("");
+                System.out.println("-".repeat(50));
+
+                System.out.print("Please enter start date MM/DD/YYYY: ");
+                String iStartDate = System.console().readLine();
+
+                // Input validation start date RegEx
+                while (!iStartDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+                    System.out.println("Use the format MM/DD/YYYY ");
+                    System.out.print("Please enter start date MM/DD/YYYY: ");
+                    iStartDate = System.console().readLine();
+                }
+
+                String[] arrOfiStartDate = iStartDate.split("/", 3);
+                String mysqlStartDate = arrOfiStartDate[2] + arrOfiStartDate[0] + arrOfiStartDate[1];
+
+                // Input validation end date RegEx
+                System.out.print("Please enter end date MM/DD/YYYY: ");
+                String iEndDate = System.console().readLine();
+
+                while (!iEndDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+                    System.out.println("Use the format MM/DD/YYYY ");
+                    System.out.print("Please enter end date MM/DD/YYYY: ");
+                    iEndDate = System.console().readLine();
+                }
+                // Validate end date after or same as start date
+                while ((iEndDate.compareTo(iStartDate) < 0)) {
+                    System.out.println("End date should be the same or after start date");
+                    System.out.print("Please enter end date MM/DD/YYYY: ");
+                    iEndDate = System.console().readLine();
+                }
+
+                // Modifying the string input for use it in a mysql script
+                String[] arrOfiEndtDate = iEndDate.split("/", 3);
+                String mysqlEndDate = arrOfiEndtDate[2] + arrOfiEndtDate[0] + arrOfiEndtDate[1];
+
+                // Call script to get transactions given date
+                arrayTransactions = DB_Transactions.getTransByMerchant(gMerchantUser.getMerchantID(), mysqlStartDate, mysqlEndDate);
+                Merchant tempMerchant = DB_Merchant.getMerchant(gMerchantUser.getMerchantID());
+                System.out.println();
+                System.out.println("-".repeat(70));
+                System.out.println("Transactions for " + tempMerchant.getName() + " from " + iStartDate + " to " + iEndDate);
+                System.out.println("-".repeat(70));
+
+                // Loop through the result set and display the transactions
+                for (Transaction transaction : arrayTransactions) {
+                    System.out.printf("\n%-10s %-25s %-25s %-6s\n", "Date", "First Name", "Last Name", "Amount");
+                    System.out.println("-".repeat(70));
+                    System.out.printf("%-10s %-25s %-25s %-6.2f \n", transaction.getDateTrans(),
+                            transaction.getCustomerFirstName(), transaction.getCustomerLastName(), transaction.getAmount());
+                    System.out.printf("\n%50s\n", "*********  Det Transaction *********");
+
+                    det_TransactionsList = dbTransactions.getDetTransaction(transaction.getTransID());
+                    for (Det_Transaction det_Transaction : det_TransactionsList) {
+                        System.out.printf("Product: %-25s Price: %6.2f Quantity: %4.2f\n",
+                                det_Transaction.getProduct_name(),
+                                det_Transaction.getProduct_price(), det_Transaction.getQuantity());
+
+                    }
+                    System.out.println("*".repeat(70));
+                    blnValid = true;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input.  " + e);
+            }
+        } while (!blnValid);
+    }
     // ******** ADMINISTRATOR USER INTERFACE **********
 
     private static void displayCreateGuestUser() {
