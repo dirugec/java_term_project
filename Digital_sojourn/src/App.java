@@ -63,6 +63,22 @@ public class App {
     }
 
     /**
+     * 
+     * @param title
+     */
+    private static void printHeaders(String title, int fullLength) {
+
+        int dashRepeat = (fullLength - (title.length() + 2)) / 2;
+
+        System.out.println("");
+        System.out.println("-".repeat(fullLength));
+        System.out.println("-".repeat(dashRepeat) + " " + title + " "
+                + ((title.length() % 2 == 0) ? "" : "-") + "-".repeat(dashRepeat));
+        System.out.println("-".repeat(fullLength));
+
+    }
+
+    /**
      * Display the header of the application
      */
     private static void displayHeader() {
@@ -88,12 +104,7 @@ public class App {
         do {
             try { // Determine type of User
                 displayHeader();
-                System.out.println("");
-                System.out.println("-".repeat(100));
-                System.out.print("-".repeat(50));
-                System.out.print(" LOGIN ");
-                System.out.println("-".repeat(43));
-                System.out.println("-".repeat(100));
+                printHeaders("LOGIN", 50);
                 System.out.println("[1] Guest");
                 System.out.println("[2] Admin");
                 System.out.println("[3] Merchant");
@@ -217,8 +228,7 @@ public class App {
         displayHeader();
         do {
             try {
-                System.out.println("");
-                System.out.println("------------------------------");
+                printHeaders("MAIN MENU", 40);
                 System.out.println("[1] View Balance");
                 System.out.println("[2] Load Funds");
                 System.out.println("[3] View Transactions");
@@ -267,12 +277,7 @@ public class App {
         int iChoice = -1;
         do {
             try {
-                // TODO: Change menu group by customer, merchant, admin
-                // TODO: working here
-                System.out.println("");
-                System.out.println("-------------------------------");
-                System.out.println("--------     ADMIN     --------");
-                System.out.println("-------------------------------");
+                printHeaders("ADMIN MAIN MENU", 40);
                 System.out.println("[1] Manage Guest Users");
                 System.out.println("[2] Manage Merchant Users");
                 System.out.println("[3] Back");
@@ -313,10 +318,7 @@ public class App {
      * Display the Guest user balance based on the User ID
      */
     private static void viewBalance() {
-        System.out.println("");
-        System.out.println("-------------------------------");
-        System.out.println("-------  VIEW BALANCE  --------");
-        System.out.println("-------------------------------");
+        printHeaders("VIEW BALANCE", 40);
 
         System.out.printf("First Name: %s\n", gCustomer.getFirstName());
         System.out.printf("Last Name: %s\n", gCustomer.getLastName());
@@ -331,15 +333,15 @@ public class App {
 
         do {
             try {
-                System.out.println("");
-                System.out.println("-".repeat(30));
+
+                printHeaders("LOAD FUNDS", 40);
 
                 System.out.print("Please enter amount to load: $");
                 double iAmount = Double.parseDouble(System.console().readLine());
 
                 // Call Script: Load Funds
                 double newBalance = gCustomer.getBalance() + iAmount;
-                if (DB_Costumer.updateBalance(gUserID, newBalance)) {
+                if (dbCustomer.updateBalance(gUserID, newBalance)) {
                     System.out.printf("$%,.2f has been added to %s\n", iAmount,
                             gCustomer.getFirstName() + " " + gCustomer.getLastName());
                     System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.getCustomerBalance(gUserID));
@@ -363,8 +365,7 @@ public class App {
         boolean blnValid = false;
         do {
             try {
-                System.out.println("");
-                System.out.println("-".repeat(50));
+                printHeaders("VIEW TRANSACTIONS", 70);
 
                 if (gUserType == 2) { // if User Type is Admin
                     System.out.print("Please enter Primary User ID: ");
@@ -445,10 +446,7 @@ public class App {
         ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
         arrayFamilyMembers = dbCustomer.getFamilyMembers(gCustomer.getCustomerID());
 
-        System.out.println("");
-        System.out.println("-".repeat(100));
-        System.out.println("-".repeat(42) + " Family Members " + "-".repeat(42));
-        System.out.println("-".repeat(100));
+        printHeaders("FAMILY MEMBERS", 100);
         System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s %-10s\n", "ID", "First Name", "Last Name", "Email",
                 "Phone",
                 "Balance", "Active");
@@ -456,7 +454,7 @@ public class App {
 
         // Loop through the result set and display the family members
         for (Customer familyMember : arrayFamilyMembers) {
-            System.out.printf("%-4d %-15s %-15s %-20s %-15s $%,.2f %10s\n", familyMember.getCustomerID(),
+            System.out.printf("%-4d %-15s %-15s %-20s %-15s $%,12.2f %10s\n", familyMember.getCustomerID(),
                     familyMember.getFirstName(),
                     familyMember.getLastName(),
                     familyMember.getEmail(), familyMember.getPhone(), familyMember.getBalance(),
@@ -572,10 +570,7 @@ public class App {
 
         do {
             try {
-                System.out.println("");
-                System.out.println("-".repeat(80));
-                System.out.println("-".repeat(30) + " Guest User Details " + "-".repeat(30));
-                System.out.println("-".repeat(80));
+                printHeaders("GUEST USER DETAILS", 80);
                 System.out.printf("%-15s %-15s %-25s %-15s\n", "First Name", "Last Name",
                         "Email", "Phone");
                 System.out.println("-".repeat(80));
@@ -741,10 +736,12 @@ public class App {
         int iChoice = -1;
         do {
             try {
-                String format = "%-15s %-15s %-20s %-15s %-15s \n";
-                System.out.println("-------------------------------------------------------------------------------");
-                System.out.printf(format, "First Name", "Last Name", "Email", "Phone", "Balance");
-                System.out.printf(format + "\n\n", gCustomer.getFirstName(),
+                printHeaders("SETTINGS", 80);
+
+                System.out.printf("%-15s %-15s %-20s %-15s %-15s \n", "First Name", "Last Name", "Email", "Phone",
+                        "Balance");
+                System.out.println("-".repeat(80));
+                System.out.printf("%-15s %-15s %-20s %-15s $%,9.2f \n\n", gCustomer.getFirstName(),
                         gCustomer.getLastName(), gCustomer.getEmail(), gCustomer.getPhone(), gCustomer.getBalance());
 
                 System.out.print("[1] Update Details\t[2] Change Password\t[3] Back\t[0] Exit\n\n");
@@ -811,8 +808,7 @@ public class App {
         do {
             displayHeader();
             try {
-                System.out.println("");
-                System.out.println("------------------------------");
+                printHeaders("MERCHANT MAIN MENU", 40);
                 System.out.println("[1] Accomplish Transaction");
                 System.out.println("[2] View Transaction History");
                 System.out.println("[3] Settings");
@@ -863,11 +859,9 @@ public class App {
         do {
             // Display Product List
             displayHeader();
-            System.out.print("-".repeat(25));
-            System.out.print("Product List");
-            System.out.println("-".repeat(25));
+            printHeaders("PRODUCT LIST", 70);
             for (Product product : arrProductList) {
-                System.out.printf("Product ID: %-4s Product: %-25s Price: %6.2f\n", product.getProductID(),
+                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
                         product.getName(), product.getPrice());
             }
             try {
@@ -916,15 +910,14 @@ public class App {
         do {
             displayHeader();
             // Display Total Transaction and ask for Confirmation
-            System.out.print("-".repeat(43));
-            System.out.print("Shopping Cart");
-            System.out.println("-".repeat(43));
+            printHeaders("SHOPPING CART", 100);
             double dSubTotal = 0.0d;
             double dTotalAmount = 0.0d;
             for (int i = 0; i < arrTotalCart.size(); i++) {
                 Product product = arrTotalCart.get(i);
                 dSubTotal = (arrQuantity.get(i) * product.getPrice());
-                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f Quantity: %-4s SubTotal: $%6.2f\n", product.getProductID(),
+                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f Quantity: %-4s SubTotal: $%6.2f\n",
+                        product.getProductID(),
                         product.getName(), product.getPrice(), arrQuantity.get(i), dSubTotal);
                 dTotalAmount = dTotalAmount + dSubTotal;
             }
@@ -948,14 +941,16 @@ public class App {
                         LocalDate txnDate = LocalDate.now();
                         DateTimeFormatter txnDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
                         String strTransactionDate = txnDate.format(txnDateFormat);
-                        int iTransactionID = DB_Transactions.insertTransaction(iGuestID, strTransactionDate, dTotalAmount,
+                        int iTransactionID = DB_Transactions.insertTransaction(iGuestID, strTransactionDate,
+                                dTotalAmount,
                                 gMerchantUser.getMerchantID());
                         // Go through the Shopping Cart to add each product to the detailed transaction
                         for (int i = 0; i < arrTotalCart.size(); i++) {
                             Product product = arrTotalCart.get(i);
                             System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
                                     product.getName(), product.getPrice());
-                            DB_Transactions.insertDetailTransaction(iTransactionID, product.getProductID(), product.getPrice(), arrQuantity.get(i));
+                            DB_Transactions.insertDetailTransaction(iTransactionID, product.getProductID(),
+                                    product.getPrice(), arrQuantity.get(i));
                         }
                         // Deduct amount from Guest balance
                         double newBalance = tempCustomer.getBalance() - dTotalAmount;
@@ -966,7 +961,7 @@ public class App {
                     } else {
                         System.out.println("ERROR: Not enough funds");
                     }
-                    
+
                 } else { // If customer does not exist
                     System.out.println("ERROR: Guest does not exist");
                 }
@@ -986,8 +981,7 @@ public class App {
         boolean blnValid = false;
         do {
             try {
-                System.out.println("");
-                System.out.println("-".repeat(50));
+                printHeaders("MERCHANT TRANSACTIONS", 50);
 
                 System.out.print("Please enter start date MM/DD/YYYY: ");
                 String iStartDate = System.console().readLine();
@@ -1023,11 +1017,13 @@ public class App {
                 String mysqlEndDate = arrOfiEndtDate[2] + arrOfiEndtDate[0] + arrOfiEndtDate[1];
 
                 // Call script to get transactions given date
-                arrayTransactions = DB_Transactions.getTransByMerchant(gMerchantUser.getMerchantID(), mysqlStartDate, mysqlEndDate);
+                arrayTransactions = DB_Transactions.getTransByMerchant(gMerchantUser.getMerchantID(), mysqlStartDate,
+                        mysqlEndDate);
                 Merchant tempMerchant = DB_Merchant.getMerchant(gMerchantUser.getMerchantID());
                 System.out.println();
                 System.out.println("-".repeat(70));
-                System.out.println("Transactions for " + tempMerchant.getName() + " from " + iStartDate + " to " + iEndDate);
+                System.out.println(
+                        "Transactions for " + tempMerchant.getName() + " from " + iStartDate + " to " + iEndDate);
                 System.out.println("-".repeat(70));
 
                 // Loop through the result set and display the transactions
@@ -1035,7 +1031,8 @@ public class App {
                     System.out.printf("\n%-10s %-25s %-25s %-6s\n", "Date", "First Name", "Last Name", "Amount");
                     System.out.println("-".repeat(70));
                     System.out.printf("%-10s %-25s %-25s %-6.2f \n", transaction.getDateTrans(),
-                            transaction.getCustomerFirstName(), transaction.getCustomerLastName(), transaction.getAmount());
+                            transaction.getCustomerFirstName(), transaction.getCustomerLastName(),
+                            transaction.getAmount());
                     System.out.printf("\n%50s\n", "*********  Det Transaction *********");
 
                     det_TransactionsList = dbTransactions.getDetTransaction(transaction.getTransID());
@@ -1255,10 +1252,7 @@ public class App {
 
         do {
             try {
-                System.out.println("");
-                System.out.println("-".repeat(40));
-                System.out.println("-------- Primary Guest Details --------");
-                System.out.println("-".repeat(40));
+                printHeaders("MANAGE GUEST USERS", 40);
                 System.out.println("[1] Create Guest User");
                 System.out.println("[2] View Transaction History");
                 System.out.println("[3] Load Funds");
@@ -1311,10 +1305,7 @@ public class App {
     private static void displayCreateGuestUser() {
 
         boolean blnValid = false;
-        System.out.println("");
-        System.out.println("-----------------------------------");
-        System.out.println("-------- Create Guest User --------");
-        System.out.println("-----------------------------------\n");
+        printHeaders("CREATE GUEST USER", 50);
         System.out.println("Enter the following details to create a new user");
         System.out.print("First Name: ");
         String strFirstName = System.console().readLine();

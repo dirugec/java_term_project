@@ -282,13 +282,14 @@ public class DB_Costumer {
      * 
      * @param customer_id customer id to update balance
      * @param newBalance  new balance to update
-     * @return String success if the balance was successfully updated, and an error
-     *         message otherwise.
+     * @return boolean This returns true if the balance was successfully updated,
+     *         and false otherwise.
      * @throws SQLException If an SQL error occurs, this exception is thrown.
      */
     public static boolean updateBalance(int customer_id, double newBalance) {
         boolean blnReturn = false;
 
+        boolean blnreturn = false;
         try {
             connection.setAutoCommit(true);
             String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
