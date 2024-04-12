@@ -30,14 +30,14 @@ public class App {
     private static DB_Admin_Users dbAdminUser; // Admin User Database Object
     private static DB_Costumer dbCustomer; // Guest User Database Object
     private static DB_Product dbProduct; // Product Database Object
-    private static DB_Merchant_Users dbMerchantUser; // Merchant User Database Object
+    //private static DB_Merchant_Users dbMerchantUser; // Merchant User Database Object
     private static DB_Transactions dbTransactions; // Transaction Database Object
 
     public static void main(String[] args) throws Exception {
 
         dbCustomer = new DB_Costumer();
         dbAdminUser = new DB_Admin_Users();
-        dbMerchantUser = new DB_Merchant_Users();
+        //dbMerchantUser = new DB_Merchant_Users();
         dbTransactions = new DB_Transactions();
 
         // Display the login menu
@@ -66,10 +66,16 @@ public class App {
      * Display the header of the application
      */
     private static void displayHeader() {
+        clearScreen();
+        System.out.print(" ".repeat(40));
         System.out.println("____/--------------------\\___");
+        System.out.print(" ".repeat(40));
         System.out.println("|                            |");
+        System.out.print(" ".repeat(40));
         System.out.println("|       DIGITAL SOJOURN      |");
+        System.out.print(" ".repeat(40));
         System.out.println("|                            |");
+        System.out.print(" ".repeat(40));
         System.out.println("----\\--------------------/----");
     }
 
@@ -83,9 +89,11 @@ public class App {
             try { // Determine type of User
                 displayHeader();
                 System.out.println("");
-                System.out.println("-------------------------------");
-                System.out.println("--------     LOGIN     --------");
-                System.out.println("-------------------------------");
+                System.out.println("-".repeat(100));
+                System.out.print("-".repeat(50));
+                System.out.print(" LOGIN ");
+                System.out.println("-".repeat(43));
+                System.out.println("-".repeat(100));
                 System.out.println("[1] Guest");
                 System.out.println("[2] Admin");
                 System.out.println("[3] Merchant");
@@ -176,10 +184,11 @@ public class App {
                         break;
                     case 3: // Login Merchant
                         // Call the GetPassword script
-                        dbPassword = dbMerchantUser.getMerchantUserPassword(gUserID);
+                        dbPassword = DB_Merchant_Users.getMerchantUserPassword(gUserID);
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
+                            // Instansiate the global user: Merchant User
                             gMerchantUser = DB_Merchant_Users.getMerchantUser(gUserID);
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
@@ -728,7 +737,6 @@ public class App {
      * Manage the Guest User details (Update Details, Change Password, Back, Exit)
      */
     private static void displaySettings() {
-
         boolean blnValid = false;
         int iChoice = -1;
         do {
@@ -769,17 +777,27 @@ public class App {
      * Change the password for the Guest User based on the User ID
      */
     private static void changePassword() {
-        System.out.println("------------------------------");
-        // Receive the new password
-        System.out.print("Please enter Primary User ID: ");
-        String strNewPassword = System.console().readLine();
-        // Receive the confirm password
-        System.out.print("Please enter Primary User ID: ");
-        String strConfirmPassword = System.console().readLine();
-        // Compare the New and Confirm Password to be equal
-        if (strNewPassword.equals(strConfirmPassword)) {
-            // Call Customer Update script with new password
-        }
+        boolean blnValid = false;
+        do {
+            clearScreen();
+            System.out.println("------------------------------");
+            // Receive the new password
+            System.out.print("Please enter new password: ");
+            String strNewPassword = System.console().readLine();
+            // Receive the confirm password
+            System.out.print("Please confirm new password: ");
+            String strConfirmPassword = System.console().readLine();
+            // Compare the New and Confirm Password to be equal
+            if (strNewPassword.equals(strConfirmPassword)) {
+                // Call Customer Update Password script with new password
+                if (DB_Costumer.updatePassword(gUserID, strConfirmPassword)) {
+                    System.out.print("SUCCESS: Password updated\n");
+                }
+                blnValid = true;
+            } else {
+                System.out.print("ERROR: Passwords did not match");
+            }
+        } while (!blnValid);
     }
 
     // ********** MERCHANT USER INTERFACE **********
@@ -791,6 +809,7 @@ public class App {
         boolean blnValid = false;
         int iChoice = -1;
         do {
+            displayHeader();
             try {
                 System.out.println("");
                 System.out.println("------------------------------");
@@ -813,7 +832,7 @@ public class App {
                         displayViewMerchantTransactions();
                         break;
                     case 3:
-                        displayViewTransactions();
+                        displayMerchantUserSettings();
                         break;
                     case 4:
                         blnValid = true;
@@ -839,10 +858,11 @@ public class App {
         boolean blnYesNoValid = false;
         int iChoice = -1;
         int iQuantity = 0;
-        char cChoice;
+        String strConfirm;
         
         do {
             // Display Product List
+            displayHeader();
             System.out.print("-".repeat(25));
             System.out.print("Product List");
             System.out.println("-".repeat(25));
@@ -873,11 +893,11 @@ public class App {
                     do {
                         // Ask if choose another or finish transaction
                         System.out.print("Choose another product Y/N?  ");
-                        cChoice = System.console().readLine().charAt(0);
-                        if ((cChoice == 'Y') || (cChoice == 'y')) {
+                        strConfirm = (System.console().readLine()).toUpperCase();
+                        if (strConfirm.equals("Y")) {
                             // Loop again to present product list
                             blnYesNoValid = true;
-                        } else if ((cChoice == 'N') || (cChoice == 'n')) {
+                        } else if (strConfirm.equals("N")) {
                             blnValid = true;
                             blnYesNoValid = true;
                         } else {
@@ -894,6 +914,7 @@ public class App {
 
         blnYesNoValid = false;
         do {
+            displayHeader();
             // Display Total Transaction and ask for Confirmation
             System.out.print("-".repeat(43));
             System.out.print("Shopping Cart");
@@ -912,8 +933,8 @@ public class App {
             System.out.printf("TOTAL: $%6.2f\n", dTotalAmount);
 
             System.out.print("Confirm purchase Y/N?  ");
-            cChoice = System.console().readLine().charAt(0);
-            if ((cChoice == 'Y') || (cChoice == 'y')) {
+            strConfirm = (System.console().readLine()).toUpperCase();
+            if (strConfirm.equals("Y")) {
                 // Get Guest ID
                 System.out.print("Please enter Guest ID: ");
                 int iGuestID = Integer.parseInt(System.console().readLine());
@@ -950,7 +971,7 @@ public class App {
                     System.out.println("ERROR: Guest does not exist");
                 }
                 // Deduct total purchase from Guest debit
-            } else if ((cChoice == 'N') || (cChoice == 'n')) {
+            } else if (strConfirm.equals("N")) {
                 blnYesNoValid = true;
             } else {
                 System.out.println("ERROR: Please enter Y/N");
@@ -1029,6 +1050,196 @@ public class App {
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input.  " + e);
+            }
+        } while (!blnValid);
+    }
+    
+    private static void displayMerchantUserSettings() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            clearScreen();
+            displayHeader();
+            try {
+                String format = "%-15s %-15s %-20s %-15s %-15s \n";
+                System.out.println("-------------------------------------------------------------------------------");
+                System.out.printf(format, "First Name", "Last Name", "Email", "Phone", "Role");
+                System.out.printf(format + "\n\n", gMerchantUser.getFirstName(),
+                        gMerchantUser.getLastName(), gMerchantUser.getEmail(),gMerchantUser.getPhone(), gMerchantUser.getRole());
+
+                System.out.print("[1] Update Details\t[2] Change Password\t[3] Back\t[0] Exit\n\n");
+                System.out.print("> ");
+
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        updateMerchantUserDetails();
+                        break;
+                    case 2:
+                        changeMerchantPassword();
+                        break;
+                    case 3:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
+
+    private static void updateMerchantUserDetails() {
+        boolean blnValid = false;
+        boolean blnConfirmSave = false;
+        String strConfirm;
+        String strTempDetail;
+        int iChoice;
+        Merchant_User tempMerchant_User = gMerchantUser;
+
+        do {
+            try {
+                System.out.println("");
+                System.out.println("-".repeat(82));
+                System.out.println("-".repeat(31) + " Guest User Details " + "-".repeat(31));
+                System.out.println("-".repeat(82));
+                System.out.printf("%-15s %-15s %-25s %-15s %-15s\n", "First Name", "Last Name", "Email", "Phone", "Role");
+                System.out.println("-".repeat(82));
+                System.out.printf("%-15s %-15s %-25s %-15s %-15s\n", "[1]" + tempMerchant_User.getFirstName(),
+                        "[2]" + tempMerchant_User.getLastName(), "[3]" + tempMerchant_User.getEmail(), "[4]" + tempMerchant_User.getPhone(), "[5]" + tempMerchant_User.getRole());
+                System.out.println("\n\t[6] Back\t\t[0] Exit\t\t\n\n");
+                System.out.print("Please choose a detail to edit: ");
+
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1: // Enter new first name
+                        System.out.print("Please enter new first name: ");
+                        strTempDetail = System.console().readLine();
+                        // Confirm with user
+                        do {
+                            System.out.print("Save Y/N?: ");
+                            strConfirm = (System.console().readLine()).toUpperCase();
+                            if ((!strConfirm.equals("Y")) && (!strConfirm.equals("N"))) { // If
+                                // input
+                                System.out.println("Please enter Y/N");
+                            } else if (strConfirm.toUpperCase().equals("Y")) { // Save to the Customer object
+                                blnConfirmSave = true;
+                                tempMerchant_User.setFirstName(strTempDetail);
+                            } else { // If user chose not to save
+                                blnConfirmSave = true;
+                            }
+                        } while (!blnConfirmSave);
+                        break;
+                    case 2: // Enter last name
+                        System.out.print("Please enter new last name: ");
+                        strTempDetail = System.console().readLine();
+                        // Confirm with user
+                        do {
+                            System.out.print("Save Y/N?: ");
+                            strConfirm = (System.console().readLine()).toUpperCase();
+                            if ((!strConfirm.equals("Y")) && (!strConfirm.equals("N"))) { // If incorrect input
+                                System.out.println("Please enter Y/N");
+                            } else if (strConfirm.equals("Y")) { // Save to the Customer object
+                                blnConfirmSave = true;
+                                tempMerchant_User.setLastName(strTempDetail);
+                            } else { // If user chose not to save
+                                blnConfirmSave = true;
+                            }
+                        } while (!blnConfirmSave);
+                        break;
+                    case 3: // Enter new email
+                        System.out.print("Please enter new email: ");
+                        strTempDetail = System.console().readLine();
+                        // Confirm with user
+                        do {
+                            System.out.print("Save Y/N?: ");
+                            strConfirm = (System.console().readLine()).toUpperCase();
+                            if ((!strConfirm.equals("Y")) && (!strConfirm.equals("N"))) { // If incorrect input
+                                System.out.println("Please enter Y/N");
+                            } else if (strConfirm.equals("Y")) { // Save to the Customer object
+                                blnConfirmSave = true;
+                                tempMerchant_User.setEmail(strTempDetail);
+                            } else { // If user chose not to save
+                                blnConfirmSave = true;
+                            }
+                        } while (!blnConfirmSave);
+                        break;
+                    case 4: // Enter new phone
+                        System.out.print("Please enter new phone: ");
+                        strTempDetail = System.console().readLine();
+                        // Confirm with user
+                        do {
+                            System.out.print("Save Y/N?: ");
+                            strConfirm = (System.console().readLine()).toUpperCase();
+                            if ((!strConfirm.equals("Y")) && (!strConfirm.equals("N"))) {
+                                // If incorrect input
+                                System.out.println("Please enter Y/N");
+                            } else if (strConfirm.equals("Y")) { // Save to the Customer object
+                                blnConfirmSave = true;
+                                tempMerchant_User.setPhone(Integer.parseInt(strTempDetail));
+                            } else { // If user chose not to save
+                                blnConfirmSave = true;
+                            }
+                        } while (!blnConfirmSave);
+                        break;
+                    case 5: // Enter new role
+                        System.out.print("Please enter new role: ");
+                        strTempDetail = System.console().readLine();
+                        // Confirm with user
+                        do {
+                            System.out.print("Save Y/N?: ");
+                            strConfirm = (System.console().readLine()).toUpperCase();
+                            if ((!strConfirm.equals("Y")) && (!strConfirm.equals("N"))) {
+                                // If incorrect input
+                                System.out.println("Please enter Y/N");
+                            } else if (strConfirm.equals("Y")) { // Save to the Customer object
+                                blnConfirmSave = true;
+                                tempMerchant_User.setRole(strTempDetail);
+                            } else { // If user chose not to save
+                                blnConfirmSave = true;
+                            }
+                        } while (!blnConfirmSave);
+                        break;
+                    case 6:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+        DB_Merchant_Users.updateMerchantUserInfo(gUserID, tempMerchant_User.getFirstName(), tempMerchant_User.getLastName(), tempMerchant_User.getEmail(), tempMerchant_User.getPhone(), tempMerchant_User.getRole());
+    }
+    
+    private static void changeMerchantPassword() {
+        boolean blnValid = false;
+        do {
+            //clearScreen();
+            System.out.println("------------------------------");
+            // Receive the new password
+            System.out.print("Please enter new password: ");
+            String strNewPassword = System.console().readLine();
+            // Receive the confirm password
+            System.out.print("Please confirm new password: ");
+            String strConfirmPassword = System.console().readLine();
+            // Compare the New and Confirm Password to be equal
+            if (strNewPassword.equals(strConfirmPassword)) {
+                // Call Merchant User Update script with new password
+                if (DB_Merchant_Users.updatePassword(gMerchantUser.getMerchantUserID(), strNewPassword)) {
+                    System.out.print("SUCCESS: Password updated\n");
+                }
+                blnValid = true;
+            } else {
+                System.out.print("ERROR: Passwords did not match");
             }
         } while (!blnValid);
     }

@@ -298,6 +298,12 @@ ALTER TABLE `products`
 --
 ALTER TABLE `transactions`
   MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  
+--
+-- AUTO_INCREMENT for table `transactions`
+--
+ALTER TABLE `detail_trans`
+  MODIFY `det_trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

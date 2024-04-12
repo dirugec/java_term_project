@@ -286,7 +286,8 @@ public class DB_Costumer {
      *         message otherwise.
      * @throws SQLException If an SQL error occurs, this exception is thrown.
      */
-    public static String updateBalance(int customer_id, double newBalance) {
+    public static boolean updateBalance(int customer_id, double newBalance) {
+        boolean blnReturn = false;
 
         try {
             connection.setAutoCommit(true);
@@ -295,13 +296,11 @@ public class DB_Costumer {
             loadFunds.setDouble(1, newBalance);
             loadFunds.setInt(2, customer_id);
             loadFunds.executeUpdate();
-            return "success";
-
+            return true;
         } catch (SQLException e) {
-            return ("An error updating customer balance has occured:" +
-                    e.getMessage());
+            System.out.println("ERROR: " + e.getMessage());
         }
-
+        return blnReturn;
     }
 
     /**
@@ -354,7 +353,7 @@ public class DB_Costumer {
             updatePassword.executeUpdate();
             success = true;
 
-            connection.close();
+            //connection.close();
 
         } catch (SQLException e) {
             System.err.println("An error updating customer password has occured: " +
