@@ -67,7 +67,7 @@ public class DB_Product {
 
                 productsByMerchant.add(new Product(productID, name, price, merchantID));
             }
-        } catch (SQLException e) { // TODO: Was not called when there is no return query
+        } catch (SQLException e) {
             System.err.println("No Products found for Merchant id: " + merchant_id);
         }
         return productsByMerchant;

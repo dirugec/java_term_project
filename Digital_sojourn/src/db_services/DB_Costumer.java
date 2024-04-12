@@ -57,8 +57,6 @@ public class DB_Costumer {
                 connection.rollback();
             }
 
-            connection.close();
-
         } catch (SQLException e) {
             System.err.println("An error has occured: " + e.getMessage());
         }
@@ -286,10 +284,9 @@ public class DB_Costumer {
      *         and false otherwise.
      * @throws SQLException If an SQL error occurs, this exception is thrown.
      */
-    public static boolean updateBalance(int customer_id, double newBalance) {
+    public boolean updateBalance(int customer_id, double newBalance) {
         boolean blnReturn = false;
 
-        boolean blnreturn = false;
         try {
             connection.setAutoCommit(true);
             String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
@@ -354,7 +351,7 @@ public class DB_Costumer {
             updatePassword.executeUpdate();
             success = true;
 
-            //connection.close();
+            // connection.close();
 
         } catch (SQLException e) {
             System.err.println("An error updating customer password has occured: " +
