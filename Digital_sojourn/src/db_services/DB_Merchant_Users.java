@@ -7,10 +7,17 @@ import java.sql.SQLException;
 import Models.Merchant_User;
 
 public class DB_Merchant_Users {
-
+    // Connect to the database
     static Connection connection = DB_Service.connect();
 
-    // // Get Admin User Password by Admin ID
+    /**
+     * This method is used to get the merchant password of the merchant user
+     * 
+     * @param merchant_user_id the id of the merchant user
+     * @return String password of the merchant user
+     * @throws SQLException if an error occurs while getting the merchant password
+     *                      from the database
+     */
     public String getMerchantUserPassword(int merchant_user_id) {
         String pwrd = "";
 
@@ -32,9 +39,17 @@ public class DB_Merchant_Users {
         return pwrd;
     }
 
-    // Get Merchant User Object
+    /**
+     * This method is used to get the merchant user from the database
+     * 
+     * @param merchant_user_id the id of the merchant user
+     * @return Merchant_User object
+     * @throws SQLException if an error occurs while getting the merchant user from
+     *                      the database
+     */
     public static Merchant_User getMerchantUser(int merchant_user_id) {
-        Merchant_User merchantUser = null;
+
+        Merchant_User merchantUser = null; // Initialize the merchantUser object to null
 
         try {
             String getMerchantUserMySql = "SELECT merchant_user_id, merchant_id, first_name, last_name, email, phone, role, password, active FROM merchant_users WHERE merchant_user_id = ?";

@@ -1,5 +1,11 @@
 package Models;
 
+/**
+ * This class is used to create a Transaction object with the following
+ * attributes:
+ * transID, customerID, customerFirstName, customerLastName, dateTrans, amount,
+ * merchantID, merchantName
+ */
 public class Transaction {
 
     private int transID;

@@ -9,8 +9,18 @@ import java.util.ArrayList;
 import Models.Product;
 
 public class DB_Product {
+    // Connect to the database
     static Connection connection = DB_Service.connect();
 
+    /**
+     * This method is used to get the product name of the product
+     * 
+     * @param product_id the id of the product
+     * @return String name of the product
+     * @throws SQLException if an error occurs while getting the product name from
+     *                      the
+     *                      database
+     */
     public static Product getProduct(int product_id) {
         Product product = null;
 
@@ -33,7 +43,13 @@ public class DB_Product {
         return product;
     }
 
-    // TODO: GET PRODUCT BY MERCHANT
+    /**
+     * This method is used to get all the products from the database
+     * 
+     * @param merchant_id the id of the merchant
+     * @return ArrayList of Product objects
+     * @throws SQLException if an error occurs while getting the products from the
+     */
     public static ArrayList<Product> getProductsByMercant(int merchant_id) {
         ArrayList<Product> productsByMerchant = new ArrayList<>();
 

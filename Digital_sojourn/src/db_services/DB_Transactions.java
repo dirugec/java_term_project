@@ -12,9 +12,20 @@ import Models.Transaction;
 
 public class DB_Transactions {
 
+    // Connect to the database
     static Connection connection = DB_Service.connect();
 
-    // Insert transactions
+    /**
+     * This method is used to insert a transaction into the database
+     * 
+     * @param customer_id the id of the customer making the transaction
+     * @param dateTrans   the date of the transaction
+     * @param amount      the amount of the transaction
+     * @param merchant_id the id of the merchant the transaction is made to
+     * @return int the id of the transaction
+     * @throws SQLException if an error occurs while inserting the transaction into
+     *                      the database
+     */
     public static int insertTransaction(int customer_id, String dateTrans, double amount, int merchant_id) {
 
         int transId = -1;
@@ -48,7 +59,17 @@ public class DB_Transactions {
         return transId;
     }
 
-    // Insert detail transactions
+    /**
+     * This method is used to insert a detail transaction into the database
+     * 
+     * @param trans_id   the id of the transaction the detail is associated with
+     * @param product_id the id of the product in the detail transaction
+     * @param price      the price of the product in the detail transaction
+     * @param quantity   the quantity of the product in the detail transaction
+     * @return int the id of the detail transaction
+     * @throws SQLException if an error occurs while inserting the detail
+     *                      transaction
+     */
     public static int insertDetailTransaction(int trans_id, int product_id, double price, double quantity) {
 
         int detailTransID = -1;
@@ -79,7 +100,16 @@ public class DB_Transactions {
 
     }
 
-    // Get Transactions by customer id
+    /**
+     * This method is used to get all the transactions from the database
+     * 
+     * @param customer_id the id of the customer making the transaction
+     * @param initialDate the initial date of the transactions
+     * @param finalDate   the final date of the transactions
+     * @return ArrayList of Transaction objects
+     * @throws SQLException if an error occurs while getting the transactions from
+     *                      the database
+     */
     public ArrayList<Transaction> getTransByCustomer(int customer_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transCustomerList = new ArrayList<>();
@@ -122,6 +152,15 @@ public class DB_Transactions {
         return transCustomerList;
     }
 
+    /**
+     * This method is used to get all the transactions from the database made by a
+     * customer
+     * 
+     * @param parentId the id of the parent customer
+     * @return ArrayList of Transaction objects
+     * @throws SQLException if an error occurs while getting the transactions from
+     *                      the database
+     */
     public ArrayList<Transaction> getFamilyTransList(int parentId) {
         ArrayList<Transaction> familyTransList = new ArrayList<Transaction>();
 
@@ -159,7 +198,17 @@ public class DB_Transactions {
 
     }
 
-    // //Get Transactions by Merchant
+    /**
+     * This method is used to get all the transactions from the database made to a
+     * merchant
+     * 
+     * @param merchant_id the id of the merchant the transaction is made to
+     * @param initialDate the initial date of the transactions
+     * @param finalDate   the final date of the transactions
+     * @return ArrayList of Transaction objects
+     * @throws SQLException if an error occurs while getting the transactions from
+     *                      the database
+     */
     public static ArrayList<Transaction> getTransByMerchant(int merchant_id, String initialDate, String finalDate) {
 
         ArrayList<Transaction> transMerchantList = new ArrayList<>();
@@ -202,6 +251,14 @@ public class DB_Transactions {
         return transMerchantList;
     }
 
+    /**
+     * This method is used to get the detail of a transaction from the database
+     * 
+     * @param transID the id of the transaction to get the detail of the transaction
+     * @return ArrayList of Det_Transaction objects
+     * @throws SQLException if an error occurs while getting the detail of the
+     *                      transaction from the database
+     */
     public ArrayList<Det_Transaction> getDetTransaction(int transID) {
         ArrayList<Det_Transaction> transDetailList = new ArrayList<>();
 

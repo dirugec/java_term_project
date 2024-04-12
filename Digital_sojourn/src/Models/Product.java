@@ -1,5 +1,10 @@
 package Models;
 
+/**
+ * This class is used to create a Product object with the following attributes:
+ * productID, name, price, merchantID
+ * 
+ */
 public class Product {
     private int productID;
     private String name;

@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -19,19 +18,20 @@ import db_services.DB_Product;
 import db_services.DB_Transactions;
 
 public class App {
-    private static int gUserType;
-    private static int gUserID;
 
-    private static Customer gCustomer;
-    private static Merchant gMerchant;
-    private static Merchant_User gMerchantUser;
-    private static Admin_User gAdmin;
+    private static int gUserType; // 1 = Guest, 2 = Admin, 3 = Merchant
+    private static int gUserID; // User ID for the current session
 
-    private static DB_Admin_Users dbAdminUser;
-    private static DB_Costumer dbCustomer;
-    private static DB_Product dbProduct;
-    private static DB_Merchant_Users dbMerchantUser;
-    private static DB_Transactions dbTransactions;
+    private static Customer gCustomer; // Guest User Object for the current session
+    private static Merchant gMerchant; // Merchant Object for the current session
+    private static Merchant_User gMerchantUser; // Merchant User Object for the current session
+    private static Admin_User gAdmin; // Admin User Object for the current session
+
+    private static DB_Admin_Users dbAdminUser; // Admin User Database Object
+    private static DB_Costumer dbCustomer; // Guest User Database Object
+    private static DB_Product dbProduct; // Product Database Object
+    private static DB_Merchant_Users dbMerchantUser; // Merchant User Database Object
+    private static DB_Transactions dbTransactions; // Transaction Database Object
 
     public static void main(String[] args) throws Exception {
 
@@ -40,9 +40,31 @@ public class App {
         dbMerchantUser = new DB_Merchant_Users();
         dbTransactions = new DB_Transactions();
 
+        // Display the login menu
         displayLoginMenu();
+
     }
 
+    // ********** GENERAL METHODS **********
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    /**
+     * Load the Guest User details based on the User ID
+     */
+    private static void loadGuestDetails() {
+        System.out.println("Please enter Primary User ID: ");
+        System.out.print("> ");
+
+        gUserID = Integer.parseInt(System.console().readLine());
+        gCustomer = dbCustomer.getCustomer(gUserID);
+    }
+
+    /**
+     * Display the header of the application
+     */
     private static void displayHeader() {
         System.out.println("____/--------------------\\___");
         System.out.println("|                            |");
@@ -51,6 +73,9 @@ public class App {
         System.out.println("----\\--------------------/----");
     }
 
+    /**
+     * Display the main menu for the User
+     */
     public static void displayLoginMenu() {
         boolean blnValidInput = false;
         boolean blnVerifiedPassword = false;
@@ -97,6 +122,12 @@ public class App {
         } while (!blnValidInput);
     }
 
+    /**
+     * Verify the password of the user
+     * 
+     * @return boolean - True if the password is verified
+     * @throws Exception - Invalid input for UserID (Numbers only)
+     */
     public static boolean verifyPassword() {
         // Retrieve login details
         boolean blnValidInput = false;
@@ -166,6 +197,10 @@ public class App {
         return blnVerifiedPassword;
     }
 
+    /**
+     * Display the main menu for the User based on the User Type (Guest, Admin,
+     * Merchant) and the User ID
+     */
     public static void displayMainMenuGuest() {
         boolean blnValid = false;
         int iChoice = -1;
@@ -215,10 +250,9 @@ public class App {
         } while (!blnValid);
     }
 
-    public static void displayViewPrimaryGuestDetails() {
-
-    }
-
+    /**
+     * Display the main menu for the Admin User based on the User ID
+     */
     public static void displayMainMenuAdminUser() {
         boolean blnValid = false;
         int iChoice = -1;
@@ -227,12 +261,12 @@ public class App {
                 // TODO: Change menu group by customer, merchant, admin
                 // TODO: working here
                 System.out.println("");
-                System.out.println("------------------------------");
-                System.out.println("[1] Create New Guest");
-                System.out.println("[2] Load Funds to Guest");
-                System.out.println("[3] View Guest Transactions");
-                System.out.println("[4] Admin Settings");
-                System.out.println("[5] Back");
+                System.out.println("-------------------------------");
+                System.out.println("--------     ADMIN     --------");
+                System.out.println("-------------------------------");
+                System.out.println("[1] Manage Guest Users");
+                System.out.println("[2] Manage Merchant Users");
+                System.out.println("[3] Back");
                 System.out.println("[0] Exit");
                 System.out.print("> ");
 
@@ -242,22 +276,19 @@ public class App {
                         System.exit(0);
                         break;
                     case 1:
-                        displayCreateGuestUser();
+                        displayViewPrimaryGuestDetails();
                         break;
                     case 2:
-                        displayLoadFunds();
+
                         break;
                     case 3:
-                        displayViewTransactions();
-                        break;
-                    case 4:
-                        // TODO: Change display settings and make it more generic or make an specific
-                        // method for admin?
-                        // displayAdminSettings();
-                        break;
-                    case 5:
                         blnValid = true;
                         break;
+                    // case 4:
+                    // break;
+                    // case 5:
+                    // blnValid = true;
+                    // break;
                     default:
                         break;
                 }
@@ -267,7 +298,11 @@ public class App {
         } while (!blnValid);
     }
 
-    // ********* Guest User Interface **********
+    // ********** GUEST USER INTERFACE **********
+
+    /**
+     * Display the Guest user balance based on the User ID
+     */
     private static void viewBalance() {
         System.out.println("");
         System.out.println("-------------------------------");
@@ -279,6 +314,9 @@ public class App {
         System.out.printf("Current Balance: $%,.2f\n\n", gCustomer.getBalance());
     }
 
+    /**
+     * Procedure to load funds to the Guest User
+     */
     private static void displayLoadFunds() {
         boolean blnValid = false;
 
@@ -286,12 +324,6 @@ public class App {
             try {
                 System.out.println("");
                 System.out.println("-".repeat(30));
-
-                if (gUserType == 2) { // if User Type is Admin
-                    System.out.print("Please enter Primary User ID: ");
-                    gUserID = Integer.parseInt(System.console().readLine());
-                    gCustomer = dbCustomer.getCustomer(gUserID);
-                }
 
                 System.out.print("Please enter amount to load: $");
                 double iAmount = Double.parseDouble(System.console().readLine());
@@ -311,6 +343,9 @@ public class App {
 
     }
 
+    /**
+     * Display the transactions for the Guest User based on the User ID
+     */
     private static void displayViewTransactions() {
 
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
@@ -394,10 +429,16 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Display the family members asociated with the Guest User based on the User ID
+     */
     private static ArrayList<Customer> displayFamilyMembers() {
         ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
         arrayFamilyMembers = dbCustomer.getFamilyMembers(gCustomer.getCustomerID());
 
+        System.out.println("");
+        System.out.println("-".repeat(100));
+        System.out.println("-".repeat(42) + " Family Members " + "-".repeat(42));
         System.out.println("-".repeat(100));
         System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s %-10s\n", "ID", "First Name", "Last Name", "Email",
                 "Phone",
@@ -415,6 +456,10 @@ public class App {
         return arrayFamilyMembers;
     }
 
+    /**
+     * Manage the family members operations (Add, Deactivate/Activate, View
+     * Transactions) for the Guest User based on the User ID
+     */
     private static void FamilyMembersManage() {
 
         boolean blnValid = false;
@@ -505,21 +550,29 @@ public class App {
 
     }
 
+    /**
+     * Update the Guest User details based on the User ID
+     */
     private static void updateCustomerDetails() {
-        // Call Customer Details script
         boolean blnValid = false;
         boolean blnConfirmSave = false;
         String strConfirm;
         String strTempDetail;
         int iChoice;
         Customer tempCustomer = gCustomer;
+
         do {
             try {
+                System.out.println("");
                 System.out.println("-".repeat(80));
-                System.out.println("First Name\t\tLast Name\t\tEmail\t\tPhone");
-                System.out.printf("[1] %s\t\t[2] %s\t\t[3] %s\t\t[4] %d\n", gCustomer.getFirstName(),
-                        gCustomer.getLastName(), gCustomer.getEmail(), gCustomer.getPhone());
-                System.out.println("[5] Back\t\t[0] Exit\t\t\n\n");
+                System.out.println("-".repeat(30) + " Guest User Details " + "-".repeat(30));
+                System.out.println("-".repeat(80));
+                System.out.printf("%-15s %-15s %-25s %-15s\n", "First Name", "Last Name",
+                        "Email", "Phone");
+                System.out.println("-".repeat(80));
+                System.out.printf("%-15s %-15s %-25s %-15s\n", "[1]" + gCustomer.getFirstName(),
+                        "[2]" + gCustomer.getLastName(), "[3]" + gCustomer.getEmail(), "[4]" + gCustomer.getPhone());
+                System.out.println("\n\t[5] Back\t\t[0] Exit\t\t\n\n");
                 System.out.print("Please choose a detail to edit: ");
 
                 iChoice = Integer.parseInt(System.console().readLine());
@@ -535,8 +588,7 @@ public class App {
                             System.out.print("Save Y/N?: ");
                             strConfirm = (System.console().readLine()).toUpperCase();
                             if ((!strConfirm.equals("Y")) && (!strConfirm.equals("N"))) { // If
-                                                                                          // incorrect
-                                                                                          // input
+                                // input
                                 System.out.println("Please enter Y/N");
                             } else if (strConfirm.toUpperCase().equals("Y")) { // Save to the Customer object
                                 blnConfirmSave = true;
@@ -612,6 +664,12 @@ public class App {
                 gCustomer.getEmail(), gCustomer.getActive());
     }
 
+    /**
+     * Deactivate or Activate a family member based on the User ID
+     * 
+     * @param customer - Customer object to deactivate or activate
+     * 
+     */
     private static void deactivateFamilyMember(Customer customer) {
 
         System.out.println("-".repeat(100));
@@ -631,6 +689,9 @@ public class App {
 
     }
 
+    /**
+     * Display the transactions for the family members based on the User ID
+     */
     private static void viewFamilyTransactions() {
         ArrayList<Transaction> arrayFamilyTrans = new ArrayList<Transaction>();
 
@@ -662,6 +723,10 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Display the settings for the Guest User based on the User ID
+     * Manage the Guest User details (Update Details, Change Password, Back, Exit)
+     */
     private static void displaySettings() {
 
         boolean blnValid = false;
@@ -700,6 +765,9 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Change the password for the Guest User based on the User ID
+     */
     private static void changePassword() {
         System.out.println("------------------------------");
         // Receive the new password
@@ -716,6 +784,9 @@ public class App {
 
     // ********** MERCHANT USER INTERFACE **********
 
+    /**
+     * Display the main menu for the Merchant User based on the User ID
+     */
     public static void displayMainMenuMerchantUser() {
         boolean blnValid = false;
         int iChoice = -1;
@@ -756,7 +827,11 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Process the transaction for the Merchant User based on the User ID
+     */
     private static void processTransaction() {
+
         ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
         ArrayList<Product> arrTotalCart = new ArrayList<Product>();
         ArrayList<Integer> arrQuantity = new ArrayList<Integer>();
@@ -959,10 +1034,76 @@ public class App {
     }
     // ******** ADMINISTRATOR USER INTERFACE **********
 
+    /**
+     * Display the main menu for the Admin User for managing the Guest Users
+     */
+    public static void displayViewPrimaryGuestDetails() {
+
+        boolean blnValid = false;
+        int iChoice = -1;
+
+        do {
+            try {
+                System.out.println("");
+                System.out.println("-".repeat(40));
+                System.out.println("-------- Primary Guest Details --------");
+                System.out.println("-".repeat(40));
+                System.out.println("[1] Create Guest User");
+                System.out.println("[2] View Transaction History");
+                System.out.println("[3] Load Funds");
+                System.out.println("[4] View/Update Details");
+                System.out.println("[5] View Family Members");
+                System.out.println("[6] Back");
+                System.out.println("[0] Exit");
+                System.out.print("> ");
+
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        displayCreateGuestUser();
+                        break;
+                    case 2:
+                        displayViewTransactions();
+                        break;
+                    case 3:
+                        loadGuestDetails();
+                        displayLoadFunds();
+                        break;
+                    case 4:
+                        loadGuestDetails();
+                        updateCustomerDetails();
+                        break;
+                    case 5:
+                        loadGuestDetails();
+                        displayFamilyMembers();
+                        break;
+                    case 6:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+
+            } catch (Exception e) {
+
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
+
+    /**
+     * Method to create a new Guest User
+     */
     private static void displayCreateGuestUser() {
 
         boolean blnValid = false;
-        System.out.println("------------------------------");
+        System.out.println("");
+        System.out.println("-----------------------------------");
+        System.out.println("-------- Create Guest User --------");
+        System.out.println("-----------------------------------\n");
         System.out.println("Enter the following details to create a new user");
         System.out.print("First Name: ");
         String strFirstName = System.console().readLine();
@@ -987,8 +1128,13 @@ public class App {
             // Call the script to create the new user
             Customer newCustomer = new Customer(strFirstName, strLastName, strEmail, iPhone, strPassword, 1);
 
-            dbCustomer.addCustomer(newCustomer);
-            blnValid = true;
+            try {
+                dbCustomer.addCustomer(newCustomer);
+                System.out.println("New user created successfully");
+            } catch (Exception e) {
+                System.out.println("Error creating new user: " + e);
+            }
+
         }
         blnValid = true;
 

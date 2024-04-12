@@ -10,11 +10,21 @@ import Models.Merchant;
 
 public class DB_Merchant {
 
+    // Connect to the database
     static Connection connection = DB_Service.connect();
 
+    /**
+     * This method is used to get the merchant name of the merchant
+     * 
+     * @param merchant_id the id of the merchant
+     * @return String name of the merchant
+     * @throws SQLException if an error occurs while getting the merchant name from
+     *                      the
+     *                      database
+     */
     public static Merchant getMerchant(int merchant_id) {
 
-        Merchant merchant = null;
+        Merchant merchant = null; // Initialize the merchant object to null
 
         try {
             String getMerchantMysql = "SELECT merchant_id, name FROM merchant WHERE merchant_id = ?";
@@ -34,9 +44,14 @@ public class DB_Merchant {
         return merchant;
     }
 
+    /**
+     * This method is used to get all the merchants from the database
+     * 
+     * @return ArrayList of Merchant objects
+     */
     public static ArrayList<Merchant> getAllMerchants() {
 
-        ArrayList<Merchant> merchants = new ArrayList<>();
+        ArrayList<Merchant> merchants = new ArrayList<>(); // Initialize the merchants list
 
         try {
             String getAllMerchantsMySql = "SELECT merchant_id, name FROM merchant";

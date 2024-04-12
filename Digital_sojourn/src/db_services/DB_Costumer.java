@@ -7,12 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.mysql.cj.xdevapi.PreparableStatement;
-
 import Models.Customer;
 
 public class DB_Costumer {
-
+    // Connect to the database
     static Connection connection = DB_Service.connect();
 
     /**
@@ -30,7 +28,7 @@ public class DB_Costumer {
         try {
             connection.setAutoCommit(false);
             // Add Customer
-            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, user_type active) VALUES(?,?,?,?,?,?,?,?,?)";
+            String addCustomerMySql = "INSERT INTO customers(first_name, last_name,email, phone, balance, parent_id, password, user_type, active) VALUES(?,?,?,?,?,?,?,?,?)";
             PreparedStatement addCustomer = connection.prepareStatement(addCustomerMySql,
                     Statement.RETURN_GENERATED_KEYS); // preparableStatement make shure avoid the script injection
             // Statement.RETURN_GENERATED_KEY retunr the key generated
@@ -42,7 +40,7 @@ public class DB_Costumer {
             addCustomer.setInt(6, customer.getParentId());
             addCustomer.setString(7, customer.getPassword());
             addCustomer.setInt(8, customer.getUserType());
-            addCustomer.setInt(8, customer.getActive());
+            addCustomer.setInt(9, customer.getActive());
 
             addCustomer.executeUpdate();
 
@@ -68,6 +66,15 @@ public class DB_Costumer {
 
     }
 
+    /**
+     * This method is used to check if a customer exists in the database.
+     * 
+     * @param customerID This is the customer ID to be checked.
+     * @return boolean This returns true if the customer exists, and false
+     *         otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public boolean checkIfCustomerExist(int customerID) {
 
         boolean customerExist = false;
@@ -91,7 +98,14 @@ public class DB_Costumer {
         return customerExist;
     }
 
-    // READ Customer Info
+    /**
+     * This method is used to get a customer from the database.
+     * 
+     * @param customer_id This is the customer ID to be retrieved.
+     * @return Customer This returns a customer object.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public Customer getCustomer(int customer_id) {
         Customer customer = null;
         try {
@@ -123,7 +137,13 @@ public class DB_Costumer {
         return customer;
     }
 
-    // Read All Customers
+    /**
+     * This method is used to get all customers from the database.
+     * 
+     * @return ArrayList<Customer> This returns a list of all customers.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public static ArrayList<Customer> getAllCustomers() {
 
         ArrayList<Customer> customers = new ArrayList<>();
@@ -156,8 +176,19 @@ public class DB_Costumer {
         return customers;
     }
 
-    // Updtae Customer Info
-
+    /**
+     * This method is used to update customer information in the database.
+     * 
+     * @param customer_id This is the customer ID to be updated.
+     * @param phone       This is the new phone number of the customer.
+     * @param first_name  This is the new first name of the customer.
+     * @param last_name   This is the new last name of the customer.
+     * @param email       This is the new email of the customer.
+     * @param active      This is the new active status of the customer.
+     * @return boolean This returns true if the customer was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
     public boolean updateCustomerInfo(int customer_id, int phone, String first_name, String last_name,
             String email, int active) {
         boolean success = false;
@@ -183,7 +214,17 @@ public class DB_Costumer {
         return success;
     }
 
-    // // Update Customer Status Active/Desactive
+    /**
+     * This method is used to update the active status of a customer in the
+     * database.
+     * 
+     * @param customer_id This is the customer ID to be updated.
+     * @param active      This is the new active status of the customer.
+     * @return boolean This returns true if the customer was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     * 
+     */
     public static boolean updateActiveStatus(int customer_id, int active) {
 
         boolean success = false;
@@ -206,6 +247,13 @@ public class DB_Costumer {
         return success;
     }
 
+    /**
+     * This method is used to get the balance of a customer from the database.
+     * 
+     * @param customer_id This is the customer ID to be retrieved.
+     * @return double This returns the balance of the customer.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
     public static double getCustomerBalance(int customer_id) {
 
         double balance = -1;
@@ -229,9 +277,17 @@ public class DB_Costumer {
         return balance;
     }
 
-    // //Update customer Balance
-    public static boolean updateBalance(int customer_id, double newBalance) {
-        boolean blnUpdateBalance = false;
+    /**
+     * This method is used to update the balance of a customer in the database.
+     * 
+     * @param customer_id customer id to update balance
+     * @param newBalance  new balance to update
+     * @return String success if the balance was successfully updated, and an error
+     *         message otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
+    public static String updateBalance(int customer_id, double newBalance) {
+
         try {
             connection.setAutoCommit(true);
             String loadFundsMysql = "UPDATE customers SET balance = ? WHERE customer_id=?";
@@ -239,15 +295,23 @@ public class DB_Costumer {
             loadFunds.setDouble(1, newBalance);
             loadFunds.setInt(2, customer_id);
             loadFunds.executeUpdate();
-            // connection.close();
-            blnUpdateBalance = true;
+            return "success";
+
         } catch (SQLException e) {
-            System.out.println("ERROR: " + e.getMessage());
+            return ("An error updating customer balance has occured:" +
+                    e.getMessage());
         }
-        return blnUpdateBalance;
+
     }
 
-    // // Get customer Password by ID customer
+    /**
+     * This method is used to get the customer password of the customer
+     * 
+     * @param customer_id the id of the customer
+     * @return String the password of the customer
+     * @throws SQLException if an error occurs while getting the customer password
+     *                      from the database
+     */
     public String getCustomerPassword(int customer_id) {
         String pwrd = "";
 
@@ -269,7 +333,15 @@ public class DB_Costumer {
         return pwrd;
     }
 
-    // // Update Customer Password
+    /**
+     * This method is used to update the password of a customer in the database.
+     * 
+     * @param customer_id customer id to update password
+     * @param password    new password to update
+     * @return boolean This returns true if the password was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
     public static boolean updatePassword(int customer_id, String password) {
 
         boolean success = false;
@@ -292,7 +364,14 @@ public class DB_Costumer {
         return success;
     }
 
-    // // Get Family Members
+    /**
+     * This method is used to get the family members of a customer from the
+     * database.
+     * 
+     * @param customer_id This is the customer ID to be retrieved.
+     * @return ArrayList<Customer> This returns a list of all family members.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
     public ArrayList<Customer> getFamilyMembers(int customer_id) {
 
         ArrayList<Customer> familyMembers = new ArrayList<>();
@@ -328,7 +407,15 @@ public class DB_Costumer {
 
     }
 
-    // // Add family member
+    /**
+     * This method is used to update the parent_id of a customer in the database.
+     * 
+     * @param customer_id customer id to update parent_id
+     * @param parent_id   new parent_id to update
+     * @return boolean This returns true if the parent_id was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
+     */
     public boolean updateParentId(int customer_id, int parent_id) {
         boolean success = false;
 
