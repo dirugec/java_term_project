@@ -4,7 +4,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.io.Console;
 
-import Models.Admin_User;
 import Models.Customer;
 import Models.Det_Transaction;
 import Models.Merchant;
@@ -24,21 +23,17 @@ public class App {
     private static int gUserID; // User ID for the current session
 
     private static Customer gCustomer; // Guest User Object for the current session
-    private static Merchant gMerchant; // Merchant Object for the current session
     private static Merchant_User gMerchantUser; // Merchant User Object for the current session
-    private static Admin_User gAdmin; // Admin User Object for the current session
-
     private static DB_Admin_Users dbAdminUser; // Admin User Database Object
     private static DB_Costumer dbCustomer; // Guest User Database Object
-    private static DB_Product dbProduct; // Product Database Object
-    //private static DB_Merchant_Users dbMerchantUser; // Merchant User Database Object
     private static DB_Transactions dbTransactions; // Transaction Database Object
+    private static DB_Product dbProduct; // Product Database Object
 
     public static void main(String[] args) throws Exception {
 
         dbCustomer = new DB_Costumer();
         dbAdminUser = new DB_Admin_Users();
-        //dbMerchantUser = new DB_Merchant_Users();
+        dbProduct = new DB_Product();
         dbTransactions = new DB_Transactions();
 
         // Display the login menu
@@ -64,19 +59,61 @@ public class App {
     }
 
     /**
+     * Dysplay main titles on the user screen
      * 
      * @param title
      */
-    private static void printHeaders(String title, int fullLength) {
+    private static void printHeaders(String title) {
 
-        int dashRepeat = (fullLength - (title.length() + 2)) / 2;
+        int spaceRepeat = (30 - title.length()) / 2;
+        String strTitle = " ".repeat(spaceRepeat) + title + " ".repeat(spaceRepeat);
+        clearScreen();
+        System.out.print(" ".repeat(40));
+        System.out.println("____/--------------------\\___");
+        System.out.print(" ".repeat(40));
+        System.out.println("|                            |");
+        System.out.print(" ".repeat(40));
+        System.out.println(strTitle);
+        System.out.print(" ".repeat(40));
+        System.out.println("|                            |");
+        System.out.print(" ".repeat(40));
+        System.out.println("----\\--------------------/----");
 
-        System.out.println("");
-        System.out.println("-".repeat(fullLength));
-        System.out.println("-".repeat(dashRepeat) + " " + title + " "
-                + ((title.length() % 2 == 0) ? "" : "-") + "-".repeat(dashRepeat));
-        System.out.println("-".repeat(fullLength));
+    }
 
+    /**
+     * Propmt user to press Enter key to continue
+     */
+    public static boolean blnRepeatTransaction(String message) {
+
+        boolean blnConfirm = false;
+        boolean blnReturn = false;
+        do {
+            System.out.print(message);
+            System.out.print("(Y/N):");
+            String strContinue = System.console().readLine();
+            if (strContinue.toUpperCase().equals("Y")) {
+                blnReturn = true;
+                blnConfirm = true;
+            } else if (strContinue.toUpperCase().equals("N")) {
+                blnReturn = false;
+                blnConfirm = true;
+
+            } else {
+                System.out.println("Invalid input. Please enter Y/N");
+
+            }
+        } while (!blnConfirm);
+        return blnReturn;
+
+    }
+
+    public static void pressEnterToContinue() {
+        System.out.println("Press Enter key to continue...");
+        try {
+            System.in.read();
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -104,7 +141,7 @@ public class App {
         do {
             try { // Determine type of User
                 displayHeader();
-                printHeaders("LOGIN", 50);
+
                 System.out.println("[1] Guest");
                 System.out.println("[2] Admin");
                 System.out.println("[3] Merchant");
@@ -188,7 +225,7 @@ public class App {
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
-                            gAdmin = dbAdminUser.getAdminUser(gUserID);
+                            dbAdminUser.getAdminUser(gUserID);
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
                         }
@@ -228,7 +265,7 @@ public class App {
         displayHeader();
         do {
             try {
-                printHeaders("MAIN MENU", 40);
+                printHeaders("GUEST USER MENU");
                 System.out.println("[1] View Balance");
                 System.out.println("[2] Load Funds");
                 System.out.println("[3] View Transactions");
@@ -252,7 +289,7 @@ public class App {
                         displayViewTransactions();
                         break;
                     case 4:
-                        FamilyMembersManage();
+                        familyMembersManage();
                         break;
                     case 5:
                         displaySettings();
@@ -277,7 +314,7 @@ public class App {
         int iChoice = -1;
         do {
             try {
-                printHeaders("ADMIN MAIN MENU", 40);
+                printHeaders("ADMIN MAIN MENU");
                 System.out.println("[1] Manage Guest Users");
                 System.out.println("[2] Manage Merchant Users");
                 System.out.println("[3] Back");
@@ -293,16 +330,11 @@ public class App {
                         displayViewPrimaryGuestDetails();
                         break;
                     case 2:
-
+                        // displayMainMenuMerchantUser();
                         break;
                     case 3:
                         blnValid = true;
                         break;
-                    // case 4:
-                    // break;
-                    // case 5:
-                    // blnValid = true;
-                    // break;
                     default:
                         break;
                 }
@@ -318,11 +350,12 @@ public class App {
      * Display the Guest user balance based on the User ID
      */
     private static void viewBalance() {
-        printHeaders("VIEW BALANCE", 40);
+        printHeaders("VIEW BALANCE");
 
         System.out.printf("First Name: %s\n", gCustomer.getFirstName());
         System.out.printf("Last Name: %s\n", gCustomer.getLastName());
         System.out.printf("Current Balance: $%,.2f\n\n", gCustomer.getBalance());
+        pressEnterToContinue();
     }
 
     /**
@@ -334,7 +367,7 @@ public class App {
         do {
             try {
 
-                printHeaders("LOAD FUNDS", 40);
+                printHeaders("LOAD FUNDS");
 
                 System.out.print("Please enter amount to load: $");
                 double iAmount = Double.parseDouble(System.console().readLine());
@@ -345,7 +378,14 @@ public class App {
                     System.out.printf("$%,.2f has been added to %s\n", iAmount,
                             gCustomer.getFirstName() + " " + gCustomer.getLastName());
                     System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.getCustomerBalance(gUserID));
-                    blnValid = true;
+                    System.out.println();
+                    if (blnRepeatTransaction("Do you want to load more funds?")) {
+                        blnValid = false;
+                    } else {
+                        blnValid = true;
+
+                    }
+
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input. Numbers only please ");
@@ -365,7 +405,7 @@ public class App {
         boolean blnValid = false;
         do {
             try {
-                printHeaders("VIEW TRANSACTIONS", 70);
+                printHeaders("VIEW TRANSACTIONS");
 
                 if (gUserType == 2) { // if User Type is Admin
                     System.out.print("Please enter Primary User ID: ");
@@ -431,11 +471,20 @@ public class App {
 
                     }
                     System.out.println("*".repeat(70));
+
+                }
+                if (blnRepeatTransaction("Do you want to see more transactions?")) {
+                    blnValid = false;
+                    break;
+                } else {
                     blnValid = true;
+                    break;
+
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input.  " + e);
             }
+
         } while (!blnValid);
     }
 
@@ -446,7 +495,7 @@ public class App {
         ArrayList<Customer> arrayFamilyMembers = new ArrayList<Customer>();
         arrayFamilyMembers = dbCustomer.getFamilyMembers(gCustomer.getCustomerID());
 
-        printHeaders("FAMILY MEMBERS", 100);
+        printHeaders("FAMILY MEMBERS");
         System.out.printf("%-4s %-15s %-15s %-20s %-15s %-15s %-10s\n", "ID", "First Name", "Last Name", "Email",
                 "Phone",
                 "Balance", "Active");
@@ -460,6 +509,9 @@ public class App {
                     familyMember.getEmail(), familyMember.getPhone(), familyMember.getBalance(),
                     (familyMember.getActive() == 1) ? "Active" : "Inactive");
         }
+        System.out.println("-".repeat(100));
+        System.out.println();
+
         return arrayFamilyMembers;
     }
 
@@ -467,7 +519,7 @@ public class App {
      * Manage the family members operations (Add, Deactivate/Activate, View
      * Transactions) for the Guest User based on the User ID
      */
-    private static void FamilyMembersManage() {
+    private static void familyMembersManage() {
 
         boolean blnValid = false;
         char cChoice;
@@ -570,7 +622,7 @@ public class App {
 
         do {
             try {
-                printHeaders("GUEST USER DETAILS", 80);
+                printHeaders("GUEST USER DETAILS");
                 System.out.printf("%-15s %-15s %-25s %-15s\n", "First Name", "Last Name",
                         "Email", "Phone");
                 System.out.println("-".repeat(80));
@@ -672,7 +724,7 @@ public class App {
      * Deactivate or Activate a family member based on the User ID
      * 
      * @param customer - Customer object to deactivate or activate
-     * 
+     * @throws Exception - Error getting family transactions
      */
     private static void deactivateFamilyMember(Customer customer) {
 
@@ -736,7 +788,7 @@ public class App {
         int iChoice = -1;
         do {
             try {
-                printHeaders("SETTINGS", 80);
+                printHeaders("SETTINGS");
 
                 System.out.printf("%-15s %-15s %-20s %-15s %-15s \n", "First Name", "Last Name", "Email", "Phone",
                         "Balance");
@@ -807,12 +859,12 @@ public class App {
         int iChoice = -1;
         do {
             try {
-                //displayHeader();
-                printHeaders("MERCHANT MAIN MENU", 40);
+                printHeaders("MERCHANT MAIN MENU");
                 System.out.println("[1] Accomplish Transaction");
                 System.out.println("[2] View Transaction History");
-                System.out.println("[3] Settings");
-                System.out.println("[4] Back");
+                System.out.println("[3] Manage Products");
+                System.out.println("[4] Settings");
+                System.out.println("[5] Back");
                 System.out.println("[0] Exit");
                 System.out.print("> ");
 
@@ -828,9 +880,12 @@ public class App {
                         displayViewMerchantTransactions();
                         break;
                     case 3:
-                        displayMerchantUserSettings();
+                        displayManageProducts();
                         break;
                     case 4:
+                        displayMerchantUserSettings();
+                        break;
+                    case 5:
                         blnValid = true;
                         break;
                     default:
@@ -855,11 +910,11 @@ public class App {
         int iChoice = -1;
         int iQuantity = 0;
         String strConfirm;
-        
+
         do {
             // Display Product List
             displayHeader();
-            printHeaders("PRODUCT LIST", 70);
+            printHeaders("PRODUCT LIST");
             for (Product product : arrProductList) {
                 System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
             }
@@ -881,7 +936,7 @@ public class App {
                     System.out.print("Enter Quantity: ");
                     iQuantity = Integer.parseInt(System.console().readLine());
                     // Save into shoppingCart variable
-                    arrTotalCart.add(DB_Product.getProduct(iChoice));
+                    arrTotalCart.add(dbProduct.getProduct(iChoice));
                     arrQuantity.add(iQuantity);
                     do {
                         // Ask if choose another or finish transaction
@@ -891,6 +946,7 @@ public class App {
                             // Loop again to present product list
                             blnYesNoValid = true;
                         } else if (strConfirm.equals("N")) {
+
                             blnValid = true;
                             blnYesNoValid = true;
                         } else {
@@ -914,7 +970,7 @@ public class App {
         do {
             displayHeader();
             // Display Total Transaction and ask for Confirmation
-            printHeaders("SHOPPING CART", 100);
+            printHeaders("SHOPPING CART");
             double dSubTotal = 0.0d;
             double dTotalAmount = 0.0d;
             for (int i = 0; i < arrTotalCart.size(); i++) {
@@ -958,10 +1014,11 @@ public class App {
                         }
                         // Deduct amount from Guest balance
                         double newBalance = tempCustomer.getBalance() - dTotalAmount;
-                        if (DB_Costumer.updateBalance(iGuestID, newBalance)) {
+                        if (dbCustomer.updateBalance(iGuestID, newBalance)) {
                             System.out.println("SUCCESS: Transaction debited");
                         }
                         blnYesNoValid = true;
+                        pressEnterToContinue();
                     } else {
                         System.out.println("ERROR: Not enough funds");
                     }
@@ -972,11 +1029,16 @@ public class App {
                 // Deduct total purchase from Guest debit
             } else if (strConfirm.equals("N")) {
                 blnYesNoValid = true;
+                pressEnterToContinue();
             } else {
                 System.out.println("ERROR: Please enter Y/N");
             }
         } while (!blnYesNoValid);
     }
+
+    /**
+     * Display the transactions for the Merchant User based on the User ID
+     */
     private static void displayViewMerchantTransactions() {
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
         ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
@@ -985,9 +1047,7 @@ public class App {
 
         do {
             try {
-                clearScreen();
-                displayHeader();
-                printHeaders("MERCHANT TRANSACTIONS", 50);
+                printHeaders("MERCHANT TRANSACTIONS");
 
                 System.out.print("Please enter start date MM/DD/YYYY: ");
                 String iStartDate = System.console().readLine();
@@ -1049,14 +1109,25 @@ public class App {
 
                     }
                     System.out.println("*".repeat(70));
+
+                }
+                // Ask if user wants to see more transactions
+                if (blnRepeatTransaction("Do you want to see more transactions?")) {
+                    blnValid = false;
+                    break;
+                } else {
                     blnValid = true;
+                    break;
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input.  " + e);
             }
         } while (!blnValid);
     }
-    
+
+    /**
+     * Display the settings for the Merchant User based on the User ID
+     */
     private static void displayMerchantUserSettings() {
         boolean blnValid = false;
         int iChoice = -1;
@@ -1068,7 +1139,8 @@ public class App {
                 System.out.println("-------------------------------------------------------------------------------");
                 System.out.printf(format, "First Name", "Last Name", "Email", "Phone", "Role");
                 System.out.printf(format + "\n\n", gMerchantUser.getFirstName(),
-                        gMerchantUser.getLastName(), gMerchantUser.getEmail(),gMerchantUser.getPhone(), gMerchantUser.getRole());
+                        gMerchantUser.getLastName(), gMerchantUser.getEmail(), gMerchantUser.getPhone(),
+                        gMerchantUser.getRole());
 
                 System.out.print("[1] Update Details\t[2] Change Password\t[3] Back\t[0] Exit\n\n");
                 System.out.print("> ");
@@ -1096,6 +1168,9 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Change the profile info for the Merchant User based on the User ID
+     */
     private static void updateMerchantUserDetails() {
         boolean blnValid = false;
         boolean blnConfirmSave = false;
@@ -1106,14 +1181,14 @@ public class App {
 
         do {
             try {
-                System.out.println("");
-                System.out.println("-".repeat(82));
-                System.out.println("-".repeat(31) + " Guest User Details " + "-".repeat(31));
-                System.out.println("-".repeat(82));
-                System.out.printf("%-15s %-15s %-25s %-15s %-15s\n", "First Name", "Last Name", "Email", "Phone", "Role");
+                printHeaders("MERCHANT USER DETAILS");
+
+                System.out.printf("%-15s %-15s %-25s %-15s %-15s\n", "First Name", "Last Name", "Email", "Phone",
+                        "Role");
                 System.out.println("-".repeat(82));
                 System.out.printf("%-15s %-15s %-25s %-15s %-15s\n", "[1]" + tempMerchant_User.getFirstName(),
-                        "[2]" + tempMerchant_User.getLastName(), "[3]" + tempMerchant_User.getEmail(), "[4]" + tempMerchant_User.getPhone(), "[5]" + tempMerchant_User.getRole());
+                        "[2]" + tempMerchant_User.getLastName(), "[3]" + tempMerchant_User.getEmail(),
+                        "[4]" + tempMerchant_User.getPhone(), "[5]" + tempMerchant_User.getRole());
                 System.out.println("\n\t[6] Back\t\t[0] Exit\t\t\n\n");
                 System.out.print("Please choose a detail to edit: ");
 
@@ -1220,13 +1295,147 @@ public class App {
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValid);
-        DB_Merchant_Users.updateMerchantUserInfo(gUserID, tempMerchant_User.getFirstName(), tempMerchant_User.getLastName(), tempMerchant_User.getEmail(), tempMerchant_User.getPhone(), tempMerchant_User.getRole());
+        DB_Merchant_Users.updateMerchantUserInfo(gUserID, tempMerchant_User.getFirstName(),
+                tempMerchant_User.getLastName(), tempMerchant_User.getEmail(), tempMerchant_User.getPhone(),
+                tempMerchant_User.getRole());
     }
-    
+
+    public static void displayProductsByMerchant() {
+        ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
+        printHeaders("PRODUCT LIST");
+        System.out.printf("%-6s %-20s %-10s\n", "ID", "Product", "Price");
+        System.out.println("-".repeat(40));
+        for (Product product : arrProductList) {
+            System.out.printf("%-6s %-20s $%,6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+
+        }
+        System.out.println("-".repeat(40));
+        System.out.println();
+
+    }
+
+    /**
+     * Add a new product for the Merchant User based on the User ID
+     */
+    public static void addProduct() {
+        boolean blnValid = false;
+        String strProductName;
+        double dProductPrice;
+        int iMerchantID = gMerchantUser.getMerchantID();
+
+        do {
+            clearScreen();
+            printHeaders("ADD PRODUCT");
+            System.out.print("Enter Product Name: ");
+            strProductName = System.console().readLine();
+            System.out.print("Enter Product Price: ");
+            dProductPrice = Double.parseDouble(System.console().readLine());
+            System.out.print("\nIs this information correct? Y/N: ");
+            char cChoice = System.console().readLine().charAt(0);
+            if (Character.toLowerCase(cChoice) == 'y') {
+                // Call the script to create the new product
+
+                try {
+                    dbProduct.createProduct(strProductName, dProductPrice, iMerchantID);
+                    System.out.println("\nNew product created successfully");
+                    if (blnRepeatTransaction("Do you want to add another product?")) {
+                        blnValid = false;
+                    } else {
+                        blnValid = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error creating new product: " + e);
+                }
+            } else {
+                blnValid = true;
+            }
+
+        } while (!blnValid);
+    }
+
+    public static void displayUpdateProduct() {
+        boolean blnValid = false;
+
+        Product productUpdate;
+        do {
+            // clearScreen();
+            // printHeaders("UPDATE PRODUCT");
+
+            System.out.print("Enter Product ID to update: ");
+            int iProductID = Integer.parseInt(System.console().readLine());
+
+            productUpdate = dbProduct.getProduct(iProductID);
+            System.out.print("\nEnter product name: ");
+            productUpdate.setName(System.console().readLine());
+            System.out.print("\nEnter product price: ");
+            productUpdate.setPrice(Double.parseDouble(System.console().readLine()));
+            System.out.print("\nIs this information correct? Y/N: ");
+            char cChoice = System.console().readLine().charAt(0);
+            if (Character.toLowerCase(cChoice) == 'y') {
+                // Call the script to update the product
+                try {
+                    dbProduct.updateProduct(productUpdate);
+
+                    if (blnRepeatTransaction("\nDo you want to update another product?")) {
+                        blnValid = false;
+                    } else {
+                        blnValid = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error updating product: " + e);
+                }
+            } else {
+                blnValid = true;
+            }
+
+        } while (!blnValid);
+    }
+
+    public static void displayManageProducts() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            clearScreen();
+            printHeaders("PRODUCT LIST");
+
+            try {
+                displayProductsByMerchant();
+
+                System.out.print("[1] Add Product\t[2] Update \t[3] Back\t[0] Exit\n\n");
+                System.out.print("> ");
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        addProduct();
+                        break;
+                    case 2:
+                        displayUpdateProduct();
+                        break;
+                    case 3:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+
+        } while (!blnValid);
+
+    }
+
+    /**
+     * Change the password for the Merchant User based on the User ID
+     * 
+     */
     private static void changeMerchantPassword() {
         boolean blnValid = false;
         do {
-            //clearScreen();
+            // clearScreen();
             System.out.println("------------------------------");
             // Receive the new password
             System.out.print("Please enter new password: ");
@@ -1249,6 +1458,7 @@ public class App {
             }
         } while (!blnValid);
     }
+
     // ******** ADMINISTRATOR USER INTERFACE **********
 
     /**
@@ -1261,7 +1471,7 @@ public class App {
 
         do {
             try {
-                printHeaders("MANAGE GUEST USERS", 40);
+                printHeaders("MANAGE GUEST USERS");
                 System.out.println("[1] Create Guest User");
                 System.out.println("[2] View Transaction History");
                 System.out.println("[3] Load Funds");
@@ -1292,7 +1502,7 @@ public class App {
                         break;
                     case 5:
                         loadGuestDetails();
-                        displayFamilyMembers();
+                        familyMembersManage();
                         break;
                     case 6:
                         blnValid = true;
@@ -1314,40 +1524,48 @@ public class App {
     private static void displayCreateGuestUser() {
 
         boolean blnValid = false;
-        printHeaders("CREATE GUEST USER", 50);
-        System.out.println("Enter the following details to create a new user");
-        System.out.print("First Name: ");
-        String strFirstName = System.console().readLine();
-        System.out.print("Last Name: ");
-        String strLastName = System.console().readLine();
-        System.out.print("Email: ");
-        String strEmail = System.console().readLine();
-        System.out.print("Phone: ");
-        int iPhone = Integer.parseInt(System.console().readLine());
-        System.out.print("Password: ");
-        String strPassword = System.console().readLine();
 
-        // Display the details entered
-        System.out.println("-".repeat(80));
-        System.out.printf("%-15s %-15s %-20s %-15s\n", "First Name", "Last Name", "Email", "Phone");
-        System.out.printf("%-15s %-15s %-20s %-15s\n", strFirstName, strLastName, strEmail, iPhone);
-        System.out.println("-".repeat(80));
-        System.out.print("Is this information correct? Y/N: ");
-        char cChoice = System.console().readLine().charAt(0);
+        do {
+            printHeaders("CREATE GUEST USER");
+            System.out.println("Enter the following details to create a new user");
+            System.out.print("First Name: ");
+            String strFirstName = System.console().readLine();
+            System.out.print("Last Name: ");
+            String strLastName = System.console().readLine();
+            System.out.print("Email: ");
+            String strEmail = System.console().readLine();
+            System.out.print("Phone: ");
+            int iPhone = Integer.parseInt(System.console().readLine());
+            System.out.print("Password: ");
+            String strPassword = System.console().readLine();
 
-        if (Character.toLowerCase(cChoice) == 'y') {
-            // Call the script to create the new user
-            Customer newCustomer = new Customer(strFirstName, strLastName, strEmail, iPhone, strPassword, 1);
+            // Display the details entered
+            System.out.println("-".repeat(80));
+            System.out.printf("%-15s %-15s %-20s %-15s\n", "First Name", "Last Name", "Email", "Phone");
+            System.out.printf("%-15s %-15s %-20s %-15s\n", strFirstName, strLastName, strEmail, iPhone);
+            System.out.println("-".repeat(80));
+            System.out.print("Is this information correct? Y/N: ");
+            char cChoice = System.console().readLine().charAt(0);
 
-            try {
-                dbCustomer.addCustomer(newCustomer);
-                System.out.println("New user created successfully");
-            } catch (Exception e) {
-                System.out.println("Error creating new user: " + e);
+            if (Character.toLowerCase(cChoice) == 'y') {
+                // Call the script to create the new user
+                Customer newCustomer = new Customer(strFirstName, strLastName, strEmail, iPhone, strPassword, 1);
+
+                try {
+                    dbCustomer.addCustomer(newCustomer);
+                    System.out.println("New user created successfully");
+                    if (blnRepeatTransaction("Do you want to create another user?")) {
+                        blnValid = false;
+                    } else {
+                        blnValid = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error creating new user: " + e);
+                }
+
             }
 
-        }
-        blnValid = true;
+        } while (!blnValid);
 
     }
 
