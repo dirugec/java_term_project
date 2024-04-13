@@ -58,7 +58,7 @@ public class DB_Costumer {
             }
 
         } catch (SQLException e) {
-            System.err.println("An error has occured: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
         }
         return customerId;
 

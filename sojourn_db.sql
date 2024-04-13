@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 12, 2024 at 12:36 AM
+-- Generation Time: Apr 13, 2024 at 01:00 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -70,7 +70,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `email`, `phone`, `balance`, `parent_id`, `password`, `user_type`, `active`) VALUES
-(9, 'Bruce', 'Wayne', 'john-doe@gamil.com', 123123337, 242283.98, NULL, 'abcd', 1, 1),
+(9, 'Bruce', 'Wayne', 'john-doe@gamil.com', 123123337, 242172.13, NULL, 'abcd', 1, 1),
 (11, 'Angel', 'Perez', 'angel@gmail.com', 12345654, 2000.00, 9, 'asdasd', 2, 1),
 (13, 'Jefferson', 'Ruge', 'jeffer@gmail.com', 1239999, 1250.00, 9, 'asdasd', 2, 1),
 (14, 'Amanda', 'Londono', 'mandy@gmail.com', 1230000, 1000.00, 9, 'asdasd', 2, 0),
@@ -106,7 +106,10 @@ INSERT INTO `detail_trans` (`det_trans_id`, `trans_id`, `product_id`, `price`, `
 (7, 5, 5, 22.95, 1.00),
 (8, 5, 6, 24.50, 1.00),
 (9, 6, 10, 6.00, 1.00),
-(10, 6, 11, 22.00, 1.00);
+(10, 6, 11, 22.00, 1.00),
+(11, 7, 6, 24.50, 1.00),
+(12, 7, 12, 18.50, 1.00),
+(13, 8, 5, 22.95, 3.00);
 
 -- --------------------------------------------------------
 
@@ -151,7 +154,7 @@ CREATE TABLE `merchant_users` (
 --
 
 INSERT INTO `merchant_users` (`merchant_user_id`, `merchant_id`, `first_name`, `last_name`, `email`, `phone`, `role`, `password`, `active`) VALUES
-(1, 4, 'Massimo', 'Bottura', 'mbottura@gmail.com', 12345654, 'Chef', 'asdasd', 1),
+(1, 4, 'Massimo', 'Bottura', 'mbottura@gmail.com', 12345654, 'Chef', 'qweqwe', 1),
 (2, 5, 'Leonor', 'Espinosa', 'lespinosa@gmail.com', 1239999, 'Chef', 'asdasd', 1);
 
 -- --------------------------------------------------------
@@ -206,7 +209,9 @@ INSERT INTO `transactions` (`trans_id`, `customer_id`, `date`, `amount`, `mercha
 (3, 11, '20240225', 47.95, 5),
 (4, 13, '20240227', 43.00, 5),
 (5, 9, '20240301', 47.45, 4),
-(6, 9, '20240229', 28.00, 5);
+(6, 9, '20240229', 28.00, 5),
+(7, 9, '20240412', 43.00, 4),
+(8, 9, '20240412', 68.85, 4);
 
 --
 -- Indexes for dumped tables
@@ -276,6 +281,12 @@ ALTER TABLE `customers`
   MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
+-- AUTO_INCREMENT for table `detail_trans`
+--
+ALTER TABLE `detail_trans`
+  MODIFY `det_trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
 -- AUTO_INCREMENT for table `merchant`
 --
 ALTER TABLE `merchant`
@@ -297,13 +308,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-  
---
--- AUTO_INCREMENT for table `transactions`
---
-ALTER TABLE `detail_trans`
-  MODIFY `det_trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

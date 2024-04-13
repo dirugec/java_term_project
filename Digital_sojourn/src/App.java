@@ -26,12 +26,13 @@ public class App {
     private static DB_Admin_Users dbAdminUser; // Admin User Database Object
     private static DB_Costumer dbCustomer; // Guest User Database Object
     private static DB_Transactions dbTransactions; // Transaction Database Object
+    private static DB_Product dbProduct; // Product Database Object
 
     public static void main(String[] args) throws Exception {
 
         dbCustomer = new DB_Costumer();
         dbAdminUser = new DB_Admin_Users();
-        // dbMerchantUser = new DB_Merchant_Users();
+        dbProduct = new DB_Product();
         dbTransactions = new DB_Transactions();
 
         // Display the login menu
@@ -470,19 +471,20 @@ public class App {
 
                     }
                     System.out.println("*".repeat(70));
-                    if (blnRepeatTransaction("Do you want to see more transactions?")) {
-                        blnValid = false;
-                        break;
-                    } else {
-                        blnValid = true;
-                        break;
 
-                    }
+                }
+                if (blnRepeatTransaction("Do you want to see more transactions?")) {
+                    blnValid = false;
+                    break;
+                } else {
+                    blnValid = true;
+                    break;
 
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input.  " + e);
             }
+
         } while (!blnValid);
     }
 
@@ -861,8 +863,9 @@ public class App {
                 printHeaders("MERCHANT MAIN MENU");
                 System.out.println("[1] Accomplish Transaction");
                 System.out.println("[2] View Transaction History");
-                System.out.println("[3] Settings");
-                System.out.println("[4] Back");
+                System.out.println("[3] Manage Products");
+                System.out.println("[4] Settings");
+                System.out.println("[5] Back");
                 System.out.println("[0] Exit");
                 System.out.print("> ");
 
@@ -878,9 +881,12 @@ public class App {
                         displayViewMerchantTransactions();
                         break;
                     case 3:
-                        displayMerchantUserSettings();
+                        displayManageProducts();
                         break;
                     case 4:
+                        displayMerchantUserSettings();
+                        break;
+                    case 5:
                         blnValid = true;
                         break;
                     default:
@@ -932,7 +938,7 @@ public class App {
                     System.out.print("Enter Quantity: ");
                     iQuantity = Integer.parseInt(System.console().readLine());
                     // Save into shoppingCart variable
-                    arrTotalCart.add(DB_Product.getProduct(iChoice));
+                    arrTotalCart.add(dbProduct.getProduct(iChoice));
                     arrQuantity.add(iQuantity);
                     do {
                         // Ask if choose another or finish transaction
@@ -1099,13 +1105,15 @@ public class App {
 
                     }
                     System.out.println("*".repeat(70));
-                    if (blnRepeatTransaction("Do you want to see more transactions?")) {
-                        blnValid = false;
-                        break;
-                    } else {
-                        blnValid = true;
-                        break;
-                    }
+
+                }
+                // Ask if user wants to see more transactions
+                if (blnRepeatTransaction("Do you want to see more transactions?")) {
+                    blnValid = false;
+                    break;
+                } else {
+                    blnValid = true;
+                    break;
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input.  " + e);
@@ -1288,6 +1296,134 @@ public class App {
                 tempMerchant_User.getRole());
     }
 
+    public static void displayProductsByMerchant() {
+        ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
+        printHeaders("PRODUCT LIST");
+        System.out.printf("%-6s %-20s %-10s\n", "ID", "Product", "Price");
+        System.out.println("-".repeat(40));
+        for (Product product : arrProductList) {
+            System.out.printf("%-6s %-20s $%,6.2f\n", product.getProductID(), product.getName(), product.getPrice());
+
+        }
+        System.out.println("-".repeat(40));
+        System.out.println();
+
+    }
+
+    /**
+     * Add a new product for the Merchant User based on the User ID
+     */
+    public static void addProduct() {
+        boolean blnValid = false;
+        String strProductName;
+        double dProductPrice;
+        int iMerchantID = gMerchantUser.getMerchantID();
+
+        do {
+            clearScreen();
+            printHeaders("ADD PRODUCT");
+            System.out.print("Enter Product Name: ");
+            strProductName = System.console().readLine();
+            System.out.print("Enter Product Price: ");
+            dProductPrice = Double.parseDouble(System.console().readLine());
+            System.out.print("\nIs this information correct? Y/N: ");
+            char cChoice = System.console().readLine().charAt(0);
+            if (Character.toLowerCase(cChoice) == 'y') {
+                // Call the script to create the new product
+
+                try {
+                    dbProduct.createProduct(strProductName, dProductPrice, iMerchantID);
+                    System.out.println("\nNew product created successfully");
+                    if (blnRepeatTransaction("Do you want to add another product?")) {
+                        blnValid = false;
+                    } else {
+                        blnValid = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error creating new product: " + e);
+                }
+            } else {
+                blnValid = true;
+            }
+
+        } while (!blnValid);
+    }
+
+    public static void displayUpdateProduct() {
+        boolean blnValid = false;
+
+        Product productUpdate;
+        do {
+            // clearScreen();
+            // printHeaders("UPDATE PRODUCT");
+
+            System.out.print("Enter Product ID to update: ");
+            int iProductID = Integer.parseInt(System.console().readLine());
+
+            productUpdate = dbProduct.getProduct(iProductID);
+            System.out.print("\nEnter product name: ");
+            productUpdate.setName(System.console().readLine());
+            System.out.print("\nEnter product price: ");
+            productUpdate.setPrice(Double.parseDouble(System.console().readLine()));
+            System.out.print("\nIs this information correct? Y/N: ");
+            char cChoice = System.console().readLine().charAt(0);
+            if (Character.toLowerCase(cChoice) == 'y') {
+                // Call the script to update the product
+                try {
+                    dbProduct.updateProduct(productUpdate);
+
+                    if (blnRepeatTransaction("\nDo you want to update another product?")) {
+                        blnValid = false;
+                    } else {
+                        blnValid = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error updating product: " + e);
+                }
+            } else {
+                blnValid = true;
+            }
+
+        } while (!blnValid);
+    }
+
+    public static void displayManageProducts() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            clearScreen();
+            printHeaders("PRODUCT LIST");
+
+            try {
+                displayProductsByMerchant();
+
+                System.out.print("[1] Add Product\t[2] Update \t[3] Back\t[0] Exit\n\n");
+                System.out.print("> ");
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        addProduct();
+                        break;
+                    case 2:
+                        displayUpdateProduct();
+                        break;
+                    case 3:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+
+        } while (!blnValid);
+
+    }
+
     /**
      * Change the password for the Merchant User based on the User ID
      * 
@@ -1315,6 +1451,7 @@ public class App {
             }
         } while (!blnValid);
     }
+
     // ******** ADMINISTRATOR USER INTERFACE **********
 
     /**
@@ -1423,60 +1560,6 @@ public class App {
 
         } while (!blnValid);
 
-    }
-
-    public static void displayViewMerchanUsersDetails() {
-
-        boolean blnValid = false;
-        int iChoice = -1;
-
-        do {
-            try {
-                printHeaders("MANAGE MERCHANT USERS");
-                System.out.println("[1] Create Guest User");
-                System.out.println("[2] View Transaction History");
-                System.out.println("[3] Load Funds");
-                System.out.println("[4] View/Update Details");
-                System.out.println("[5] View Family Members");
-                System.out.println("[6] Back");
-                System.out.println("[0] Exit");
-                System.out.print("> ");
-
-                iChoice = Integer.parseInt(System.console().readLine());
-                switch (iChoice) {
-                    case 0:
-                        System.exit(0);
-                        break;
-                    case 1:
-                        displayCreateGuestUser();
-                        break;
-                    case 2:
-                        displayViewTransactions();
-                        break;
-                    case 3:
-                        loadGuestDetails();
-                        displayLoadFunds();
-                        break;
-                    case 4:
-                        loadGuestDetails();
-                        updateCustomerDetails();
-                        break;
-                    case 5:
-                        loadGuestDetails();
-                        familyMembersManage();
-                        break;
-                    case 6:
-                        blnValid = true;
-                        break;
-                    default:
-                        break;
-                }
-
-            } catch (Exception e) {
-
-                System.out.println("Invalid input. Numbers only please.");
-            }
-        } while (!blnValid);
     }
 
 }
