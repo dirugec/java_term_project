@@ -141,6 +141,7 @@ public class App {
         boolean blnVerifiedPassword = false;
         do {
             try { // Determine type of User
+                clearScreen();
                 displayHeader();
 
                 System.out.println("[1] Guest");
@@ -930,14 +931,17 @@ public class App {
 
         do {
             // Display Product List
-            displayHeader();
-            printHeaders("PRODUCT LIST");
+            clearScreen();
+            printHeaders("ACCOMPLISH TRANSACTION");
             System.out.printf("%-6s %-20s %-10s\n", "ID", "Product", "Price");
             System.out.println("-".repeat(40));
             for (Product product : arrProductList) {
-                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
-                        product.getName(), product.getPrice());
+                System.out.printf("%-6s %-20s $%,6.2f\n", product.getProductID(), product.getName(),
+                        product.getPrice());
+
             }
+            System.out.println("-".repeat(40));
+            System.out.println();
             try {
                 // Choose Product
                 System.out.print("Choose Product: ");
@@ -1027,8 +1031,7 @@ public class App {
                         // Go through the Shopping Cart to add each product to the detailed transaction
                         for (int i = 0; i < arrTotalCart.size(); i++) {
                             Product product = arrTotalCart.get(i);
-                            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
-                                    product.getName(), product.getPrice());
+
                             DB_Transactions.insertDetailTransaction(iTransactionID, product.getProductID(),
                                     product.getPrice(), arrQuantity.get(i));
                         }
