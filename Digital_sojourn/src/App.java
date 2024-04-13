@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.io.Console;
 
 import Models.Customer;
 import Models.Det_Transaction;
@@ -120,7 +121,6 @@ public class App {
      * Display the header of the application
      */
     private static void displayHeader() {
-        clearScreen();
         System.out.print(" ".repeat(40));
         System.out.println("____/--------------------\\___");
         System.out.print(" ".repeat(40));
@@ -915,6 +915,53 @@ public class App {
     // ********** MERCHANT USER INTERFACE **********
 
     /**
+     * Display the main menu for the Merchant User based on the User ID
+     */
+    public static void displayMainMenuMerchantUser() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            displayHeader();
+            try {
+                printHeaders("MERCHANT MAIN MENU");
+                System.out.println("[1] Accomplish Transaction");
+                System.out.println("[2] View Transaction History");
+                System.out.println("[3] Manage Products");
+                System.out.println("[4] Settings");
+                System.out.println("[5] Back");
+                System.out.println("[0] Exit");
+                System.out.print("> ");
+
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        processTransaction();
+                        break;
+                    case 2:
+                        displayViewMerchantTransactions();
+                        break;
+                    case 3:
+                        displayManageProducts();
+                        break;
+                    case 4:
+                        displayMerchantUserSettings();
+                        break;
+                    case 5:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("MerchantError: Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
+
+    /**
      * Process the transaction for the Merchant User based on the User ID
      */
     private static void processTransaction() {
@@ -935,18 +982,9 @@ public class App {
             System.out.printf("%-6s %-20s %-10s\n", "ID", "Product", "Price");
             System.out.println("-".repeat(40));
             for (Product product : arrProductList) {
-                System.out.printf("%-6s %-20s $%,6.2f\n", product.getProductID(), product.getName(),
-                        product.getPrice());
-
+                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
+                        product.getName(), product.getPrice());
             }
-            System.out.println("-".repeat(40));
-            System.out.println();
-            // printHeaders("PRODUCT LIST");
-            // for (Product product : arrProductList) {
-            // System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n",
-            // product.getProductID(),
-            // product.getName(), product.getPrice());
-            // }
             try {
                 // Choose Product
                 System.out.print("Choose Product: ");
@@ -990,7 +1028,12 @@ public class App {
             }
         } while (!blnValid);
 
-        blnYesNoValid = false;
+        checkoutShoppingCart(arrTotalCart, arrQuantity);
+    }
+
+    private static void checkoutShoppingCart(ArrayList<Product> arrTotalCart, ArrayList<Integer> arrQuantity) {
+        String strConfirm;
+        boolean blnYesNoValid = false;
         do {
             displayHeader();
             // Display Total Transaction and ask for Confirmation
@@ -1068,6 +1111,7 @@ public class App {
         ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
 
         boolean blnValid = false;
+
         do {
             try {
                 printHeaders("MERCHANT TRANSACTIONS");
@@ -1470,8 +1514,11 @@ public class App {
             System.out.print("Please enter new password: ");
             String strNewPassword = System.console().readLine();
             // Receive the confirm password
-            System.out.print("Please confirm new password: ");
-            String strConfirmPassword = System.console().readLine();
+            // System.out.print("Please confirm new password: ");
+            // String strConfirmPassword = System.console().readLine();
+            Console console = System.console();
+            char[] arrConfirmPassword = console.readPassword("Please confirm new password: ");
+            String strConfirmPassword = new String(arrConfirmPassword);
             // Compare the New and Confirm Password to be equal
             if (strNewPassword.equals(strConfirmPassword)) {
                 // Call Merchant User Update script with new password
