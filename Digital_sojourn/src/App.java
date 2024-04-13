@@ -355,53 +355,6 @@ public class App {
         } while (!blnValid);
     }
 
-    /**
-     * Display the main menu for the Merchant User based on the User ID
-     */
-    public static void displayMainMenuMerchantUser() {
-        boolean blnValid = false;
-        int iChoice = -1;
-        do {
-            displayHeader();
-            try {
-                printHeaders("MERCHANT MAIN MENU");
-                System.out.println("[1] Accomplish Transaction");
-                System.out.println("[2] View Transaction History");
-                System.out.println("[3] Manage Products");
-                System.out.println("[4] Settings");
-                System.out.println("[5] Back");
-                System.out.println("[0] Exit");
-                System.out.print("\nEnter your choise:  ");
-
-                iChoice = Integer.parseInt(System.console().readLine());
-                switch (iChoice) {
-                    case 0:
-                        System.exit(0);
-                        break;
-                    case 1:
-                        processTransaction();
-                        break;
-                    case 2:
-                        displayViewMerchantTransactions();
-                        break;
-                    case 3:
-                        displayManageProducts();
-                        break;
-                    case 4:
-                        displayMerchantUserSettings();
-                        break;
-                    case 5:
-                        blnValid = true;
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                System.out.println("MerchantError: Invalid input. Numbers only please.");
-            }
-        } while (!blnValid);
-    }
-
     // ********** GUEST USER INTERFACE **********
 
     /**
