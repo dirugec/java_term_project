@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.io.Console;
 
 import Models.Admin_User;
 import Models.Customer;
@@ -82,7 +83,6 @@ public class App {
      * Display the header of the application
      */
     private static void displayHeader() {
-        clearScreen();
         System.out.print(" ".repeat(40));
         System.out.println("____/--------------------\\___");
         System.out.print(" ".repeat(40));
@@ -806,8 +806,8 @@ public class App {
         boolean blnValid = false;
         int iChoice = -1;
         do {
-            displayHeader();
             try {
+                //displayHeader();
                 printHeaders("MERCHANT MAIN MENU", 40);
                 System.out.println("[1] Accomplish Transaction");
                 System.out.println("[2] View Transaction History");
@@ -861,8 +861,7 @@ public class App {
             displayHeader();
             printHeaders("PRODUCT LIST", 70);
             for (Product product : arrProductList) {
-                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
-                        product.getName(), product.getPrice());
+                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
             }
             try {
                 // Choose Product
@@ -906,7 +905,12 @@ public class App {
             }
         } while (!blnValid);
 
-        blnYesNoValid = false;
+        checkoutShoppingCart(arrTotalCart, arrQuantity);
+    }
+
+    private static void checkoutShoppingCart(ArrayList<Product> arrTotalCart, ArrayList<Integer> arrQuantity) {
+        String strConfirm;
+        boolean blnYesNoValid = false;
         do {
             displayHeader();
             // Display Total Transaction and ask for Confirmation
@@ -973,14 +977,16 @@ public class App {
             }
         } while (!blnYesNoValid);
     }
-
     private static void displayViewMerchantTransactions() {
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
         ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
-
+        
         boolean blnValid = false;
+
         do {
             try {
+                clearScreen();
+                displayHeader();
                 printHeaders("MERCHANT TRANSACTIONS", 50);
 
                 System.out.print("Please enter start date MM/DD/YYYY: ");
@@ -1226,8 +1232,11 @@ public class App {
             System.out.print("Please enter new password: ");
             String strNewPassword = System.console().readLine();
             // Receive the confirm password
-            System.out.print("Please confirm new password: ");
-            String strConfirmPassword = System.console().readLine();
+            //System.out.print("Please confirm new password: ");
+            //String strConfirmPassword = System.console().readLine();
+            Console console = System.console();
+            char[] arrConfirmPassword = console.readPassword("Please confirm new password: ");
+            String strConfirmPassword = new String(arrConfirmPassword);
             // Compare the New and Confirm Password to be equal
             if (strNewPassword.equals(strConfirmPassword)) {
                 // Call Merchant User Update script with new password
