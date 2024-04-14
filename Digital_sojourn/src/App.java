@@ -915,9 +915,7 @@ public class App {
             // Display Product List
             displayHeader();
             printHeaders("PRODUCT LIST");
-            for (Product product : arrProductList) {
-                System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(), product.getName(), product.getPrice());
-            }
+            displayProductsByMerchant();
             try {
                 // Choose Product
                 System.out.print("Choose Product: ");
@@ -946,7 +944,6 @@ public class App {
                             // Loop again to present product list
                             blnYesNoValid = true;
                         } else if (strConfirm.equals("N")) {
-
                             blnValid = true;
                             blnYesNoValid = true;
                         } else {
@@ -1334,7 +1331,6 @@ public class App {
             char cChoice = System.console().readLine().charAt(0);
             if (Character.toLowerCase(cChoice) == 'y') {
                 // Call the script to create the new product
-
                 try {
                     dbProduct.createProduct(strProductName, dProductPrice, iMerchantID);
                     System.out.println("\nNew product created successfully");
@@ -1433,17 +1429,19 @@ public class App {
      * 
      */
     private static void changeMerchantPassword() {
+        Console console = System.console();
         boolean blnValid = false;
         do {
             // clearScreen();
             System.out.println("------------------------------");
             // Receive the new password
-            System.out.print("Please enter new password: ");
-            String strNewPassword = System.console().readLine();
+            //System.out.print("Please enter new password: ");
+            //String strNewPassword = System.console().readLine();
+            char[] arrNewPassword = console.readPassword("Please enter new password: ");
+            String strNewPassword = new String(arrNewPassword);
             // Receive the confirm password
             //System.out.print("Please confirm new password: ");
             //String strConfirmPassword = System.console().readLine();
-            Console console = System.console();
             char[] arrConfirmPassword = console.readPassword("Please confirm new password: ");
             String strConfirmPassword = new String(arrConfirmPassword);
             // Compare the New and Confirm Password to be equal
