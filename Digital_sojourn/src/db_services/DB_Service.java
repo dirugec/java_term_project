@@ -25,6 +25,7 @@ public class DB_Service {
         } catch (SQLException e) {
             connection = null;
             e.printStackTrace();
+            System.out.println("An error occurred while connecting to the database: " + e.getMessage());
         }
         return connection;
 

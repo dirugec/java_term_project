@@ -28,6 +28,7 @@ public class App {
     private static DB_Costumer dbCustomer; // Guest User Database Object
     private static DB_Transactions dbTransactions; // Transaction Database Object
     private static DB_Product dbProduct; // Product Database Object
+    private static DB_Merchant_Users dbMerchantUser; // Merchant User Database Object
 
     public static void main(String[] args) throws Exception {
 
@@ -35,6 +36,7 @@ public class App {
         dbAdminUser = new DB_Admin_Users();
         dbProduct = new DB_Product();
         dbTransactions = new DB_Transactions();
+        dbMerchantUser = new DB_Merchant_Users();
 
         // Display the login menu
         displayLoginMenu();
@@ -51,8 +53,7 @@ public class App {
      * Load the Guest User details based on the User ID
      */
     private static void loadGuestDetails() {
-        System.out.println("Please enter Primary User ID: ");
-        System.out.print("> ");
+        System.out.print("\nPlease enter Primary User ID: ");
 
         gUserID = Integer.parseInt(System.console().readLine());
         gCustomer = dbCustomer.getCustomer(gUserID);
@@ -140,6 +141,7 @@ public class App {
         boolean blnVerifiedPassword = false;
         do {
             try { // Determine type of User
+                clearScreen();
                 displayHeader();
 
                 System.out.println("[1] Guest");
@@ -173,6 +175,7 @@ public class App {
                     System.out.println("Invalid input. Select from choices.\n");
                 }
             } catch (Exception e) {
+                System.err.println(e.getMessage());
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValidInput);
@@ -193,8 +196,11 @@ public class App {
                 System.out.println("------------------------------");
                 System.out.print("Please enter ID Number: ");
                 gUserID = Integer.parseInt(System.console().readLine());
+
                 System.out.print("Please enter Password (Enter X to go back): ");
+
                 String strPassword = System.console().readLine();
+
                 String dbPassword;
 
                 // Allows the user to go back to the main menu
@@ -209,7 +215,12 @@ public class App {
                         break;
                     case 1: // Login Customer
                         // Call the GetPassword script
+
                         dbPassword = dbCustomer.getCustomerPassword(gUserID);
+                        if (dbPassword == "") {
+                            break;
+                        }
+
                         if (dbPassword.equals(strPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
@@ -232,21 +243,21 @@ public class App {
                         break;
                     case 3: // Login Merchant
                         // Call the GetPassword script
-                        dbPassword = DB_Merchant_Users.getMerchantUserPassword(gUserID);
+                        dbPassword = dbMerchantUser.getMerchantUserPassword(gUserID);
                         if (strPassword.equals(dbPassword)) {
                             blnValidInput = true;
                             blnVerifiedPassword = true;
                             // Instansiate the global user: Merchant User
-                            gMerchantUser = DB_Merchant_Users.getMerchantUser(gUserID);
+                            gMerchantUser = dbMerchantUser.getMerchantUser(gUserID);
                         } else { // Invalid Password
                             System.out.println("Invalid Password");
                         }
                         break;
                     default:
-                        System.out.println("Switch: Default");
                         break;
                 }
             } catch (Exception e) {
+
                 System.out.println("Invalid input. Numbers only for UserID.");
             }
         } while (!blnValidInput);
@@ -273,7 +284,8 @@ public class App {
                 System.out.println("[5] Settings");
                 System.out.println("[6] Back");
                 System.out.println("[0] Exit");
-                System.out.print("> ");
+                System.out.print("\nEnter your choise:  ");
+
                 iChoice = Integer.parseInt(System.console().readLine());
                 switch (iChoice) {
                     case 0:
@@ -319,7 +331,7 @@ public class App {
                 System.out.println("[2] Manage Merchant Users");
                 System.out.println("[3] Back");
                 System.out.println("[0] Exit");
-                System.out.print("> ");
+                System.out.print("\nEnter your choise:  ");
 
                 iChoice = Integer.parseInt(System.console().readLine());
                 switch (iChoice) {
@@ -389,6 +401,7 @@ public class App {
                 }
             } catch (Exception e) {
                 System.out.println("Invalid input. Numbers only please ");
+                pressEnterToContinue();
             }
         } while (!blnValid);
 
@@ -418,8 +431,8 @@ public class App {
 
                 // Input validation start date RegEx
                 while (!iStartDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
-                    System.out.println("Use the format MM/DD/YYYY ");
-                    System.out.print("Please enter start date MM/DD/YYYY: ");
+                    System.out.println("\nUse the format MM/DD/YYYY ");
+                    System.out.print("\nPlease enter start date MM/DD/YYYY: ");
                     iStartDate = System.console().readLine();
                 }
 
@@ -427,18 +440,18 @@ public class App {
                 String mysqlStartDate = arrOfiStartDate[2] + arrOfiStartDate[0] + arrOfiStartDate[1];
 
                 // Input validation end date RegEx
-                System.out.print("Please enter end date MM/DD/YYYY: ");
+                System.out.print("\nPlease enter end date MM/DD/YYYY: ");
                 String iEndDate = System.console().readLine();
 
                 while (!iEndDate.matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
-                    System.out.println("Use the format MM/DD/YYYY ");
-                    System.out.print("Please enter end date MM/DD/YYYY: ");
+                    System.out.println("\nUse the format MM/DD/YYYY ");
+                    System.out.print("\nPlease enter end date MM/DD/YYYY: ");
                     iEndDate = System.console().readLine();
                 }
                 // Validate end date after or same as start date
                 while ((iEndDate.compareTo(iStartDate) < 0)) {
-                    System.out.println("End date should be the same or after start date");
-                    System.out.print("Please enter end date MM/DD/YYYY: ");
+                    System.out.println("\nEnd date should be the same or after start date");
+                    System.out.print("\nPlease enter end date MM/DD/YYYY: ");
                     iEndDate = System.console().readLine();
                 }
 
@@ -541,7 +554,7 @@ public class App {
 
                     case 'A':
                         // Add Family Member
-                        System.out.print("Please enter the id of the new family member: ");
+                        System.out.print("Please enter the ID of the new family member: ");
                         int iNewFamilyMemberID = Integer.parseInt(System.console().readLine());
 
                         // Check if the family member is already in the list with a stream and lambda
@@ -579,6 +592,7 @@ public class App {
                         // Check if the family member is not in the list
                         if (!arrayFamilyMembers.stream().anyMatch(x -> x.getCustomerID() == iFamilyNumber)) {
                             System.out.println("The family member ID is not in the list");
+                            pressEnterToContinue();
                             break;
                         } else {
                             // Gettting the customer object from the array
@@ -604,6 +618,7 @@ public class App {
 
             } catch (Exception e) {
                 System.out.println("Invalid input. Numbers only please.");
+                pressEnterToContinue();
             }
         } while (!blnValid);
 
@@ -716,8 +731,8 @@ public class App {
                 System.out.println("Invalid input. Numbers only please.");
             }
         } while (!blnValid);
-        dbCustomer.updateCustomerInfo(gUserID, gCustomer.getPhone(), gCustomer.getFirstName(), gCustomer.getLastName(),
-                gCustomer.getEmail(), gCustomer.getActive());
+        dbCustomer.updateCustomerInfo(gUserID, tempCustomer.getPhone(), tempCustomer.getFirstName(),
+                tempCustomer.getLastName(), tempCustomer.getEmail(), tempCustomer.getActive());
     }
 
     /**
@@ -742,7 +757,7 @@ public class App {
                     customer.getLastName(), customer.getEmail(), (customer.getActive() == 1) ? 0 : 1);
 
         }
-
+        pressEnterToContinue();
     }
 
     /**
@@ -772,9 +787,11 @@ public class App {
 
                 System.out.println("-".repeat(100));
                 blnValid = true;
+                pressEnterToContinue();
             } catch (Exception e) {
                 // Display error message
                 System.out.println("Error getting family transactions: " + e);
+
             }
         } while (!blnValid);
     }
@@ -858,6 +875,7 @@ public class App {
         boolean blnValid = false;
         int iChoice = -1;
         do {
+            displayHeader();
             try {
                 printHeaders("MERCHANT MAIN MENU");
                 System.out.println("[1] Accomplish Transaction");
@@ -1004,8 +1022,7 @@ public class App {
                         // Go through the Shopping Cart to add each product to the detailed transaction
                         for (int i = 0; i < arrTotalCart.size(); i++) {
                             Product product = arrTotalCart.get(i);
-                            System.out.printf("Product ID: %-4s Product: %-25s Price: $%6.2f\n", product.getProductID(),
-                                    product.getName(), product.getPrice());
+
                             DB_Transactions.insertDetailTransaction(iTransactionID, product.getProductID(),
                                     product.getPrice(), arrQuantity.get(i));
                         }
@@ -1039,7 +1056,7 @@ public class App {
     private static void displayViewMerchantTransactions() {
         ArrayList<Transaction> arrayTransactions = new ArrayList<Transaction>();
         ArrayList<Det_Transaction> det_TransactionsList = new ArrayList<Det_Transaction>();
-        
+
         boolean blnValid = false;
 
         do {
@@ -1349,6 +1366,9 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Update a product for the Merchant User based on the User ID
+     */
     public static void displayUpdateProduct() {
         boolean blnValid = false;
 
@@ -1387,6 +1407,9 @@ public class App {
         } while (!blnValid);
     }
 
+    /**
+     * Display the main menu for the Merchant User for managing the products
+     */
     public static void displayManageProducts() {
         boolean blnValid = false;
         int iChoice = -1;
@@ -1525,16 +1548,16 @@ public class App {
 
         do {
             printHeaders("CREATE GUEST USER");
-            System.out.println("Enter the following details to create a new user");
-            System.out.print("First Name: ");
+            System.out.println("\nEnter the following details to create a new user");
+            System.out.print("\nFirst Name: ");
             String strFirstName = System.console().readLine();
-            System.out.print("Last Name: ");
+            System.out.print("\nLast Name: ");
             String strLastName = System.console().readLine();
-            System.out.print("Email: ");
+            System.out.print("\nEmail: ");
             String strEmail = System.console().readLine();
-            System.out.print("Phone: ");
+            System.out.print("\nPhone: ");
             int iPhone = Integer.parseInt(System.console().readLine());
-            System.out.print("Password: ");
+            System.out.print("\nPassword: ");
             String strPassword = System.console().readLine();
 
             // Display the details entered

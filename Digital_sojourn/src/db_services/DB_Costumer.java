@@ -127,7 +127,7 @@ public class DB_Costumer {
                         balance, parentId, password, active, userType);
 
             } else {
-                System.err.println("No customer found for customer_id: " + customer_id);
+                System.err.println("No Guest found for ID: " + customer_id);
             }
         } catch (SQLException e) {
             System.err.println("An error reading customer has occured: " + e.getMessage());
@@ -313,6 +313,7 @@ public class DB_Costumer {
         String pwrd = "";
 
         try {
+
             String getCustomerPasswordMySql = "SELECT password FROM customers WHERE customer_id = ?";
             PreparedStatement getCustomerPassword = connection.prepareStatement(getCustomerPasswordMySql);
             getCustomerPassword.setInt(1, customer_id);
@@ -321,7 +322,7 @@ public class DB_Costumer {
             if (getCustomerPasswordResult.next()) {
                 pwrd = getCustomerPasswordResult.getString("password");
             } else {
-                System.err.println("No found customer_id: " + customer_id);
+                System.err.println("No found Guest ID: " + customer_id);
             }
         } catch (SQLException e) {
             System.err.println("An error Getting the customer password has occured: " +

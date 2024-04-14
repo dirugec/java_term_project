@@ -18,7 +18,7 @@ public class DB_Merchant_Users {
      * @throws SQLException if an error occurs while getting the merchant password
      *                      from the database
      */
-    public static String getMerchantUserPassword(int merchant_user_id) {
+    public String getMerchantUserPassword(int merchant_user_id) {
         String pwrd = "";
 
         try {
@@ -30,7 +30,7 @@ public class DB_Merchant_Users {
             if (getMerchantUserPasswordResult.next()) {
                 pwrd = getMerchantUserPasswordResult.getString("password");
             } else {
-                System.err.println("No found merchant_user_id: " + merchant_user_id);
+                System.err.println("No found Merchant User ID: " + merchant_user_id);
             }
         } catch (SQLException e) {
             System.err.println("An error Getting the Merchant User password has occured: " +
@@ -47,7 +47,7 @@ public class DB_Merchant_Users {
      * @throws SQLException if an error occurs while getting the merchant user from
      *                      the database
      */
-    public static Merchant_User getMerchantUser(int merchant_user_id) {
+    public Merchant_User getMerchantUser(int merchant_user_id) {
 
         Merchant_User merchantUser = null; // Initialize the merchantUser object to null
 
@@ -70,7 +70,7 @@ public class DB_Merchant_Users {
                 merchantUser = new Merchant_User(merchantUserID, merchantID, firstName, lastName, email, phone, role,
                         password, active);
 
-                //connection.close();
+                // connection.close();
 
             } else {
                 System.err.println("No Merchant User found for merchant_user_id: " + merchant_user_id);
@@ -86,7 +86,7 @@ public class DB_Merchant_Users {
      * This method is used to update the password of a customer in the database.
      * 
      * @param merchant_user_id merchant user id to update password
-     * @param password    new password to update
+     * @param password         new password to update
      * @return boolean This returns true if the password was successfully updated,
      *         and false otherwise.
      * @throws SQLException If an SQL error occurs, this exception is thrown.
@@ -103,7 +103,7 @@ public class DB_Merchant_Users {
             updatePassword.executeUpdate();
             blnSuccess = true;
 
-            //connection.close(); 
+            // connection.close();
         } catch (SQLException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
@@ -114,17 +114,18 @@ public class DB_Merchant_Users {
     /**
      * This method is used to update customer information in the database.
      * 
-     * @param merchant_user_id  This is the Merchant User ID to be updated.
-     * @param phone             This is the new phone number of the Merchant User.
-     * @param first_name        This is the new first name of the Merchant User.
-     * @param last_name         This is the new last name of the Merchant User.
-     * @param email             This is the new email of the Merchant User.
-     * @param role              This is the new role of the Merchant User.
-     * @return                  boolean This returns true if the customer was successfully updated,
-     *                          and false otherwise.
-     * @throws SQLException     If an SQL error occurs, this exception is thrown.
+     * @param merchant_user_id This is the Merchant User ID to be updated.
+     * @param phone            This is the new phone number of the Merchant User.
+     * @param first_name       This is the new first name of the Merchant User.
+     * @param last_name        This is the new last name of the Merchant User.
+     * @param email            This is the new email of the Merchant User.
+     * @param role             This is the new role of the Merchant User.
+     * @return boolean This returns true if the customer was successfully updated,
+     *         and false otherwise.
+     * @throws SQLException If an SQL error occurs, this exception is thrown.
      */
-    public static boolean updateMerchantUserInfo(int merchant_user_id, String first_name, String last_name, String email, int phone, String role) {
+    public static boolean updateMerchantUserInfo(int merchant_user_id, String first_name, String last_name,
+            String email, int phone, String role) {
         boolean success = false;
 
         try {

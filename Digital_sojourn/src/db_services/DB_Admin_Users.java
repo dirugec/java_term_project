@@ -31,7 +31,7 @@ public class DB_Admin_Users {
             if (getAdminPasswordResult.next()) {
                 pwrd = getAdminPasswordResult.getString("password");
             } else {
-                System.err.println("No found admin_id: " + admin_id);
+                System.err.println("No found Admin ID: " + admin_id);
             }
         } catch (SQLException e) {
             System.err.println("An error Getting the admin user password has occured: " +
