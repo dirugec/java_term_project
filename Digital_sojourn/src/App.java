@@ -40,7 +40,6 @@ public class App {
 
         // Display the login menu
         displayLoginMenu();
-
     }
 
     // ********** GENERAL METHODS **********
@@ -83,9 +82,9 @@ public class App {
     }
 
     /**
-     * Propmt user to press Enter key to continue
+     * Prompt user to press Enter key to continue
      */
-    public static boolean blnRepeatTransaction(String message) {
+    public static boolean blnConfirmYesNo(String message) {
 
         boolean blnConfirm = false;
         boolean blnReturn = false;
@@ -109,6 +108,9 @@ public class App {
 
     }
 
+    /**
+     * User to pause the screen and wait for user input
+     */
     public static void pressEnterToContinue() {
         System.out.println("Press Enter key to continue...");
         try {
@@ -265,6 +267,9 @@ public class App {
         return blnVerifiedPassword;
     }
 
+
+    // ******************** GUEST USER INTERFACE ********************
+
     /**
      * Display the main menu for the User based on the User Type (Guest, Admin,
      * Merchant) and the User ID
@@ -319,46 +324,6 @@ public class App {
     }
 
     /**
-     * Display the main menu for the Admin User based on the User ID
-     */
-    public static void displayMainMenuAdminUser() {
-        boolean blnValid = false;
-        int iChoice = -1;
-        do {
-            try {
-                printHeaders("ADMIN MAIN MENU");
-                System.out.println("[1] Manage Guest Users");
-                System.out.println("[2] Manage Merchant Users");
-                System.out.println("[3] Back");
-                System.out.println("[0] Exit");
-                System.out.print("\nEnter your choise:  ");
-
-                iChoice = Integer.parseInt(System.console().readLine());
-                switch (iChoice) {
-                    case 0:
-                        System.exit(0);
-                        break;
-                    case 1:
-                        displayViewPrimaryGuestDetails();
-                        break;
-                    case 2:
-                        // displayMainMenuMerchantUser();
-                        break;
-                    case 3:
-                        blnValid = true;
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                System.out.println("Invalid input. Numbers only please.");
-            }
-        } while (!blnValid);
-    }
-
-    // ********** GUEST USER INTERFACE **********
-
-    /**
      * Display the Guest user balance based on the User ID
      */
     private static void viewBalance() {
@@ -386,12 +351,12 @@ public class App {
 
                 // Call Script: Load Funds
                 double newBalance = gCustomer.getBalance() + iAmount;
-                if (dbCustomer.updateBalance(gUserID, newBalance)) {
+                if (DB_Costumer.updateBalance(gUserID, newBalance)) {
                     System.out.printf("$%,.2f has been added to %s\n", iAmount,
                             gCustomer.getFirstName() + " " + gCustomer.getLastName());
                     System.out.printf("The new balance is $%,.2f \n\n", DB_Costumer.getCustomerBalance(gUserID));
                     System.out.println();
-                    if (blnRepeatTransaction("Do you want to load more funds?")) {
+                    if (blnConfirmYesNo("Do you want to load more funds?")) {
                         blnValid = false;
                     } else {
                         blnValid = true;
@@ -486,7 +451,7 @@ public class App {
                     System.out.println("*".repeat(70));
 
                 }
-                if (blnRepeatTransaction("Do you want to see more transactions?")) {
+                if (blnConfirmYesNo("Do you want to see more transactions?")) {
                     blnValid = false;
                     break;
                 } else {
@@ -543,7 +508,7 @@ public class App {
             try {
                 arrayFamilyMembers = displayFamilyMembers();// Call display Family Members method
                 System.out.println("-".repeat(100));
-                System.out.printf("%25s %12s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions",
+                System.out.printf("%25s %12s %20s %20s %6s \n", "[A] Add", "[D] Deact/Active", "[V] View Transactions", "[T] Transfer Funds",
                         "[B] Back");
 
                 // Prompt the user for the choice
@@ -580,7 +545,6 @@ public class App {
                         if (Character.toLowerCase(System.console().readLine().charAt(0)) == 'y') {
                             // Call the script to add the family member
                             dbCustomer.updateParentId(iNewFamilyMemberID, gCustomer.getCustomerID());
-
                         }
 
                         break;
@@ -596,16 +560,17 @@ public class App {
                             break;
                         } else {
                             // Gettting the customer object from the array
-                            Customer modifyCustomer = arrayFamilyMembers.stream()
-                                    .filter(x -> x.getCustomerID() == iFamilyNumber).findFirst().get();
+                            Customer modifyCustomer = arrayFamilyMembers.stream().filter(x -> x.getCustomerID() == iFamilyNumber).findFirst().get();
                             // Call the method to deactivate the family member
                             deactivateFamilyMember(modifyCustomer);
-
                         }
 
                         break;
                     case 'V':
                         viewFamilyTransactions();
+                        break;
+                    case 'T':
+                        transferFunds(arrayFamilyMembers);
                         break;
                     case 'B':
                         // clear the screen
@@ -638,12 +603,19 @@ public class App {
         do {
             try {
                 printHeaders("GUEST USER DETAILS");
-                System.out.printf("%-15s %-15s %-25s %-15s\n", "First Name", "Last Name",
-                        "Email", "Phone");
-                System.out.println("-".repeat(80));
-                System.out.printf("%-15s %-15s %-25s %-15s\n", "[1]" + gCustomer.getFirstName(),
-                        "[2]" + gCustomer.getLastName(), "[3]" + gCustomer.getEmail(), "[4]" + gCustomer.getPhone());
-                System.out.println("\n\t[5] Back\t\t[0] Exit\t\t\n\n");
+                if (gUserType == 1) { // If logged in user is a Guest
+                    System.out.printf("%-15s %-15s %-25s %-15s\n", "First Name", "Last Name", "Email", "Phone");
+                    System.out.println("-".repeat(80));
+                    System.out.printf("%-15s %-15s %-25s %-15s\n", "[1] " + gCustomer.getFirstName(),
+                        "[2] " + gCustomer.getLastName(), "[3] " + gCustomer.getEmail(), "[4] " + gCustomer.getPhone());
+                    System.out.println("\n\t[6] Back\t\t[0] Exit\t\t\n\n");
+                } else if (gUserType == 2) { // If logged in user is an Admin
+                    System.out.printf("%-15s %-15s %-25s %-15s %-10s\n", "First Name", "Last Name", "Email", "Phone", "Status");
+                    System.out.println("-".repeat(80));
+                    System.out.printf("%-15s %-15s %-25s %-15s %-10s\n", "[1] " + gCustomer.getFirstName(),
+                        "[2] " + gCustomer.getLastName(), "[3] " + gCustomer.getEmail(), "[4] " + gCustomer.getPhone(), "[5] " + gCustomer.getActive());
+                    System.out.println("\n\t[6] Back\t\t[0] Exit\t\t\n\n");
+                }
                 System.out.print("Please choose a detail to edit: ");
 
                 iChoice = Integer.parseInt(System.console().readLine());
@@ -721,7 +693,18 @@ public class App {
                             }
                         } while (!blnConfirmSave);
                         break;
-                    case 5:
+                    case 5: // Deactivate/Activate Account
+                        if (blnConfirmYesNo("Confirm Status Change ")) {
+                            if (gCustomer.getActive() == 1) {
+                                gCustomer.setActive(0);
+                            } else {
+                                gCustomer.setActive(1); 
+                            }
+                            DB_Costumer.updateActiveStatus(gCustomer.getCustomerID(), gCustomer.getActive());
+                        }
+                        pressEnterToContinue();
+                        break;
+                    case 6:
                         blnValid = true;
                         break;
                     default:
@@ -744,8 +727,7 @@ public class App {
     private static void deactivateFamilyMember(Customer customer) {
 
         System.out.println("-".repeat(100));
-        System.out.printf("\nThe family member you want to %s is:\n",
-                (customer.getActive() == 1) ? "deactivate" : "activate");
+        System.out.printf("\nThe family member you want to %s is:\n", (customer.getActive() == 1) ? "deactivate" : "activate");
         System.out.printf("\n%-15s %-15s %-20s %-15s $%,.2f\n", customer.getFirstName(),
                 customer.getLastName(), customer.getEmail(), customer.getPhone(), customer.getBalance());
         System.out.println("\nAre you sure? Y/N: ");
@@ -864,6 +846,82 @@ public class App {
                 System.out.print("ERROR: Passwords did not match");
             }
         } while (!blnValid);
+    }
+
+    /**
+     * Transfer funds from Primary Guest to Family Member
+     */
+    private static void transferFunds(ArrayList<Customer> arrFamilyMembers) {
+        boolean blnExit = false;
+        double dAmountTransfer = 0.0;
+        double dFamilyMemberBalance = 0.0;
+        int iFamilyMemberID;
+        do {
+            try {
+                System.out.println("-".repeat(100));
+
+                // Validate input and if family member exists
+                boolean blnValidFamilyMemberID = false;
+                boolean blnValidAmount = false;
+                
+                do {
+                    System.out.print("\nEnter ID of family member to transfer to (Enter 0 to Exit): ");
+                    iFamilyMemberID = Integer.parseInt(System.console().readLine());
+                    
+                    if (iFamilyMemberID == 0) {
+                        blnExit = true;
+                        blnValidFamilyMemberID = true;
+                    } else {
+                        int iIterator = 0;
+                        boolean blnInList = false;
+                        // Loop through the family member list
+                        do {
+                            if (iFamilyMemberID == arrFamilyMembers.get(iIterator).getCustomerID()) {
+                                System.out.printf("Family Member ID: %d", arrFamilyMembers.get(iIterator).getCustomerID());
+                                dFamilyMemberBalance = arrFamilyMembers.get(iIterator).getBalance();
+                                blnInList = true;
+                                blnValidFamilyMemberID = true;
+                            }
+                            iIterator++;
+                        } while ((!blnInList) && (iIterator < arrFamilyMembers.size()));
+                        if (!blnInList) {
+                            System.out.println("Please selct an ID among family members");
+                        }
+                    }
+                } while(!blnValidFamilyMemberID);
+
+                // Verify amount
+                while ((!blnValidAmount) && (!blnExit)) {
+                    System.out.print("\nEnter amount to transfer (Enter 0 to Exit): ");
+                    dAmountTransfer = Double.parseDouble(System.console().readLine());
+
+                    if (dAmountTransfer == 0) {
+                        blnExit = true;
+                    } else {
+                        if (dAmountTransfer < 0) {
+                            System.out.println("\nPlease enter a positive number");
+                        } else if (dAmountTransfer < gCustomer.getBalance()) {
+                            blnValidAmount = true;
+                        }
+                    }
+                };
+
+                // Transfer amount from Primary Guest to Family Member
+                if ((blnValidFamilyMemberID) && (blnValidAmount) && (!blnExit)) {
+                    if (blnConfirmYesNo("Confirm Transfer?")) {
+                        DB_Costumer.updateBalance(gCustomer.getCustomerID(), (gCustomer.getBalance() - dAmountTransfer));
+                        DB_Costumer.updateBalance(iFamilyMemberID, dFamilyMemberBalance + dAmountTransfer);
+                        dbCustomer.getCustomer(gUserID);
+                        System.out.println("SUCCESS: Transfer done");
+                    }
+                }
+
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only for UserID.");
+            }
+        } while (!blnExit);
+        pressEnterToContinue();
+        
     }
 
     // ********** MERCHANT USER INTERFACE **********
@@ -1028,7 +1086,7 @@ public class App {
                         }
                         // Deduct amount from Guest balance
                         double newBalance = tempCustomer.getBalance() - dTotalAmount;
-                        if (dbCustomer.updateBalance(iGuestID, newBalance)) {
+                        if (DB_Costumer.updateBalance(iGuestID, newBalance)) {
                             System.out.println("SUCCESS: Transaction debited");
                         }
                         blnYesNoValid = true;
@@ -1126,7 +1184,7 @@ public class App {
 
                 }
                 // Ask if user wants to see more transactions
-                if (blnRepeatTransaction("Do you want to see more transactions?")) {
+                if (blnConfirmYesNo("Do you want to see more transactions?")) {
                     blnValid = false;
                     break;
                 } else {
@@ -1321,7 +1379,6 @@ public class App {
         System.out.println("-".repeat(40));
         for (Product product : arrProductList) {
             System.out.printf("%-6s %-20s $%,6.2f\n", product.getProductID(), product.getName(), product.getPrice());
-
         }
         System.out.println("-".repeat(40));
         System.out.println();
@@ -1351,7 +1408,7 @@ public class App {
                 try {
                     dbProduct.createProduct(strProductName, dProductPrice, iMerchantID);
                     System.out.println("\nNew product created successfully");
-                    if (blnRepeatTransaction("Do you want to add another product?")) {
+                    if (blnConfirmYesNo("Do you want to add another product?")) {
                         blnValid = false;
                     } else {
                         blnValid = true;
@@ -1392,7 +1449,7 @@ public class App {
                 try {
                     dbProduct.updateProduct(productUpdate);
 
-                    if (blnRepeatTransaction("\nDo you want to update another product?")) {
+                    if (blnConfirmYesNo("\nDo you want to update another product?")) {
                         blnValid = false;
                     } else {
                         blnValid = true;
@@ -1482,6 +1539,44 @@ public class App {
 
     // ******** ADMINISTRATOR USER INTERFACE **********
 
+    /**
+     * Display the main menu for the Admin User based on the User ID
+     */
+    public static void displayMainMenuAdminUser() {
+        boolean blnValid = false;
+        int iChoice = -1;
+        do {
+            try {
+                printHeaders("ADMIN MAIN MENU");
+                System.out.println("[1] Manage Guest Users");
+                System.out.println("[2] Manage Merchant Users");
+                System.out.println("[3] Back");
+                System.out.println("[0] Exit");
+                System.out.print("\nEnter your choise:  ");
+
+                iChoice = Integer.parseInt(System.console().readLine());
+                switch (iChoice) {
+                    case 0:
+                        System.exit(0);
+                        break;
+                    case 1:
+                        displayViewPrimaryGuestDetails();
+                        break;
+                    case 2:
+                        displayMainMenuMerchantUser();
+                        break;
+                    case 3:
+                        blnValid = true;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Numbers only please.");
+            }
+        } while (!blnValid);
+    }
+    
     /**
      * Display the main menu for the Admin User for managing the Guest Users
      */
@@ -1575,7 +1670,7 @@ public class App {
                 try {
                     dbCustomer.addCustomer(newCustomer);
                     System.out.println("New user created successfully");
-                    if (blnRepeatTransaction("Do you want to create another user?")) {
+                    if (blnConfirmYesNo("Do you want to create another user?")) {
                         blnValid = false;
                     } else {
                         blnValid = true;

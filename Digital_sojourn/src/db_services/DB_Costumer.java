@@ -48,7 +48,6 @@ public class DB_Costumer {
             ResultSet addCustomerResult = addCustomer.getGeneratedKeys();
             if (addCustomerResult.next()) {
                 customerId = addCustomerResult.getInt(1);
-
             }
 
             if (customerId > 1) {
@@ -234,8 +233,7 @@ public class DB_Costumer {
             updateCustomerStatus.setInt(2, customer_id);
             updateCustomerStatus.executeUpdate();
             success = true;
-
-            connection.close();
+            //connection.close();
 
         } catch (SQLException e) {
             System.err.println("An error updating customer status has occured: " +
@@ -284,7 +282,7 @@ public class DB_Costumer {
      *         and false otherwise.
      * @throws SQLException If an SQL error occurs, this exception is thrown.
      */
-    public boolean updateBalance(int customer_id, double newBalance) {
+    public static boolean updateBalance(int customer_id, double newBalance) {
         boolean blnReturn = false;
 
         try {
