@@ -1,3 +1,9 @@
+/**
+ * Authors: Dumar Ruge - 
+ *          Deneb Villanueva - c0872334
+ */
+
+
 
 import java.util.ArrayList;
 import java.time.*;
@@ -1037,6 +1043,11 @@ public class App {
         checkoutShoppingCart(arrTotalCart, arrQuantity);
     }
 
+    /**
+     * Displays the products purchased by the user for confirmation of transaction and will debit the amount to guest's account
+     * @param arrTotalCart - Passed from processTransaction, holds the products selected by the Guest
+     * @param arrQuantity - Passed from processTransaction, holds the corresponding quantity of the products in the arrTotalCart
+     */
     private static void checkoutShoppingCart(ArrayList<Product> arrTotalCart, ArrayList<Integer> arrQuantity) {
         String strConfirm;
         boolean blnYesNoValid = false;
@@ -1372,6 +1383,9 @@ public class App {
                 tempMerchant_User.getRole());
     }
 
+    /**
+     * Display the list of Products based on the Merchant ID
+     */
     public static void displayProductsByMerchant() {
         ArrayList<Product> arrProductList = DB_Product.getProductsByMercant(gMerchantUser.getMerchantID());
         printHeaders("PRODUCT LIST");
@@ -1549,7 +1563,7 @@ public class App {
             try {
                 printHeaders("ADMIN MAIN MENU");
                 System.out.println("[1] Manage Guest Users");
-                System.out.println("[2] Manage Merchant Users");
+                //System.out.println("[2] Manage Merchant Users");
                 System.out.println("[3] Back");
                 System.out.println("[0] Exit");
                 System.out.print("\nEnter your choise:  ");
@@ -1562,9 +1576,9 @@ public class App {
                     case 1:
                         displayViewPrimaryGuestDetails();
                         break;
-                    case 2:
+                    /*case 2:
                         displayMainMenuMerchantUser();
-                        break;
+                        break;*/
                     case 3:
                         blnValid = true;
                         break;
